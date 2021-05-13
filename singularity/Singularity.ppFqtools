@@ -1,0 +1,43 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk" 
+about.summary="fqtools container"
+
+%post
+fqtools_version=2.3
+htslib_version=1.11
+
+PACKAGES="procps curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
+
+apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL https://github.com/alastair-droop/fqtools/archive/v${fqtools_version}.tar.gz | tar -C /usr/local/bin -xz \
+&& cd /usr/local/bin/fqtools-${fqtools_version} \
+&& curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
+&& mv htslib-${htslib_version} htslib \
+&& cd htslib \
+&& autoreconf -i \
+&& ./configure \
+&& make \
+&& make install \
+&& cd .. \
+&& make \
+&& chmod +x bin/fqtools
+
+PATH=${PATH}:/usr/local/bin/fqtools-${fqtools_version}/bin
+LD_LIBRARY_PATH=/usr/local/lib
+
+%environment
+export fqtools_version=2.3
+export htslib_version=1.11
+export PACKAGES="procps curl build-essential libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev autoconf"
+export PATH=${PATH}:/usr/local/bin/fqtools-${fqtools_version}/bin
+export LD_LIBRARY_PATH=/usr/local/lib
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)

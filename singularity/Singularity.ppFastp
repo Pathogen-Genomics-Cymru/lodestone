@@ -1,0 +1,30 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk" 
+about.summary="fastp container"
+
+%post
+fastp_version=0.20.1
+
+PACKAGES="procps curl build-essential zlib1g-dev jq"
+
+apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL https://github.com/OpenGene/fastp/archive/v${fastp_version}.tar.gz | tar -xz \
+&& cd fastp-${fastp_version} \
+&& make \
+&& make install \
+&& cd .. \
+&& rm -r fastp-${fastp_version}
+
+%environment
+export fastp_version=0.20.1
+export PACKAGES="procps curl build-essential zlib1g-dev jq"
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)

@@ -1,0 +1,18 @@
+FROM debian:buster
+
+LABEL maintainer="pricea35@cardiff.ac.uk" \
+software="kraken2"
+
+ENV kraken2_version=2.1.1
+
+ENV PACKAGES="procps curl build-essential rsync unzip ncbi-blast+ perl libjson-perl cpanminus pigz jq" \
+PYTHON="python3 python3-pip" \
+PYTHON_PACKAGES="biopython"
+
+RUN apt-get update && apt-get install -y $PACKAGES $PYTHON \
+&& curl -fsSL https://github.com/DerrickWood/kraken2/archive/v${kraken2_version}.tar.gz | tar -xz \
+&& cd kraken2-${kraken2_version} \
+&& ./install_kraken2.sh /usr/local/bin \
+&& cd / \
+&& pip3 install $PYTHON_PACKAGES \
+&& cpanm JSON::Create

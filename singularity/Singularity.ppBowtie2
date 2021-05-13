@@ -1,0 +1,35 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk" 
+about.summary="bowtie2 and samtools container"
+
+%post
+samtools_version=1.11
+htslib_version=1.11
+bowtie2_version=2.4.2
+
+PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
+
+apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
+&& curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
+&& make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} \
+&& make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} prefix=/usr/local install \
+&& curl -fsSL https://sourceforge.net/projects/bowtie-bio/files/bowtie2/${bowtie2_version}/bowtie2-${bowtie2_version}-source.zip -o bowtie2-${bowtie2_version}-source.zip \
+&& unzip bowtie2-${bowtie2_version}-source.zip \
+&& make -C bowtie2-${bowtie2_version} \
+&& make -C bowtie2-${bowtie2_version} prefix=/usr/local install
+
+%environment
+export samtools_version=1.11
+export htslib_version=1.11
+export bowtie2_version=2.4.2
+export PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl unzip libtbb-dev"
+
+%runscript
+exec /bin/bash "$@"
+%startscript
+exec /bin/bash "$@"

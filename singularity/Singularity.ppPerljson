@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk" 
+software="perl container for json parsing" 
+
+%post
+PACKAGES="procps curl wget=1.20.1-1.1 build-essential perl libjson-perl cpanminus jq"
+
+apt-get update && apt-get install -y $PACKAGES \
+&& cpanm JSON::Create
+
+%environment
+export PACKAGES="procps curl wget=1.20.1-1.1 build-essential perl libjson-perl cpanminus jq"
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"

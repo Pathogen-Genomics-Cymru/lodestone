@@ -1,0 +1,38 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk" 
+about.summary="bwa and samtools container"
+
+%post
+bwa_version=0.7.17
+samtools_version=1.11
+htslib_version=1.11
+
+PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
+
+apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
+&& curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
+&& make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} \
+&& make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} prefix=/usr/local install \
+&& curl -fsSL https://github.com/lh3/bwa/archive/v${bwa_version}.tar.gz | tar -C /usr/local/bin -xz \
+&& make -C /usr/local/bin/bwa-${bwa_version} \
+&& chmod +x /usr/local/bin/bwa-${bwa_version}/bwa
+
+PATH=${PATH}:/usr/local/bin/bwa-${bwa_version}
+
+%environment
+export bwa_version=0.7.17
+export samtools_version=1.11
+export htslib_version=1.11
+export PACKAGES="procps curl build-essential zlib1g-dev libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libfindbin-libs-perl"
+export PATH=${PATH}:/usr/local/bin/bwa-${bwa_version}
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)

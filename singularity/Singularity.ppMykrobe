@@ -1,0 +1,42 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk"
+about.summary="mykrobe container"
+
+%post
+mykrobe_version=0.9.0
+
+PACKAGES="procps wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
+PYTHON="python3.7 python3.7-dev python3-pip"
+
+apt-get update \
+&& apt-get install -y $PACKAGES $PYTHON \
+&& git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
+&& make -C mccortex \
+&& mv mccortex /usr/local/bin \
+&& wget -O mykrobe-${mykrobe_version}.tar.gz https://github.com/Mykrobe-tools/mykrobe/archive/v${mykrobe_version}.tar.gz \
+&& tar -xzf mykrobe-${mykrobe_version}.tar.gz \
+&& cd mykrobe-${mykrobe_version} \
+&& pip3 install -r requirements.txt \
+&& pip3 install . \
+&& ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.7/dist-packages/mykrobe/cortex/mccortex31 \
+&& wget -O /usr/local/bin/json_to_tsv.py https://raw.githubusercontent.com/iqbal-lab/Mykrobe-predictor/master/scripts/json_to_tsv.py \
+&& chmod +x /usr/local/bin/json_to_tsv.py \
+&& mykrobe panels update_metadata \
+&& mykrobe panels update_species all
+
+PATH=${PATH}:/usr/local/bin/mccortex/bin
+
+%environment
+export mykrobe_version=0.9.0
+export PACKAGES="procps wget rsync git build-essential r-base-core zlib1g-dev libncurses5-dev libz-dev liblzma-dev libbz2-dev"
+export PYTHON="python3.7 python3.7-dev python3-pip"
+export PATH=${PATH}:/usr/local/bin/mccortex/bin
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)

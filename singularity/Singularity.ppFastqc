@@ -1,0 +1,32 @@
+Bootstrap: docker
+From: debian:buster
+
+%labels
+maintainer="pricea35@cardiff.ac.uk"  
+about.summary="FastQC container"
+
+%post
+fastqc_version=0.11.9
+
+PACKAGES="procps curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
+
+apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip" -o fastqc_v${fastqc_version}.zip \
+&& unzip fastqc_v${fastqc_version}.zip \
+&& chmod +x FastQC/fastqc \
+&& mv FastQC /usr/local/bin \
+&& rm *.zip
+
+PATH=${PATH}:/usr/local/bin/FastQC
+
+%environment
+export fastqc_version=0.11.9
+export PACKAGES="procps curl unzip libfindbin-libs-perl openjdk-11-jre-headless"
+export PATH=${PATH}:/usr/local/bin/FastQC
+
+%runscript
+exec /bin/bash "$@"
+
+%startscript
+exec /bin/bash "$@"(base)
