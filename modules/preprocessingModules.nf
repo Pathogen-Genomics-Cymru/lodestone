@@ -569,3 +569,31 @@ process alignToRef {
     """ 
 }
 
+process CallVarsMpileup {
+    /**
+    * @QCcheckpoint none
+    */
+
+    tag { sample_name }
+
+    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+
+    cpus 12
+
+    when:
+    do_we_varcall =~ /NOW\_VARCALL\_${sample_name}/
+
+    input:
+    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
+
+    output:
+    tuple val(sample_name), path(json), path(bam), path("${sample_name}.samtools.vcf"), emit: mpileup_vcf
+
+    script:
+    samtools_vcf = "${sample_name}.samtools.vcf"
+
+    """
+    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+    samtools mpileup -ugf \${ref_fa} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${samtools_vcf}
+    """
+}
