@@ -68,7 +68,7 @@ if ($#G == -1) { push(@{$out{'Warnings'}},"warning: no genus classifications mee
 if ($#F == -1) { push(@{$out{'Warnings'}},"warning: no family classifications meet thresholds of > $num_threshold reads and > $pct_threshold % of total reads");  }
 my $top_family = ''; my $no_of_reads_assigned_to_top_family = 0;
 my $top_genus = ''; my $top_species = '';
-my $contaminant_species_found = 0;
+my $contaminant_species_found = 0; my $contaminant_mycobacterium_found = 0;
 for(my $x=0;$x<=2;$x++)
 	{ my @arr = (); my $clade = '';
 	  if    ($x == 0) { @arr = @F; $clade = 'Family';  }
@@ -83,11 +83,18 @@ for(my $x=0;$x<=2;$x++)
 		{ my %hash = ('reads' => $sorted_arr[$y][0], 'percentage' => $sorted_arr[$y][1], 'name' => $sorted_arr[$y][2], 'taxon_id' => $sorted_arr[$y][3]);
 		  push(@{$out{$clade}},\%hash);
 		  if (($x == 2) and ($y > 0) and ($sorted_arr[$y][2] ne 'Homo sapiens'))
-			{ $contaminant_species_found++; } # raise a warning if a non-human species is detected that is NOT the top hit, as this indicates the sample is mixed or contaminated
+			{ $contaminant_species_found++; # raise a warning if a non-human species is detected that is NOT the top hit, as this indicates the sample is mixed or contaminated
+			  if ($sorted_arr[$y][2] =~ /^Mycobact.*?$/)
+				{ $contaminant_mycobacterium_found++; }
+			}
 		}
 	}
 if ($contaminant_species_found > 0)
-	{ push(@{$out{'Warnings'}},'warning: sample is mixed or contaminated (contains reads from multiple non-human species)'); }
+	{ if ($contaminant_mycobacterium_found > 0)
+		{ push(@{$out{'Warnings'}},'warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to Mykrobe report for superior mycobacterial classification'); }
+	  else
+		{ push(@{$out{'Warnings'}},'warning: sample is mixed or contaminated (contains reads from multiple non-human species)'); }
+	}
 if ($top_family =~ /^Mycobact.*?$/)
 	{ if (($top_genus !~ /^Mycobact.*?$/) or ($top_species !~ /^Mycobact.*?$/))
 		{ push(@{$out{'Warnings'}},'warning: top family classification is mycobacterial, but this is not consistent with top genus and species classifications'); }
@@ -96,7 +103,7 @@ if ($top_family =~ /^Mycobact.*?$/)
 # IF THE TOP FAMILY IS MYCOBACTERIACEAE (WHICH CAN ONLY BE THE CASE IF MINIMUM COVERAGE THRESHOLDS ARE MET), WE WILL ALSO REPORT THE KRAKEN 'G1' CLASSIFICATIONS. THESE MAY INDICATE WHETHER THIS IS A MIXED MYCOBACTERIAL SAMPLE.
 if ($top_family eq 'Mycobacteriaceae')
 	{ if ($no_of_reads_assigned_to_top_family < 100000)
-		{ push(@{$out{'Warnings'}},"error: there are < 100k reads classified as Mycobacteriaceae");
+		{ push(@{$out{'Errors'}},"error: there are < 100k reads classified as Mycobacteriaceae");
 		  $out{'Mykrobe'} = 'false';
 		}
 	  else
@@ -111,11 +118,11 @@ if ($top_family eq 'Mycobacteriaceae')
 			}
 		  my $num_G1 = @sorted_G1;
 		  if ($num_G1 > 1)
-			{ push(@{$out{'Warnings'}},'warning: sample contains multiple mycobacterial species complexes'); }
+			{ push(@{$out{'Warnings'}},'warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to Mykrobe report)'); }
 		}
 	}
 else
-	{ push(@{$out{'Warnings'}},"error: top family is not Mycobacteriaceae");
+	{ push(@{$out{'Errors'}},"error: top family is not Mycobacteriaceae");
 	  $out{'Mykrobe'} = 'false';
 	}
 if (!(exists($out{'Warnings'})))
