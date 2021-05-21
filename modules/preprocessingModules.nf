@@ -318,7 +318,7 @@ process identifyBacterialContaminants {
 
     tag { sample_name }
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_species_in_sample.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log' 
 
     when:
@@ -330,7 +330,7 @@ process identifyBacterialContaminants {
 		
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
-    path("${sample_name}_species_in_sample_previous.json"), emit: prev_sample_json
+    tuple path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
     path("${sample_name}.log", emit: contam_log)
 		
     script:
@@ -503,10 +503,10 @@ process summarise {
     input:
     tuple val(sample_name), path(mykrobe_json)
     tuple path(kraken_report), path(kraken_json)
-    path(prev_species_json)
+    tuple path(prev_species_json), val(decontam)
 		
     output:
-    path("${sample_name}_species_in_sample.json", emit: summary_json)
+    tuple path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     path("${sample_name}.log", emit: summary_log)
 	
     script:
