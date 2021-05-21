@@ -16,10 +16,11 @@ process alignToRef {
     doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(json), doWeAlign
+    tuple val(sample_name), path(fq1), path(fq2) 
+    tuple path(json), val(doWeAlign)
 
     output:
-    tuple sample_name, file("${sample_name}_report.json"), file("${sample_name}.bam"), stdout into alignToRef_mpileup
+    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), stdout, emit: alignToRef_mpileup
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
     path("${sample_name}.err", emit: alignToRef_err)
@@ -34,18 +35,23 @@ process alignToRef {
 
     """
     ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+
     minimap2 -ax sr \$ref_fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference \$ref_fa - minimap.bam
-    java -jar ${picard} AddOrReplaceReadGroups INPUT=minimap.bam OUTPUT=${bam} RGID=${sample_name} RGLB=lib RGPL=Illumina RGPU=unit RGSM=sample
+
+    java -jar /usr/local/bin/picard.jar AddOrReplaceReadGroups INPUT=minimap.bam OUTPUT=${bam} RGID=${sample_name} RGLB=lib RGPL=Illumina RGPU=unit RGSM=sample
+
     samtools index ${bam} ${bai}
     samtools stats ${bam} > ${stats}
-    python3 ${parse_samtools_stats} ${bam} ${stats} > ${stats_json}
-    perl ${create_final_json} ${stats_json} ${json}
+
+    python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
+    perl ${baseDir}/bin/create_final_json.pl ${stats_json} ${json}
+
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
     if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo "error: insufficient number and/or quality of read alignments to the reference genome" >> ${error_log}; fi
     """
 }
 
-process CallVarsMpileup {
+process callVarsMpileup {
     /**
     * @QCcheckpoint none
     */
