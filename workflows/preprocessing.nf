@@ -64,5 +64,5 @@ workflow preprocessing {
 
       reMykrobe(mapToContamFa.out.reClassification_fqs)
 
-      summarise(reMykrobe.out.reMykrobe_report, reKraken.out.reKraken_report)
+      summarise(reMykrobe.out.reMykrobe_report, reKraken.out.reKraken_report, identifyBacterialContaminants.out.prev_sample_json)
 }

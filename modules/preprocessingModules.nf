@@ -318,7 +318,7 @@ process identifyBacterialContaminants {
 
     tag { sample_name }
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_cleanedReads", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_species_in_sample.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log' 
 
     when:
@@ -329,24 +329,23 @@ process identifyBacterialContaminants {
     tuple path(kraken_report), path(kraken_json)
 		
     output:
-    path("${sample_name}_species_in_sample.json", emit: sample_json)
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
+    path("${sample_name}_species_in_sample_previous.json"), emit: prev_sample_json
     path("${sample_name}.log", emit: contam_log)
 		
     script:
     error_log = "${sample_name}.log"	
 
     """
-    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco}
+    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+    
+    cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
 
-    num_urls=\$(cat ${sample_name}_urllist.txt | wc -l)
+    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
+    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
+    top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    contam_to_remove=\$(jq '.ContaminantsToRemove' ${sample_name}_species_in_sample.json)
-    acceptable_species=\$(jq '.AcceptableSpecies' ${sample_name}_species_in_sample.json)
-
-    if (( \$num_urls > 0 )); then printf "" >> ${error_log} && printf "yes"; else echo "no contaminant genomes detected for ${sample_name} (note: if --unmix_myco is 'no', contaminating mycobacteria, if any, won't be counted here)" >> ${error_log} && printf "no"; fi
-
-    if [ \$contam_to_remove == '\"no\"' ] && [ \$acceptable_species == '\"yes\"' ]; then echo "workflow complete without error" >> ${error_log}; else echo "top hit in ${sample_name} is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
     """
 }
 
@@ -360,7 +359,7 @@ process downloadContamGenomes {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', pattern: '*.log'
 
     when:
-    run_decontaminator == 'yes'
+    run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
 
     input:
     tuple val(sample_name), path(contam_list), val(run_decontaminator)
@@ -504,6 +503,7 @@ process summarise {
     input:
     tuple val(sample_name), path(mykrobe_json)
     tuple path(kraken_report), path(kraken_json)
+    path(prev_species_json)
 		
     output:
     path("${sample_name}_species_in_sample.json", emit: summary_json)
@@ -513,14 +513,15 @@ process summarise {
     error_log = "${sample_name}.log"
 	
     """
-    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco}
-
-    contam_to_remove=\$(jq '.ContaminantsToRemove' ${sample_name}_species_in_sample.json)
-    acceptable_species=\$(jq '.AcceptableSpecies' ${sample_name}_species_in_sample.json)
-
-    if [ \$contam_to_remove == '\"yes\"' ]; then echo "error: ${sample_name} remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
-
-    if [ \$contam_to_remove == '\"no\"' ] && [ \$acceptable_species == '\"yes\"' ]; then echo "workflow complete without error" >> ${error_log}; else echo "error: top hit in ${sample_name} is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
+	
+    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
+    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
+    top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
+	
+    if [ \$contam_to_remove == 'yes' ]; then echo "error: sample remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
+	
+    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "error: top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
     """
 }
 
