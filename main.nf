@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 
 // import subworkflows
 include {preprocessing} from './workflows/preprocessing.nf'
+include {clockwork} from './workflows/clockwork.nf'
 
 /*
  ANSI escape codes to allow colour-coded output messages
@@ -162,6 +163,11 @@ workflow {
     // call preprocressing subworkflow
     main:
       preprocessing(input_files, krakenDB, bowtie_dir)
+      
+      clockwork_seqs = preprocessing.out.decontam_seqs.ifEmpty(preprocessing.out.uncontam_seqs)
+      clockwork_json = preprocessing.out.decontam_json.ifEmpty(preprocessing.out.uncontam_json)
+
+      clockwork(clockwork_seqs, clockwork_json)
 }
 
 workflow.onComplete {
