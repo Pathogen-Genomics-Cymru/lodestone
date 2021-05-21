@@ -65,4 +65,11 @@ workflow preprocessing {
       reMykrobe(mapToContamFa.out.reClassification_fqs)
 
       summarise(reMykrobe.out.reMykrobe_report, reKraken.out.reKraken_report, identifyBacterialContaminants.out.prev_sample_json)
+
+    emit:
+
+      uncontam_seqs = bowtie2.out.bowtie2_fqs
+      decontam_seqs = mapToContamFa.out.reClassification_fqs
+      uncontam_json = identifyBacterialContaminants.out.prev_sample_json
+      decontam_json = summarise.out.summary_json
 }
