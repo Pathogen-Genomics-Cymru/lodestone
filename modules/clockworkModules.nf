@@ -81,3 +81,26 @@ process callVarsMpileup {
     """
 }
 
+process callVarsCortex {
+
+    tag { sample_name }
+
+    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+
+    cpus 12
+
+    input:
+    tuple val(sample_name), path(json), path(bam)
+
+    output:
+    tuple val(sample_name), path(json), path(bam), path("${sample_name}.cortex.vcf"), emit: cortex_vcf
+
+    script:
+    cortex_vcf = "${sample_name}.cortex.vcf"
+
+    """
+    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${json})
+    clockwork cortex \${ref_dir} ${bam} cortex ${sample_name}
+    cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
+    """
+}

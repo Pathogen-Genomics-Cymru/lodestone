@@ -4,6 +4,7 @@ nextflow.enable.dsl = 2
 // import modules
 include {alignToRef} from '../modules/clockworkModules.nf' params(params)
 include {callVarsMpileup} from '../modules/clockworkModules.nf' params(params)
+include {callVarsCortex} from '../modules/clockworkModules.nf' params(params)
 
 // define workflow component
 workflow clockwork {
@@ -15,5 +16,6 @@ workflow clockwork {
     main:
 
       alignToRef(input_seqs, json)
-      callVarsMpileup(alignToRef.out.alignToRef_mpileup) 
+      callVarsMpileup(alignToRef.out.alignToRef_mpileup)
+      callVarsCortex(callVarsMpileup.out.mpileup_bam)
 }
