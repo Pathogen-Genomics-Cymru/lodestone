@@ -132,3 +132,40 @@ process minos {
     """
 }
 
+process gvcf {
+
+    tag { sample_name }
+
+    publishDir "${params.output_dir}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
+    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+
+    cpus 12
+
+    input:
+    tuple val(sample_name), path(json), path(bam), path(minos_vcf)
+
+    output:
+    path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
+    path("${sample_name}.fa", emit: gvcf_fa)
+    path("${sample_name}.err", emit: gvcf_log)
+
+    script:
+    gvcf = "${sample_name}.gvcf.vcf"
+    gvcf_fa = "${sample_name}.fa"
+    error_log = "${sample_name}.err"
+
+	// the awk command removes whitespace from the (only) header line of ref.fa; necessary to sidestep a Minos bug (since fixed, albeit not in the Clockwork container used in this workflow)
+
+    """
+    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+    awk '{print \$1}' \${ref_fa} > ref.fa
+    samtools mpileup -ugf \${ref_fa} ${bam} | bcftools call --threads ${task.cpus} -m -O v -o samtools_all_pos.vcf
+    clockwork gvcf_from_minos_and_samtools ref.fa ${minos_vcf} samtools_all_pos.vcf ${gvcf}
+    clockwork gvcf_to_fasta ${gvcf} ${gvcf_fa}
+    rm samtools_all_pos.vcf
+    gzip ${gvcf}
+    printf "workflow complete without error" >> ${error_log}
+    """
+}
+

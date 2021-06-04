@@ -6,6 +6,7 @@ include {alignToRef} from '../modules/clockworkModules.nf' params(params)
 include {callVarsMpileup} from '../modules/clockworkModules.nf' params(params)
 include {callVarsCortex} from '../modules/clockworkModules.nf' params(params)
 include {minos} from '../modules/clockworkModules.nf' params(params)
+include {gvcf} from '../modules/clockworkModules.nf' params(params)
 
 // define workflow component
 workflow clockwork {
@@ -20,4 +21,5 @@ workflow clockwork {
       callVarsMpileup(alignToRef.out.alignToRef_mpileup)
       callVarsCortex(callVarsMpileup.out.mpileup_bam)
       minos(callVarsCortex.out.cortex_vcf, callVarsMpileup.out.mpileup_vcf)
+      gvcf(minos.out.minos_vcf)
 }
