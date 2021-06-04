@@ -104,3 +104,31 @@ process callVarsCortex {
     cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
     """
 }
+
+process minos {
+
+    tag { sample_name }
+
+    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+
+    input:
+    tuple val(sample_name), path(json), path(bam), path(cortex_vcf)
+    path(samtools_vcf)
+
+    output:
+    tuple val(sample_name), path(json), path(bam), path("${sample_name}.minos.vcf"), emit: minos_vcf
+
+    script:
+    minos_vcf = "${sample_name}.minos.vcf"
+
+	// the awk command removes whitespace from the (only) header line of ref.fa; necessary to sidestep a Minos bug (since fixed, albeit not in the Clockwork container used in this workflow)
+
+    """
+    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+    awk '{print \$1}' \${ref_fa} > ref.fa
+    minos adjudicate --force --reads ${bam} minos ref.fa ${samtools_vcf} ${cortex_vcf}
+    cp minos/final.vcf ${minos_vcf}
+    rm -rf minos
+    """
+}
+
