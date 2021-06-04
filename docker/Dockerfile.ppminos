@@ -1,0 +1,40 @@
+FROM debian:buster
+
+LABEL maintainer="pricea35@cardiff.ac.uk" \
+about.summary="clockwork cortex container"
+
+ENV gramtools_version=8af53f6c8c0d72ef95223e89ab82119b717044f2 \
+vt_version=2187ff6347086e38f71bd9f8ca622cd7dcfbb40c \
+bcftools_version=1.10.2 \
+minos_version=0.11.0 \
+python_version=3.6.5
+
+ENV PACKAGES="procps curl git build-essential cmake tabix autoconf wget zlib1g-dev pkg-config libvcflib-tools libssl-dev libcurl4-openssl-dev jq"
+
+RUN apt-get update \
+&& apt-get install -y $PACKAGES \
+&& curl -fsSL https://www.python.org/ftp/python/${python_version}/Python-${python_version}.tgz | tar -xz \
+&& cd Python-${python_version} \
+&& ./configure --enable-optimizations \
+&& make altinstall \
+&& cd .. \
+&& ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
+&& ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
+&& pip3 install 'cluster_vcf_records==0.13.1' \
+&& curl -fsSL https://github.com/samtools/bcftools/releases/download/${bcftools_version}/bcftools-${bcftools_version}.tar.bz2 | tar -xj \
+&& make -C bcftools-${bcftools_version} \
+&& mv bcftools-${bcftools_version}/bcftools /usr/local/bin \
+&& git clone https://github.com/atks/vt.git vt-git \
+&& cd vt-git \
+&& git checkout ${vt_version} \
+&& make \
+&& cd .. \
+&& mv vt-git/vt /usr/local/bin \
+&& pip3 install tox "six>=1.14.0" \
+&& git clone https://github.com/iqbal-lab-org/gramtools \
+&& cd gramtools \
+&& git checkout ${gramtools_version} \
+&& pip3 install . \
+&& cd .. \
+&& pip3 install cython \
+&& pip3 install git+https://github.com/iqbal-lab-org/minos@v${minos_version}
