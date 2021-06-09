@@ -10,7 +10,7 @@ process alignToRef {
     publishDir "${params.output_dir}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
 
-    cpus 12
+    cpus 8
 
     when:
     doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -60,7 +60,7 @@ process callVarsMpileup {
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
-    cpus 12
+    cpus 8
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -87,7 +87,7 @@ process callVarsCortex {
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
-    cpus 12
+    cpus 8
 
     input:
     tuple val(sample_name), path(json), path(bam)
@@ -140,7 +140,7 @@ process gvcf {
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
-    cpus 12
+    cpus 8
 
     input:
     tuple val(sample_name), path(json), path(bam), path(minos_vcf)
