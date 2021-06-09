@@ -1,4 +1,4 @@
-# Mycobacterial Pre-processing Pipeline #
+# TB Pipeline #
   
 Cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads.
 
@@ -6,7 +6,7 @@ Takes as input one directory containing pairs of fastq(.gz) or bam files.
 Produces as output one directory per sample, containing the relevant reports & a pair of cleaned fastqs.
 
 ## Quick Start ## 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow using singularity, the singularity images for the workflow will need to be built by running `singularity/singularity_pull.sh` 
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow using singularity, the images for the workflow will need to be built by running either `docker/docker_build.sh` or  `singularity/singularity_build.sh` 
 
 E.g. to run the workflow:
 ```
@@ -33,7 +33,7 @@ Do you want to disambiguate mixed-mycobacterial samples by read alignment? Eithe
 * **species**<br />
 Principal species in each sample, assuming genus Mycobacterium. Default 'null'. If parameter used, takes 1 of 10 values: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis
 * **kraken_db**<br />
-Directory containing `*.k2d` Kraken2 database files (obtain from https://benlangmead.github.io/aws-indexes/k2)
+Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb_20200919 recommended, obtain from https://benlangmead.github.io/aws-indexes/k2)
 * **bowtie2_index**<br />
 Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip). The specified path should NOT include the index name
 * **bowtie_index_name**<br />
