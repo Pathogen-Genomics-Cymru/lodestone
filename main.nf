@@ -24,7 +24,7 @@ if (params.help) {
 def helpMessage() {
 log.info """
 ========================================================================
-M Y C O B A C T E R I A L  P R E - P R O C E S S I N G   P I P E L I N E
+M Y C O B A C T E R I A L  P I P E L I N E
   
 Cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads.
 
@@ -107,7 +107,7 @@ if ( ( params.species != "null" ) && ( params.species != "abscessus" ) && ( para
 
 log.info """
 ========================================================================
-M Y C O B A C T E R I A L  P R E - P R O C E S S I N G   P I P E L I N E
+M Y C O B A C T E R I A L  P I P E L I N E
 
 Parameters used:
 ------------------------------------------------------------------------
