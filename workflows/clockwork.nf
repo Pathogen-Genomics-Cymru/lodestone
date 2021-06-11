@@ -20,6 +20,6 @@ workflow clockwork {
       alignToRef(input_seqs, json)
       callVarsMpileup(alignToRef.out.alignToRef_bam)
       callVarsCortex(alignToRef.out.alignToRef_bam)
-      minos(callVarsCortex.out.cortex_vcf, callVarsMpileup.out.mpileup_vcf)
+      minos(alignToRef.out.alignToRef_bam, callVarsCortex.out.cortex_vcf, callVarsMpileup.out.mpileup_vcf)
       gvcf(alignToRef.out.alignToRef_bam, minos.out.minos_vcf)
 }

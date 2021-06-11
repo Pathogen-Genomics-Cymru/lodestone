@@ -146,6 +146,7 @@ process minos {
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
     input:
+    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
     tuple val(sample_name), path(cortex_vcf)
     tuple val(sample_name), path(samtools_vcf)
 
