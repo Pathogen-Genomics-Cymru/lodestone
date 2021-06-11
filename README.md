@@ -6,7 +6,9 @@ Takes as input one directory containing pairs of fastq(.gz) or bam files.
 Produces as output one directory per sample, containing the relevant reports & a pair of cleaned fastqs.
 
 ## Quick Start ## 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow using singularity, the images for the workflow will need to be built by running either `docker/docker_build.sh` or  `singularity/singularity_build.sh` 
+Requires NXF_VER>=20.11.0-edge
+
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow, the images will need to be built by running either `docker/docker_build.sh` or  `singularity/singularity_build.sh` 
 
 E.g. to run the workflow:
 ```
@@ -41,6 +43,12 @@ Name of the bowtie index, e.g. hg19_1kgmaj<br />
 <br />
 
 For more information on the parameters run `nextflow run main.nf --help`
+
+## Stub-run ##
+To test the stub run:
+```
+nextflow run main.nf -stub -config testing.config
+```
 
 ## Checkpoints ##
 Checkpoints used throughout this workflow to fail a sample/issue warnings:

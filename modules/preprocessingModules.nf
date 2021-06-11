@@ -26,6 +26,14 @@ process checkBamValidity {
     if [ \$is_ok == 'OK' ]; then printf "" >> ${error_log}; else echo "error: bam did not pass samtools quickcheck" >> ${error_log}; fi
     printf \$is_ok
     """
+
+    stub:
+    error_log = "${bam_file.getBaseName()}.err"
+
+    """
+    touch ${error_log}
+    printf ${params.checkBamValidity_isok}
+    """
 }
 
 process checkFqValidity {
@@ -53,6 +61,14 @@ process checkFqValidity {
     is_ok=\$(fqtools validate $fq1 $fq2)
 
     if [ \$is_ok == 'OK' ]; then printf 'OK' && printf "" >> ${error_log}; else echo "error: sample did not pass fqtools validation check" >> ${error_log}; fi
+    """
+
+    stub:
+    error_log  = "${sample_name}.err"
+
+    """
+    printf ${params.checkFqValidity_isok}
+    touch ${error_log}
     """
 }
 
@@ -88,6 +104,13 @@ process bam2fastq {
 
     printf 'OK'
     """
+
+    stub:
+    """
+    touch ${bam_file.getBaseName()}_1.fq.gz
+    touch ${bam_file.getBaseName()}_2.fq.gz
+    printf 'OK'
+    """
 }
 
 process countReads {
@@ -117,6 +140,14 @@ process countReads {
     num_reads=\$(fqtools count $fq1 $fq2)
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: sample did not have > 100k pairs of raw reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
+    """
+
+    stub:
+    error_log = "${sample_name}.err"
+
+    """
+    printf ${params.countReads_runfastp}
+    touch ${error_log}
     """
 }
 	
@@ -160,6 +191,22 @@ process fastp {
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
     """
+
+    stub:
+    clean_fq1  = "${sample_name}_cleaned_1.fq.gz"
+    clean_fq2  = "${sample_name}_cleaned_2.fq.gz"
+    fastp_json = "${sample_name}_fastp.json"
+    fastp_html = "${sample_name}_fastp.html"
+    error_log  = "${sample_name}.err"
+
+    """
+    printf ${params.fastp_enoughreads}
+    touch ${error_log}
+    touch ${clean_fq1}
+    touch ${clean_fq2}
+    touch ${fastp_json}
+    touch ${fastp_html}
+    """    
 }
 
 process fastQC {
@@ -184,6 +231,12 @@ process fastQC {
     cat $fq1 $fq2 > ${sample_name}.fq.gz
     fastqc ${sample_name}.fq.gz
     rm ${sample_name}.fq.gz
+    """
+
+    stub:
+    """
+    touch ${sample_name}_fastqc.html
+    touch ${sample_name}_fastqc.zip
     """
 }
 
@@ -238,6 +291,24 @@ process kraken2 {
 
     if [ \$run_mykrobe == '\"true\"' ]; then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads" >> ${error_log} && printf "no"; fi
     """
+
+    stub:
+    kraken2_report = "${sample_name}_kraken_report.txt"
+    kraken2_json = "${sample_name}_kraken_report.json"
+    kraken2_read_classification = "${sample_name}_read_classifications.txt"
+    nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq.gz"
+    nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq.gz"
+    error_log = "${sample_name}.err"
+
+    """
+    printf ${params.kraken2_runmykrobe}
+    touch ${kraken2_report}
+    touch ${kraken2_json}
+    touch ${kraken2_read_classification}
+    touch ${nonBac_depleted_reads_1}
+    touch ${nonBac_depleted_reads_2}
+    touch ${error_log}
+    """
 }
 
 process mykrobe {
@@ -267,6 +338,14 @@ process mykrobe {
 	
     """
     mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    printf ${sample_name}
+    """
+
+    stub:
+    mykrobe_report = "${sample_name}_mykrobe_report.json"
+
+    """
+    touch ${mykrobe_report}
     printf ${sample_name}
     """
 }
@@ -308,6 +387,15 @@ process bowtie2 {
 
     gzip -f ${humanfree_fq1}
     gzip -f ${humanfree_fq2}
+    """
+
+    stub:
+    humanfree_fq1 = "${sample_name}_cleaned_1.fq"
+    humanfree_fq2 = "${sample_name}_cleaned_2.fq"
+
+    """
+    touch ${humanfree_fq1}.gz
+    touch ${humanfree_fq2}.gz
     """	
 }
 
@@ -346,6 +434,16 @@ process identifyBacterialContaminants {
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
     if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    """
+
+    stub:
+    error_log = "${sample_name}.err"
+
+    """
+    touch ${sample_name}_species_in_sample_previous.json
+    touch ${sample_name}_urllist.txt
+    touch ${error_log}
+    printf ${params.identifyBacContam_rundecontam}
     """
 }
 
@@ -394,6 +492,16 @@ process downloadContamGenomes {
 
     if (( \$num_urls_in == \$num_urls_out )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded" >> ${error_log} && printf "fail"; fi
     """
+
+    stub:
+    contaminant_fa = "${sample_name}_contaminants.fa"
+    error_log = "${sample_name}.err"
+
+    """
+    printf ${params.downloadContamGenomes_fapass}
+    touch ${contaminant_fa}
+    touch ${error_log}
+    """
 }
 
 process mapToContamFa {
@@ -434,6 +542,15 @@ process mapToContamFa {
     gzip -f ${decontam_fq1}
     gzip -f ${decontam_fq2}
     """
+
+    stub:
+    decontam_fq1 = "${sample_name}_cleaned_1.fq"
+    decontam_fq2 = "${sample_name}_cleaned_2.fq"
+
+    """
+    touch ${decontam_fq1}.gz
+    touch ${decontam_fq2}.gz
+    """
 }
 
 process reKraken {
@@ -467,6 +584,17 @@ process reKraken {
     perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
+
+    stub:
+    kraken2_report = "${sample_name}_kraken_report.txt"
+    kraken2_json = "${sample_name}_kraken_report.json"
+    kraken2_read_classification = "${sample_name}_read_classifications.txt"
+
+    """
+    touch ${kraken2_report}
+    touch ${kraken2_json}
+    touch ${kraken2_read_classification}
+    """
 }
 
 process reMykrobe {
@@ -493,6 +621,13 @@ process reMykrobe {
 	
     """
     mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    """
+
+    stub:
+    mykrobe_report = "${sample_name}_mykrobe_report.json"
+
+    """
+    touch ${mykrobe_report}
     """
 }
 
@@ -528,6 +663,15 @@ process summarise {
     if [ \$contam_to_remove == 'yes' ]; then echo "error: sample remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
 	
     if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "error: top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    """
+
+    stub:
+    error_log = "${sample_name}.err"
+
+    """
+    touch ${sample_name}_species_in_sample.json
+    touch ${error_log}
+    printf ${params.summary_doWeAlign}
     """
 }
 
