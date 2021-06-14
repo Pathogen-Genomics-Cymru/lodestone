@@ -12,6 +12,8 @@ process alignToRef {
 
     cpus 8
 
+    memory '10 GB'
+
     when:
     doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
@@ -80,6 +82,8 @@ process callVarsMpileup {
 
     cpus 8
 
+    memory '5 GB'
+
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
 
@@ -113,6 +117,8 @@ process callVarsCortex {
 
     cpus 8
 
+    memory '10 GB'
+
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
 
@@ -144,6 +150,8 @@ process minos {
     tag { sample_name }
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+
+    memory '10 GB'
 
     input:
     tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
@@ -183,6 +191,8 @@ process gvcf {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     cpus 8
+
+    memory '5 GB'
 
     input:
     tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
