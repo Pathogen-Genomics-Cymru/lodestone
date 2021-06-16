@@ -1,21 +1,20 @@
 # TB Pipeline #
   
-Cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads.
+This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
-Takes as input one directory containing pairs of fastq(.gz) or bam files.
-Produces as output one directory per sample, containing the relevant reports & a pair of cleaned fastqs.
+Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, and summary reports.
 
 ## Quick Start ## 
-Requires NXF_VER>=20.11.0-edge
+Requires `NXF_VER>=20.11.0-edge`
 
 The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow, the images will need to be built by running either `docker/docker_build.sh` or  `singularity/singularity_build.sh` 
 
 E.g. to run the workflow:
 ```
-nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes \
+NXF_VER=20.11.0-edge nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 
-nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
+NXF_VER=20.11.0-edge nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 ```
 
@@ -27,13 +26,17 @@ Directory containing fastq OR bam files
 * **filetype**<br />
 File type in input_dir. Either "fastq" or "bam"
 * **pattern**<br />
-Regex to match fastq files in input_dir, e.g. "*_R{1,2}.fq.gz"
+Regex to match fastq files in input_dir, e.g. "*_R{1,2}.fq.gz". Only mandatory if --filetype is "fastq"
 * **output_dir**<br />
-Output directory
+Output directory for results
 * **unmix_myco**<br />
-Do you want to disambiguate mixed-mycobacterial samples by read alignment? Either "yes" or "no"
+Do you want to disambiguate mixed-mycobacterial samples by read alignment? Either "yes" or "no":
+  * If "yes" workflow will remove reads mapping to any minority mycobacterial genomes but in doing so WILL ALMOST CERTAINLY ALSO reduce coverage of the principal species
+  * If "no" then mixed-mycobacterial samples will be left alone. Mixtures of mycobacteria + non-mycobacteria will still be disambiguated
 * **species**<br />
-Principal species in each sample, assuming genus Mycobacterium. Default 'null'. If parameter used, takes 1 of 10 values: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis
+Principal species in each sample, assuming genus Mycobacterium. Default 'null'. If parameter used, takes 1 of 10 values: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Using this parameter will apply an additional sanity test to your sample
+  * If you DO NOT use this parameter (default option), pipeline will determine principal species from the reads and consider any other species a contaminant
+  * If you DO use this parameter, pipeline will expect this to be the principal species. It will fail the sample if reads from this species are not actually the majority
 * **kraken_db**<br />
 Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb_20200919 recommended, obtain from https://benlangmead.github.io/aws-indexes/k2)
 * **bowtie2_index**<br />
@@ -44,10 +47,12 @@ Name of the bowtie index, e.g. hg19_1kgmaj<br />
 
 For more information on the parameters run `nextflow run main.nf --help`
 
+The path to the singularity images can also be changed in the singularity profile in `nextflow.config`. Default value is `${baseDir}/singularity`
+
 ## Stub-run ##
 To test the stub run:
 ```
-nextflow run main.nf -stub -config testing.config
+NXF_VER=20.11.0-edge nextflow run main.nf -stub -config testing.config
 ```
 
 ## Checkpoints ##
