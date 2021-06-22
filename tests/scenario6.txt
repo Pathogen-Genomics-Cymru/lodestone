@@ -1,0 +1,179 @@
+N E X T F L O W  ~  version 20.11.0-edge
+Launching `main.nf` [mad_morse] - revision: 703580fd05
+
+========================================================================
+M Y C O B A C T E R I A L  P I P E L I N E
+
+Parameters used:
+------------------------------------------------------------------------
+--input_dir		/home/ubuntu/data/clockwork/tb-pipeline/tests
+--filetype		fastq
+--pattern		*_R{1,2}.fastq.gz
+--output_dir	        /home/ubuntu/data/clockwork/tb-pipeline/tests
+--unmix_myco	        yes
+--kraken_db		kraken
+--bowtie2_index         bowtie2
+--bowtie_index_name     hg19_1kgmaj
+--species		null
+
+Runtime data:
+------------------------------------------------------------------------
+Running with profile  standard
+Running as user       ubuntu
+Launch directory      /home/ubuntu/data/clockwork/tb-pipeline
+
+[-        ] process > preprocessing:checkFqValidity               -
+[-        ] process > preprocessing:countReads                    -
+[-        ] process > preprocessing:fastp                         -
+[-        ] process > preprocessing:fastQC                        -
+[-        ] process > preprocessing:kraken2                       -
+[-        ] process > preprocessing:mykrobe                       -
+[-        ] process > preprocessing:bowtie2                       -
+[-        ] process > preprocessing:identifyBacterialContaminants -
+[-        ] process > preprocessing:downloadContamGenomes         -
+[-        ] process > preprocessing:mapToContamFa                 -
+
+[-        ] process > preprocessing:checkFqValidity               -
+[-        ] process > preprocessing:countReads                    -
+[-        ] process > preprocessing:fastp                         -
+[-        ] process > preprocessing:fastQC                        -
+[-        ] process > preprocessing:kraken2                       -
+[-        ] process > preprocessing:mykrobe                       -
+[-        ] process > preprocessing:bowtie2                       -
+[-        ] process > preprocessing:identifyBacterialContaminants -
+[-        ] process > preprocessing:downloadContamGenomes         -
+[-        ] process > preprocessing:mapToContamFa                 -
+[-        ] process > preprocessing:reKraken                      -
+[-        ] process > preprocessing:reMykrobe                     -
+[-        ] process > preprocessing:summarise                     -
+[-        ] process > clockwork:alignToRef                        -
+[-        ] process > clockwork:callVarsMpileup                   -
+[-        ] process > clockwork:callVarsCortex                    -
+[-        ] process > clockwork:minos                             -
+[-        ] process > clockwork:gvcf                              -
+
+executor >  local (1)
+[e7/d4b088] process > preprocessing:checkFqValidity (dryRun)      [  0%] 0 of 1
+[-        ] process > preprocessing:countReads                    [  0%] 0 of 1
+[-        ] process > preprocessing:fastp                         -
+[-        ] process > preprocessing:fastQC                        -
+[-        ] process > preprocessing:kraken2                       -
+[-        ] process > preprocessing:mykrobe                       -
+[-        ] process > preprocessing:bowtie2                       -
+[-        ] process > preprocessing:identifyBacterialContaminants -
+[-        ] process > preprocessing:downloadContamGenomes         -
+[-        ] process > preprocessing:mapToContamFa                 -
+[-        ] process > preprocessing:reKraken                      -
+[-        ] process > preprocessing:reMykrobe                     -
+[-        ] process > preprocessing:summarise                     -
+[-        ] process > clockwork:alignToRef                        -
+[-        ] process > clockwork:callVarsMpileup                   -
+[-        ] process > clockwork:callVarsCortex                    -
+[-        ] process > clockwork:minos                             -
+[-        ] process > clockwork:gvcf                              -
+
+executor >  local (5)
+[e7/d4b088] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
+[5c/8c00d3] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
+[c1/8460cd] process > preprocessing:fastp (dryRun)                [100%] 1 of 1 ✔
+[83/e3f37d] process > preprocessing:fastQC (dryRun)               [100%] 1 of 1 ✔
+[82/c58a02] process > preprocessing:kraken2 (dryRun)              [  0%] 0 of 1
+[-        ] process > preprocessing:mykrobe                       -
+[-        ] process > preprocessing:bowtie2                       -
+[-        ] process > preprocessing:identifyBacterialContaminants -
+[-        ] process > preprocessing:downloadContamGenomes         -
+[-        ] process > preprocessing:mapToContamFa                 -
+[-        ] process > preprocessing:reKraken                      -
+[-        ] process > preprocessing:reMykrobe                     -
+[-        ] process > preprocessing:summarise                     -
+[-        ] process > clockwork:alignToRef                        -
+[-        ] process > clockwork:callVarsMpileup                   -
+[-        ] process > clockwork:callVarsCortex                    -
+[-        ] process > clockwork:minos                             -
+[-        ] process > clockwork:gvcf                              -
+
+executor >  local (8)
+[e7/d4b088] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[5c/8c00d3] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[c1/8460cd] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[83/e3f37d] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[82/c58a02] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[4f/93a4d7] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[da/955177] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[87/be4c17] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+[-        ] process > preprocessing:downloadContamGenomes                  -
+[-        ] process > preprocessing:mapToContamFa                          -
+[-        ] process > preprocessing:reKraken                               -
+[-        ] process > preprocessing:reMykrobe                              -
+[-        ] process > preprocessing:summarise                              -
+[-        ] process > clockwork:alignToRef                                 -
+[-        ] process > clockwork:callVarsMpileup                            -
+[-        ] process > clockwork:callVarsCortex                             -
+[-        ] process > clockwork:minos                                      -
+[-        ] process > clockwork:gvcf                                       -
+WARN: Input tuple does not match input set cardinality declared by process `clockwork:alignToRef` -- offending value: DataflowStream[[dryRun, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_1.fq.gz, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_2.fq.gz], groovyx.gpars.dataflow.operator.PoisonPill@1fcd04f, ?]
+
+executor >  local (8)
+[e7/d4b088] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[5c/8c00d3] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[c1/8460cd] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[83/e3f37d] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[82/c58a02] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[4f/93a4d7] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[da/955177] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[87/be4c17] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+[-        ] process > preprocessing:downloadContamGenomes                  -
+[-        ] process > preprocessing:mapToContamFa                          -
+[-        ] process > preprocessing:reKraken                               -
+[-        ] process > preprocessing:reMykrobe                              -
+[-        ] process > preprocessing:summarise                              -
+[-        ] process > clockwork:alignToRef                                 -
+[-        ] process > clockwork:callVarsMpileup                            -
+[-        ] process > clockwork:callVarsCortex                             -
+[-        ] process > clockwork:minos                                      -
+[-        ] process > clockwork:gvcf                                       -
+WARN: Input tuple does not match input set cardinality declared by process `clockwork:alignToRef` -- offending value: DataflowStream[[dryRun, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_1.fq.gz, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_2.fq.gz], groovyx.gpars.dataflow.operator.PoisonPill@1fcd04f, ?]
+Error executing process > 'clockwork:alignToRef (null)'
+
+Caused by:
+  Path value cannot be null
+
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+
+
+
+===========================================
+Finished with errors
+
+
+executor >  local (8)
+[e7/d4b088] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[5c/8c00d3] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[c1/8460cd] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[83/e3f37d] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[82/c58a02] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[4f/93a4d7] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[da/955177] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[87/be4c17] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+[-        ] process > preprocessing:downloadContamGenomes                  -
+[-        ] process > preprocessing:mapToContamFa                          -
+[-        ] process > preprocessing:reKraken                               -
+[-        ] process > preprocessing:reMykrobe                              -
+[-        ] process > preprocessing:summarise                              -
+[-        ] process > clockwork:alignToRef                                 -
+[-        ] process > clockwork:callVarsMpileup                            -
+[-        ] process > clockwork:callVarsCortex                             -
+[-        ] process > clockwork:minos                                      -
+[-        ] process > clockwork:gvcf                                       -
+WARN: Input tuple does not match input set cardinality declared by process `clockwork:alignToRef` -- offending value: DataflowStream[[dryRun, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_1.fq.gz, /home/ubuntu/data/clockwork/tb-pipeline/work/da/95517736edec5ae35b8f7325984bfa/dryRun_cleaned_2.fq.gz], groovyx.gpars.dataflow.operator.PoisonPill@1fcd04f, ?]
+Error executing process > 'clockwork:alignToRef (null)'
+
+Caused by:
+  Path value cannot be null
+
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+
+
+
