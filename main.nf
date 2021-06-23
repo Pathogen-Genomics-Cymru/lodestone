@@ -162,10 +162,18 @@ workflow {
 
     // call preprocressing subworkflow
     main:
+
       preprocessing(input_files, krakenDB, bowtie_dir)
-      
-      clockwork_seqs = preprocessing.out.decontam_seqs.ifEmpty(preprocessing.out.uncontam_seqs)
-      clockwork_json = preprocessing.out.decontam_json.ifEmpty(preprocessing.out.uncontam_json)
+
+      if ( params.unmix_myco == "yes" ) {
+          clockwork_seqs = preprocessing.out.decontam_seqs
+          clockwork_json = preprocessing.out.decontam_json
+      }
+
+      if ( params.unmix_myco == "no" ) {
+          clockwork_seqs = preprocessing.out.uncontam_seqs
+          clockwork_json = preprocessing.out.uncontam_json
+      }
 
       clockwork(clockwork_seqs, clockwork_json)
 }

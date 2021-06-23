@@ -419,6 +419,7 @@ process identifyBacterialContaminants {
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
     tuple path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
+    tuple path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     path("${sample_name}.err", emit: contam_log)
 		
     script:
