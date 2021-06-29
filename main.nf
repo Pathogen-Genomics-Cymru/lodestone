@@ -175,7 +175,7 @@ workflow {
           clockwork_json = preprocessing.out.uncontam_json
       }
 
-      clockwork(clockwork_seqs, clockwork_json)
+      clockwork(clockwork_seqs.join(clockwork_json, by: 0))
 }
 
 workflow.onComplete {

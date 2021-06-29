@@ -263,7 +263,7 @@ process kraken2 {
     path(database)
 		
     output:
-    tuple path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
+    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: kraken2_fqs
     path("${sample_name}.err", emit: kraken2_log)
 			
@@ -413,13 +413,12 @@ process identifyBacterialContaminants {
     enough_myco_reads =~ /${sample_name}/
 
     input:
-    tuple val(sample_name), path(mykrobe_json), val(enough_myco_reads)
-    tuple path(kraken_report), path(kraken_json)
+    tuple val(sample_name), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
 		
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
-    tuple path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
-    tuple path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     path("${sample_name}.err", emit: contam_log)
 		
     script:
@@ -464,7 +463,7 @@ process downloadContamGenomes {
     tuple val(sample_name), path(contam_list), val(run_decontaminator)
 		
     output:
-    tuple path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
+    tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
     path("${sample_name}.err", emit: downcontam_log)
 	
     script:
@@ -522,8 +521,7 @@ process mapToContamFa {
     does_fa_pass =~ /${sample_name}/
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2)
-    tuple path(contam_fa), val(does_fa_pass)
+    tuple val(sample_name), path(fq1), path(fq2), path(contam_fa), val(does_fa_pass)
 			
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: reClassification_fqs
@@ -572,7 +570,7 @@ process reKraken {
     path(database)
 		
     output:
-    tuple path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
+    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
 
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
@@ -643,12 +641,10 @@ process summarise {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
-    tuple val(sample_name), path(mykrobe_json)
-    tuple path(kraken_report), path(kraken_json)
-    tuple path(prev_species_json), val(decontam)
+    tuple val(sample_name), path(mykrobe_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam)
 		
     output:
-    tuple path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     path("${sample_name}.err", emit: summary_log)
 	
     script:

@@ -12,14 +12,17 @@ include {gvcf} from '../modules/clockworkModules.nf' params(params)
 workflow clockwork {
 
     take:
-      input_seqs
-      json
+      input_seqs_json
 
     main:
 
-      alignToRef(input_seqs, json)
+      alignToRef(input_seqs_json)
+
       callVarsMpileup(alignToRef.out.alignToRef_bam)
+
       callVarsCortex(alignToRef.out.alignToRef_bam)
-      minos(alignToRef.out.alignToRef_bam, callVarsCortex.out.cortex_vcf, callVarsMpileup.out.mpileup_vcf)
-      gvcf(alignToRef.out.alignToRef_bam, minos.out.minos_vcf)
+
+      minos(alignToRef.out.alignToRef_bam.join(callVarsCortex.out.cortex_vcf, by: 0).join(callVarsMpileup.out.mpileup_vcf, by: 0))
+
+      gvcf(alignToRef.out.alignToRef_bam.join(minos.out.minos_vcf, by: 0))
 }

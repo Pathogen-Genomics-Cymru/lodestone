@@ -54,17 +54,17 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir)
 
-      identifyBacterialContaminants(mykrobe.out.mykrobe_report, kraken2.out.kraken2_report)
+      identifyBacterialContaminants(mykrobe.out.mykrobe_report.join(kraken2.out.kraken2_report, by: 0))
 
       downloadContamGenomes(identifyBacterialContaminants.out.contam_list)
 
-      mapToContamFa(bowtie2.out.bowtie2_fqs, downloadContamGenomes.out.contam_fa)
+      mapToContamFa(bowtie2.out.bowtie2_fqs.join(downloadContamGenomes.out.contam_fa, by: 0))
 
       reKraken(mapToContamFa.out.reClassification_fqs, krakenDB.toList())
 
       reMykrobe(mapToContamFa.out.reClassification_fqs)
 
-      summarise(reMykrobe.out.reMykrobe_report, reKraken.out.reKraken_report, identifyBacterialContaminants.out.prev_sample_json)
+      summarise(reMykrobe.out.reMykrobe_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0))
 
     emit:
 

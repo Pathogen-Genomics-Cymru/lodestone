@@ -18,8 +18,7 @@ process alignToRef {
     doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2) 
-    tuple path(json), val(doWeAlign)
+    tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
 
     output:
     tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), stdout, emit: alignToRef_bam
@@ -154,12 +153,10 @@ process minos {
     memory '10 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
-    tuple val(sample_name), path(cortex_vcf)
-    tuple val(sample_name), path(samtools_vcf)
+    tuple val(sample_name), path(json), path(bam), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
 
     output:
-    path("${sample_name}.minos.vcf", emit: minos_vcf)
+    tuple val(sample_name), path("${sample_name}.minos.vcf"), emit: minos_vcf
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
@@ -195,8 +192,7 @@ process gvcf {
     memory '5 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
-    path(minos_vcf)
+    tuple val(sample_name), path(json), path(bam), val(doWeVarCall), path(minos_vcf)
 
     output:
     path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
