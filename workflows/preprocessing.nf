@@ -52,7 +52,7 @@ workflow preprocessing {
 
       mykrobe(kraken2.out.kraken2_fqs)
 
-      bowtie2(kraken2.out.kraken2_fqs, bowtie_dir)
+      bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
       identifyBacterialContaminants(mykrobe.out.mykrobe_report.join(kraken2.out.kraken2_report, by: 0))
 

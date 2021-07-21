@@ -82,11 +82,11 @@ process bam2fastq {
 
     memory '5 GB'
     
-    when:
-    is_ok == 'OK'    
-
     input:
     tuple path(bam_file), val(is_ok)
+
+    when:
+    is_ok == 'OK'
     
     output:
     tuple val("${bam_file.getBaseName()}"), path("${bam_file.getBaseName()}_1.fq.gz"), path("${bam_file.getBaseName()}_2.fq.gz"), stdout, emit: bam2fastq_fqs
@@ -124,11 +124,11 @@ process countReads {
 
     memory '5 GB'
 
-    when:
-    is_ok == 'OK'
-  
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(is_ok)
+
+    when:
+    is_ok == 'OK'
 
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: countReads_fqs
@@ -164,11 +164,11 @@ process fastp {
 
     memory '5 GB'
 
-    when:
-    run_fastp =~ /${sample_name}/
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_fastp)
+
+    when:
+    run_fastp =~ /${sample_name}/
 		
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: fastp_fqs
@@ -255,12 +255,12 @@ process kraken2 {
 
     memory '10 GB'
 
-    when:
-    enough_reads =~ /${sample_name}/
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
     path(database)
+
+    when:
+    enough_reads =~ /${sample_name}/
 		
     output:
     tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
@@ -324,14 +324,15 @@ process mykrobe {
 
     memory '5 GB'
 
-    when:
-    run_mykrobe =~ /${sample_name}/
-	
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_mykrobe)
+
+    when:
+    run_mykrobe =~ /${sample_name}/
 		
     output:
     tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), stdout, emit: mykrobe_report
+    tuple val(sample_name), path(fq1), path(fq2), stdout, emit: mykrobe_fqs
 
     script:
     mykrobe_report = "${sample_name}_mykrobe_report.json"
@@ -363,12 +364,12 @@ process bowtie2 {
 
     memory '5 GB'
 
-    when:
-    enough_myco_reads =~ /${sample_name}/
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_myco_reads)
     path(index)
+
+    when:
+    enough_myco_reads =~ /${sample_name}/
 
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: bowtie2_fqs
@@ -379,7 +380,7 @@ process bowtie2 {
     humanfree_fq2 = "${sample_name}_cleaned_2.fq"
 	
     """
-    bowtie2 --very-sensitive -p ${task.cpus} -x ${index}/${params.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
+    bowtie2 --very-sensitive -p ${task.cpus} -x ./${params.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
     samtools fastq -1 ${humanfree_fq1} -2 ${humanfree_fq2} -s singleton.fq ${bam}
 
     rm -rf ${bam}
@@ -409,11 +410,11 @@ process identifyBacterialContaminants {
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
-    when:
-    enough_myco_reads =~ /${sample_name}/
-
     input:
     tuple val(sample_name), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+
+    when:
+    enough_myco_reads =~ /${sample_name}/
 		
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
@@ -456,11 +457,11 @@ process downloadContamGenomes {
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
-    when:
-    run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
-
     input:
     tuple val(sample_name), path(contam_list), val(run_decontaminator)
+
+    when:
+    run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
 		
     output:
     tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
@@ -517,11 +518,11 @@ process mapToContamFa {
 
     memory '10 GB'
 
-    when:
-    does_fa_pass =~ /${sample_name}/
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(contam_fa), val(does_fa_pass)
+
+    when:
+    does_fa_pass =~ /${sample_name}/
 			
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: reClassification_fqs

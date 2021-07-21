@@ -158,7 +158,7 @@ workflow {
 
     // create channels for kraken2 database and bowtie2 index
     krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
-    bowtie_dir = Channel.fromPath( "${params.bowtie2_index}", type: 'dir', maxDepth: 1)
+    bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
 
     // call preprocressing subworkflow
     main:

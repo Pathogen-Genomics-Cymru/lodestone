@@ -14,11 +14,11 @@ process alignToRef {
 
     memory '10 GB'
 
-    when:
-    doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
-
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
+
+    when:
+    doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     output:
     tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), stdout, emit: alignToRef_bam
@@ -83,11 +83,11 @@ process callVarsMpileup {
 
     memory '5 GB'
 
-    when:
-    doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
-
     input:
     tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
+
+    when:
+    doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
 
     output:
     tuple val(sample_name), path("${sample_name}.samtools.vcf"), emit: mpileup_vcf
@@ -118,11 +118,11 @@ process callVarsCortex {
 
     memory '10 GB'
 
-    when:
-    doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
-
     input:
     tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
+
+    when:
+    doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
 
     output:
     tuple val(sample_name), path("${sample_name}.cortex.vcf"), emit: cortex_vcf
