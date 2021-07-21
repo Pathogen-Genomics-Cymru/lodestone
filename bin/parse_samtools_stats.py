@@ -100,4 +100,6 @@ if __name__ == "__main__":
     options = parser.parse_args()
     genome_size = total_genome_size_from_bam(options.bam)
     stats = parse_samtools_stats_file(options.samtools_stats, genome_size)
-    print(json.dumps(stats, sort_keys=True, indent=2))
+    tmp = dict()
+    tmp.update({"bam_stats":stats})
+    print(json.dumps(tmp, sort_keys=True, indent=2))
