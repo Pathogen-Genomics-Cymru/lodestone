@@ -21,7 +21,7 @@ process alignToRef {
     doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), stdout, emit: alignToRef_bam
+    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
     path("${sample_name}.err", emit: alignToRef_err)
@@ -37,7 +37,9 @@ process alignToRef {
     """
     ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
 
-    minimap2 -ax sr \$ref_fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference \$ref_fa - minimap.bam
+    cp \${ref_fa} ${sample_name}.fa
+
+    minimap2 -ax sr ${sample_name}.fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference ${sample_name}.fa - minimap.bam
 
     java -jar /usr/local/bin/picard.jar AddOrReplaceReadGroups INPUT=minimap.bam OUTPUT=${bam} RGID=${sample_name} RGLB=lib RGPL=Illumina RGPU=unit RGSM=sample
 
@@ -84,7 +86,7 @@ process callVarsMpileup {
     memory '5 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
+    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -96,8 +98,7 @@ process callVarsMpileup {
     samtools_vcf = "${sample_name}.samtools.vcf"
 
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
-    samtools mpileup -ugf \${ref_fa} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${samtools_vcf}
+    samtools mpileup -ugf ${ref} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${samtools_vcf}
     """
 
     stub:
@@ -119,7 +120,7 @@ process callVarsCortex {
     memory '10 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall)
+    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -132,7 +133,10 @@ process callVarsCortex {
 
     """
     ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${json})
-    clockwork cortex \${ref_dir} ${bam} cortex ${sample_name}
+
+    cp -r \${ref_dir}/* .
+
+    clockwork cortex . ${bam} cortex ${sample_name}
     cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
     """
 
@@ -153,7 +157,7 @@ process minos {
     memory '10 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
+    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
 
     output:
     tuple val(sample_name), path("${sample_name}.minos.vcf"), emit: minos_vcf
@@ -161,11 +165,8 @@ process minos {
     script:
     minos_vcf = "${sample_name}.minos.vcf"
 
-	// the awk command removes whitespace from the (only) header line of ref.fa; necessary to sidestep a Minos bug (since fixed, albeit not in the Clockwork container used in this workflow)
-
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
-    awk '{print \$1}' \${ref_fa} > ref.fa
+    awk '{print \$1}' ${ref} > ref.fa
     minos adjudicate --force --reads ${bam} minos ref.fa ${samtools_vcf} ${cortex_vcf}
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
@@ -192,7 +193,7 @@ process gvcf {
     memory '5 GB'
 
     input:
-    tuple val(sample_name), path(json), path(bam), val(doWeVarCall), path(minos_vcf)
+    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(minos_vcf)
 
     output:
     path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
@@ -204,12 +205,9 @@ process gvcf {
     gvcf_fa = "${sample_name}.fa"
     error_log = "${sample_name}.err"
 
-	// the awk command removes whitespace from the (only) header line of ref.fa; necessary to sidestep a Minos bug (since fixed, albeit not in the Clockwork container used in this workflow)
-
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
-    awk '{print \$1}' \${ref_fa} > ref.fa
-    samtools mpileup -ugf \${ref_fa} ${bam} | bcftools call --threads ${task.cpus} -m -O v -o samtools_all_pos.vcf
+    awk '{print \$1}' ${ref} > ref.fa
+    samtools mpileup -ugf ref.fa ${bam} | bcftools call --threads ${task.cpus} -m -O v -o samtools_all_pos.vcf
     clockwork gvcf_from_minos_and_samtools ref.fa ${minos_vcf} samtools_all_pos.vcf ${gvcf}
     clockwork gvcf_to_fasta ${gvcf} ${gvcf_fa}
     rm samtools_all_pos.vcf
