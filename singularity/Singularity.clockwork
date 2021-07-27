@@ -19,7 +19,7 @@ vcftools_version=0.1.15
 mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51
 python_version=3.6.5
 
-PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
+PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl locales locales-all libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
 PYTHON="python2.7 python-dev"
 
 apt-get update \
@@ -32,7 +32,7 @@ apt-get update \
 && ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools \
-&& cpanm JSON::Create \
+&& cpanm JSON::Create Test::Script Test::More \
 && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
 && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
 && apt-get update && apt-get install -y adoptopenjdk-8-hotspot
@@ -108,6 +108,10 @@ git clone --recursive https://github.com/iqbal-lab/cortex.git \
 CLOCKWORK_CORTEX_DIR=/cortex
 PATH=${PATH}:/clockwork/python/scripts
 PICARD_JAR=/usr/local/bin/picard.jar
+
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
 %environment
 export samtools_version=1.12
 export htslib_version=1.12
@@ -121,11 +125,14 @@ export cortex_version=3a235272e4e0121be64527f01e73f9e066d378d3
 export vcftools_version=0.1.15
 export mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51
 export python_version=3.6.5
-export PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
+export PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl locales locales-all libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
 export PYTHON="python2.7 python-dev"
 export CLOCKWORK_CORTEX_DIR=/cortex
 export PATH=${PATH}:/clockwork/python/scripts
 export PICARD_JAR=/usr/local/bin/picard.jar
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 %runscript
 exec /bin/bash "$@"
 %startscript
