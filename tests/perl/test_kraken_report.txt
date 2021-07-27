@@ -1,0 +1,226 @@
+  0.40	5695	5695	U	0	unclassified
+ 99.60	1404682	0	R	1	root
+ 99.60	1404682	0	R1	131567	  cellular organisms
+ 99.60	1404682	0	D	2	    Bacteria
+ 99.60	1404682	0	D1	1783272	      Terrabacteria group
+ 99.60	1404682	0	P	201174	        Actinobacteria
+ 99.60	1404682	0	C	1760	          Actinobacteria
+ 99.60	1404682	0	O	85007	            Corynebacteriales
+ 99.60	1404682	11498	F	1762	              Mycobacteriaceae
+ 98.78	1393167	145836	G	1763	                Mycobacterium
+ 79.72	1124355	982219	G1	77643	                  Mycobacterium tuberculosis complex
+ 10.08	142104	127831	S	1773	                    Mycobacterium tuberculosis
+  0.25	3572	3356	S1	1765	                      Mycobacterium tuberculosis variant bovis
+  0.02	216	3	S2	33892	                        Mycobacterium tuberculosis variant bovis BCG
+  0.02	213	213	S3	410289	                          Mycobacterium tuberculosis variant bovis BCG str. Pasteur 1173P2
+  0.11	1621	1621	S1	83332	                      Mycobacterium tuberculosis H37Rv
+  0.08	1088	1088	S1	1402185	                      Mycobacterium tuberculosis DCTB0027
+  0.03	483	483	S1	83331	                      Mycobacterium tuberculosis CDC1551
+  0.03	429	429	S1	795200	                      Mycobacterium tuberculosis HN1485
+  0.03	425	425	S1	1267355	                      Mycobacterium tuberculosis TKK-01-0008
+  0.03	362	362	S1	33894	                      Mycobacterium tuberculosis variant africanum
+  0.02	250	250	S1	1402174	                      Mycobacterium tuberculosis DCTB0015
+  0.02	238	238	S1	1402473	                      Mycobacterium tuberculosis SK-E
+  0.02	238	238	S1	1402175	                      Mycobacterium tuberculosis DCTB0016
+  0.02	227	227	S1	1267360	                      Mycobacterium tuberculosis TKK-01-0026
+  0.01	201	201	S1	1402186	                      Mycobacterium tuberculosis DCTB0028
+  0.01	186	186	S1	1402172	                      Mycobacterium tuberculosis DCTB0013
+  0.01	183	183	S1	668349	                      Mycobacterium tuberculosis T67
+  0.01	178	178	S1	1267363	                      Mycobacterium tuberculosis TKK-01-0072
+  0.01	165	165	S1	1402184	                      Mycobacterium tuberculosis DCTB0025
+  0.01	162	162	S1	1267361	                      Mycobacterium tuberculosis TKK-01-0032
+  0.01	153	153	S1	1402474	                      Mycobacterium tuberculosis SK-A
+  0.01	148	148	S1	1267357	                      Mycobacterium tuberculosis TKK-01-0020
+  0.01	145	145	S1	795205	                      Mycobacterium tuberculosis HN2602
+  0.01	140	140	S1	520140	                      Mycobacterium tuberculosis EAS054
+  0.01	121	121	S1	1402188	                      Mycobacterium tuberculosis DCTB0030
+  0.01	120	120	S1	515615	                      Mycobacterium tuberculosis 94_M4241A
+  0.01	114	114	S1	1402481	                      Mycobacterium tuberculosis SK-F
+  0.01	111	111	S1	1402475	                      Mycobacterium tuberculosis SK-C
+  0.01	103	103	S1	795237	                      Mycobacterium tuberculosis HN4687
+  0.01	103	103	S1	795217	                      Mycobacterium tuberculosis HN4140
+  0.01	99	99	S1	795227	                      Mycobacterium tuberculosis HN1687
+  0.01	95	95	S1	795255	                      Mycobacterium tuberculosis HN4705
+  0.01	84	84	S1	687446	                      Mycobacterium tuberculosis KL2825
+  0.01	84	84	S1	395095	                      Mycobacterium tuberculosis str. Haarlem
+  0.01	81	81	S1	687447	                      Mycobacterium tuberculosis KL2826
+  0.01	76	76	S1	795195	                      Mycobacterium tuberculosis HN1416
+  0.00	70	70	S1	336982	                      Mycobacterium tuberculosis F11
+  0.00	70	70	S1	1398483	                      Mycobacterium tuberculosis 101
+  0.00	66	66	S1	687449	                      Mycobacterium tuberculosis KL2849
+  0.00	66	66	S1	795247	                      Mycobacterium tuberculosis HN4697
+  0.00	66	66	S1	1402483	                      Mycobacterium tuberculosis UG-D
+  0.00	64	64	S1	795212	                      Mycobacterium tuberculosis HN3454
+  0.00	64	64	S1	795230	                      Mycobacterium tuberculosis HN4047
+  0.00	63	63	S1	795196	                      Mycobacterium tuberculosis HN1418
+  0.00	56	56	S1	1402189	                      Mycobacterium tuberculosis DCTB0031
+  0.00	55	55	S1	1402476	                      Mycobacterium tuberculosis UG-F
+  0.00	55	55	S1	1402484	                      Mycobacterium tuberculosis UG-E
+  0.00	53	53	S1	795249	                      Mycobacterium tuberculosis HN4699
+  0.00	52	52	S1	1806	                      Mycobacterium tuberculosis variant microti
+  0.00	49	49	S1	1267356	                      Mycobacterium tuberculosis TKK-01-0017
+  0.00	48	48	S1	1417005	                      Mycobacterium tuberculosis XDR KZN 605
+  0.00	47	47	S1	1402177	                      Mycobacterium tuberculosis DCTB0018
+  0.00	45	45	S1	795254	                      Mycobacterium tuberculosis HN4704
+  0.00	44	44	S1	1402477	                      Mycobacterium tuberculosis UG-A
+  0.00	43	43	S1	795209	                      Mycobacterium tuberculosis HN3282
+  0.00	43	43	S1	795256	                      Mycobacterium tuberculosis HN4706
+  0.00	43	43	S1	1267358	                      Mycobacterium tuberculosis TKK-01-0021
+  0.00	42	42	S1	907908	                      Mycobacterium tuberculosis HN1150
+  0.00	42	42	S1	515617	                      Mycobacterium tuberculosis T92
+  0.00	40	40	S1	795211	                      Mycobacterium tuberculosis HN3448
+  0.00	39	39	S1	907912	                      Mycobacterium tuberculosis HN1523
+  0.00	36	36	S1	907900	                      Mycobacterium tuberculosis HN2206
+  0.00	35	35	S1	795218	                      Mycobacterium tuberculosis HN4171
+  0.00	34	34	S1	1267359	                      Mycobacterium tuberculosis TKK-01-0023
+  0.00	32	32	S1	795251	                      Mycobacterium tuberculosis HN4701
+  0.00	31	31	S1	795252	                      Mycobacterium tuberculosis HN4702
+  0.00	31	31	S1	115862	                      Mycobacterium tuberculosis variant caprae
+  0.00	31	31	S1	795246	                      Mycobacterium tuberculosis HN4696
+  0.00	30	30	S1	907921	                      Mycobacterium tuberculosis HN770
+  0.00	30	30	S1	795238	                      Mycobacterium tuberculosis HN4688
+  0.00	29	29	S1	611303	                      Mycobacterium tuberculosis CPHL_A
+  0.00	29	29	S1	795198	                      Mycobacterium tuberculosis HN1434
+  0.00	29	29	S1	1402187	                      Mycobacterium tuberculosis DCTB0029
+  0.00	28	28	S1	795253	                      Mycobacterium tuberculosis HN4703
+  0.00	27	27	S1	795229	                      Mycobacterium tuberculosis HN3409
+  0.00	27	27	S1	1402173	                      Mycobacterium tuberculosis DCTB0014
+  0.00	27	27	S1	795216	                      Mycobacterium tuberculosis HN3942
+  0.00	26	26	S1	907918	                      Mycobacterium tuberculosis HN733
+  0.00	26	26	S1	687445	                      Mycobacterium tuberculosis KL2803
+  0.00	26	26	S1	795201	                      Mycobacterium tuberculosis HN1889
+  0.00	25	25	S1	1402171	                      Mycobacterium tuberculosis DCTB0012
+  0.00	24	24	S1	907898	                      Mycobacterium tuberculosis HN2863
+  0.00	23	23	S1	795202	                      Mycobacterium tuberculosis HN1897
+  0.00	21	21	S1	795215	                      Mycobacterium tuberculosis HN3760
+  0.00	21	21	S1	1402183	                      Mycobacterium tuberculosis DCTB0024
+  0.00	20	20	S1	907915	                      Mycobacterium tuberculosis HN133
+  0.00	20	20	S1	1402482	                      Mycobacterium tuberculosis UG-B
+  0.00	19	19	S1	659019	                      Mycobacterium tuberculosis W-148
+  0.00	19	19	S1	1402480	                      Mycobacterium tuberculosis UG-C
+  0.00	19	19	S1	795243	                      Mycobacterium tuberculosis HN4693
+  0.00	18	18	S1	795197	                      Mycobacterium tuberculosis HN1430
+  0.00	17	17	S1	1402168	                      Mycobacterium tuberculosis DCTB0009
+  0.00	17	17	S1	795250	                      Mycobacterium tuberculosis HN4700
+  0.00	15	15	S1	520141	                      Mycobacterium tuberculosis T85
+  0.00	15	15	S1	687452	                      Mycobacterium tuberculosis MC2_6020
+  0.00	15	15	S1	687448	                      Mycobacterium tuberculosis KL2827
+  0.00	14	14	S1	687444	                      Mycobacterium tuberculosis KL2802
+  0.00	14	14	S1	907906	                      Mycobacterium tuberculosis HN1175
+  0.00	14	14	S1	795203	                      Mycobacterium tuberculosis HN2304
+  0.00	13	13	S1	1402180	                      Mycobacterium tuberculosis DCTB0021
+  0.00	13	13	S1	795214	                      Mycobacterium tuberculosis HN3635
+  0.00	12	12	S1	1402166	                      Mycobacterium tuberculosis DCTB0006
+  0.00	12	12	S1	907907	                      Mycobacterium tuberculosis HN1135
+  0.00	12	12	S1	795248	                      Mycobacterium tuberculosis HN4698
+  0.00	9	9	S1	907904	                      Mycobacterium tuberculosis HN4143
+  0.00	9	9	S1	1398481	                      Mycobacterium tuberculosis 82
+  0.00	9	9	S1	1402181	                      Mycobacterium tuberculosis DCTB0022
+  0.00	8	8	S1	907895	                      Mycobacterium tuberculosis HN2953
+  0.00	8	8	S1	907896	                      Mycobacterium tuberculosis HN4112
+  0.00	8	0	S1	1316940	                      Mycobacterium tuberculosis EAI
+  0.00	8	8	S2	1322343	                        Mycobacterium tuberculosis EAI/OSDD271
+  0.00	8	8	S1	907897	                      Mycobacterium tuberculosis HN3171
+  0.00	7	7	S1	907905	                      Mycobacterium tuberculosis HN2163
+  0.00	7	7	S1	907901	                      Mycobacterium tuberculosis HN2492
+  0.00	6	6	S1	937592	                      Mycobacterium tuberculosis str. Erdman WHO
+  0.00	6	6	S1	907919	                      Mycobacterium tuberculosis HN198
+  0.00	5	5	S1	1402182	                      Mycobacterium tuberculosis DCTB0023
+  0.00	5	5	S1	795188	                      Mycobacterium tuberculosis HN312
+  0.00	5	5	S1	687450	                      Mycobacterium tuberculosis KL2850
+  0.00	5	5	S1	1452723	                      Mycobacterium tuberculosis 18b
+  0.00	5	5	S1	907924	                      Mycobacterium tuberculosis HN1587
+  0.00	5	5	S1	1398486	                      Mycobacterium tuberculosis 130
+  0.00	5	5	S1	1398478	                      Mycobacterium tuberculosis 70
+  0.00	4	4	S1	1398484	                      Mycobacterium tuberculosis 102
+  0.00	4	4	S1	194542	                      Mycobacterium tuberculosis variant pinnipedii
+  0.00	4	4	S1	795208	                      Mycobacterium tuberculosis HN3226
+  0.00	4	4	S1	795189	                      Mycobacterium tuberculosis HN353
+  0.00	4	4	S1	907920	                      Mycobacterium tuberculosis HN139
+  0.00	3	3	S1	687451	                      Mycobacterium tuberculosis KL2851
+  0.00	3	3	S1	1398480	                      Mycobacterium tuberculosis 76
+  0.00	3	3	S1	907902	                      Mycobacterium tuberculosis HN2925
+  0.00	3	3	S1	907922	                      Mycobacterium tuberculosis HN434
+  0.00	3	3	S1	907911	                      Mycobacterium tuberculosis HN1210
+  0.00	3	3	S1	687443	                      Mycobacterium tuberculosis KL2801
+  0.00	2	2	S1	907916	                      Mycobacterium tuberculosis HN499
+  0.00	2	2	S1	611302	                      Mycobacterium tuberculosis T46
+  0.00	2	2	S1	907914	                      Mycobacterium tuberculosis HN1500
+  0.00	2	2	S1	1267362	                      Mycobacterium tuberculosis TKK-01-0069
+  0.00	2	2	S1	1402179	                      Mycobacterium tuberculosis DCTB0020
+  0.00	2	2	S1	1402165	                      Mycobacterium tuberculosis DCTB0005
+  0.00	2	2	S1	907917	                      Mycobacterium tuberculosis HN268
+  0.00	2	2	S1	907899	                      Mycobacterium tuberculosis HN2738
+  0.00	2	2	S1	1267364	                      Mycobacterium tuberculosis TKK-01-0080
+  0.00	1	1	S1	907923	                      Mycobacterium tuberculosis HN1680
+  0.00	1	1	S1	537210	                      Mycobacterium tuberculosis T17
+  0.00	1	1	S1	537209	                      Mycobacterium tuberculosis GM 1503
+  0.00	1	1	S1	515616	                      Mycobacterium tuberculosis 02_1987
+  0.00	1	1	S1	1398479	                      Mycobacterium tuberculosis 73
+  0.00	1	1	S1	1402178	                      Mycobacterium tuberculosis DCTB0019
+  0.00	1	1	S1	907903	                      Mycobacterium tuberculosis HN2136
+  0.00	1	1	S1	1398482	                      Mycobacterium tuberculosis 98
+  0.00	1	1	S1	907910	                      Mycobacterium tuberculosis HN1380
+  0.00	1	1	S1	907913	                      Mycobacterium tuberculosis HN1744
+  0.00	1	1	S1	1402167	                      Mycobacterium tuberculosis DCTB0008
+  0.00	20	20	S	1844474	                    Mycobacterium mungi
+  0.00	6	6	S	1871904	                    Mycobacterium tuberculosis complex sp. (ex Procavia capensis) 47
+  0.00	4	4	S	1871905	                    Mycobacterium tuberculosis complex sp. (ex Suricata suricatta) 48
+  0.00	2	2	S	1871906	                    Mycobacterium tuberculosis complex sp. (ex Procavia capensis) 49
+  8.67	122223	41468	G1	120793	                  Mycobacterium avium complex (MAC)
+  5.53	78001	77857	S	1767	                    Mycobacterium intracellulare
+  0.01	144	144	S1	1203599	                      Mycobacterium intracellulare subsp. yongonense
+  0.12	1718	1718	S	222805	                    Mycobacterium chimaera
+  0.04	577	577	S	2731869	                    Mycobacterium tomidae
+  0.02	308	308	S	701042	                    Mycobacterium marseillense
+  0.01	151	111	S	1764	                    Mycobacterium avium
+  0.00	40	11	S1	1770	                      Mycobacterium avium subsp. paratuberculosis
+  0.00	23	23	S2	262316	                        Mycobacterium avium subsp. paratuberculosis K-10
+  0.00	6	6	S2	1432162	                        Mycobacterium avium subsp. paratuberculosis 43525
+  0.02	332	12	G1	2249310	                  Mycobacterium simiae complex
+  0.01	163	163	S	47839	                    Mycobacterium triplex
+  0.01	85	69	S	240125	                    Mycobacterium parascrofulaceum
+  0.00	16	16	S1	525368	                      Mycobacterium parascrofulaceum ATCC BAA-614
+  0.00	33	33	S	1784	                    Mycobacterium simiae
+  0.00	28	28	S	141349	                    Mycobacterium lentiflavum
+  0.00	11	11	S	36812	                    Mycobacterium genavense
+  0.00	65	10	G1	2642494	                  unclassified Mycobacterium
+  0.00	15	15	S	1502745	                    Mycobacterium sp. UNC267MFSha1.1M11
+  0.00	11	11	S	212767	                    Mycobacterium sp. JS623
+  0.00	11	11	S	1761810	                    Mycobacterium sp. 283mftsu
+  0.00	5	5	S	1298864	                    Mycobacterium sp. URHD0025
+  0.00	5	5	S	1747766	                    Mycobacterium sp. NAZ190054
+  0.00	3	3	S	1855663	                    Mycobacterium sp. D16R18
+  0.00	2	2	S	1785	                    Mycobacterium sp.
+  0.00	2	2	S	1855662	                    Mycobacterium sp. D16R12
+  0.00	1	1	S	1157943	                    Mycobacterium sp. 155
+  0.00	46	46	S	1768	                  Mycobacterium kansasii
+  0.00	45	45	S	1780	                  Mycobacterium malmoense
+  0.00	44	44	S	56425	                  Mycobacterium bohemicum
+  0.00	43	43	S	1778	                  Mycobacterium gordonae
+  0.00	43	43	S	1787	                  Mycobacterium szulgai
+  0.00	28	28	S	28045	                  Mycobacterium celatum
+  0.00	20	20	S	53378	                  Mycobacterium paraffinicum
+  0.00	17	0	S	29311	                  Mycobacterium haemophilum
+  0.00	17	17	S1	1202450	                    Mycobacterium haemophilum DSM 44634
+  0.00	16	16	S	1789	                  Mycobacterium xenopi
+  0.00	12	12	S	1769	                  Mycobacterium leprae
+  0.00	11	11	S	43348	                  Mycobacterium branderi
+  0.00	11	11	S	1781	                  Mycobacterium marinum
+  0.00	9	9	S	29313	                  Mycobacterium shimoidei
+  0.00	5	5	S	1809	                  Mycobacterium ulcerans
+  0.00	3	3	S	480418	                  Mycobacterium lepromatosis
+  0.00	3	3	S	547163	                  Mycobacterium vulneris
+  0.00	8	1	G	1866885	                Mycolicibacterium
+  0.00	4	0	S	1772	                  Mycolicibacterium smegmatis
+  0.00	4	4	S1	246196	                    Mycolicibacterium smegmatis MC2 155
+  0.00	1	1	S	1800	                  Mycolicibacterium chubuense
+  0.00	1	1	S	75922	                  Mycolicibacterium tusciae
+  0.00	1	0	S	46351	                  Mycolicibacterium hassiacum
+  0.00	1	1	S1	1122247	                    Mycolicibacterium hassiacum DSM 44199
+  0.00	6	0	G	1073531	                Mycolicibacter
+  0.00	4	4	S	354243	                  Mycolicibacter kumamotonensis
+  0.00	2	2	S	342002	                  Mycolicibacter arupensis
+  0.00	3	0	G	670516	                Mycobacteroides
+  0.00	2	2	S	36809	                  Mycobacteroides abscessus
+  0.00	1	1	S	1774	                  Mycobacteroides chelonae

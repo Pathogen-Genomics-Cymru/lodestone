@@ -1,0 +1,322 @@
+{
+   "bam_stats" : {
+      "insert_size_average" : 273.8,
+      "genome_size" : 4411532,
+      "reads_mapped" : 2376415,
+      "average_quality" : 36.1,
+      "pairs_with_other_orientation" : 41821,
+      "inward_oriented_pairs" : 1073869,
+      "outward_oriented_pairs" : 65657,
+      "bases_trimmed" : 0,
+      "error_rate" : 0.00192807,
+      "raw_total_sequences" : 2809358,
+      "reads_duplicated" : 48495,
+      "insert_size_standard_deviation" : 118.4,
+      "bases_mapped_cigar" : 314651807,
+      "coverage_breadth" : {
+         "2" : 98.84,
+         "100" : 13.88,
+         "25" : 96.55,
+         "10" : 98.18,
+         "1" : 98.95,
+         "15" : 97.8,
+         "4" : 98.63,
+         "3" : 98.73,
+         "5" : 98.55,
+         "50" : 80.96
+      }
+   },
+   "top_hit" : {
+      "phylogenetics" : {
+         "species" : {
+            "Mycobacterium_intracellulare" : {
+               "percent_coverage" : 87.445,
+               "median_depth" : 10
+            },
+            "Mycobacterium_tuberculosis" : {
+               "percent_coverage" : 98.459,
+               "median_depth" : 56
+            }
+         },
+         "lineage" : {
+            "calls_summary" : {
+               "lineage2.2" : {
+                  "genotypes" : {
+                     "lineage2.2" : 1,
+                     "lineage2" : 1
+                  },
+                  "good_nodes" : 2,
+                  "tree_depth" : 2
+               }
+            },
+            "calls" : {
+               "lineage2.2" : {
+                  "lineage2" : {
+                     "G497491A" : {
+                        "genotype_likelihoods" : [
+                           -7179.37,
+                           -99999999,
+                           -62.4384
+                        ],
+                        "_cls" : "Call.VariantCall",
+                        "variant" : "ref-G497491A?var_name=G497491A&num_alts=1&ref=NC_000962.3&enum=0&gene=NA&mut=G497491A",
+                        "genotype" : [
+                           1,
+                           1
+                        ],
+                        "info" : {
+                           "expected_depths" : [
+                              63
+                           ],
+                           "coverage" : {
+                              "alternate" : {
+                                 "median_depth" : 56,
+                                 "kmer_count" : 1118,
+                                 "klen" : 21,
+                                 "min_non_zero_depth" : 53,
+                                 "percent_coverage" : 100
+                              },
+                              "reference" : {
+                                 "percent_coverage" : 0,
+                                 "klen" : 21,
+                                 "median_depth" : 0,
+                                 "kmer_count" : 0,
+                                 "min_non_zero_depth" : 0
+                              }
+                           },
+                           "filter" : [],
+                           "contamination_depths" : [],
+                           "conf" : 7117
+                        }
+                     }
+                  },
+                  "lineage2.2" : {
+                     "G2505085A" : {
+                        "genotype_likelihoods" : [
+                           -8695.79,
+                           -99999999,
+                           -55.9288
+                        ],
+                        "genotype" : [
+                           1,
+                           1
+                        ],
+                        "info" : {
+                           "expected_depths" : [
+                              63
+                           ],
+                           "conf" : 8640,
+                           "coverage" : {
+                              "alternate" : {
+                                 "klen" : 21,
+                                 "kmer_count" : 1490,
+                                 "median_depth" : 74,
+                                 "min_non_zero_depth" : 70,
+                                 "percent_coverage" : 100
+                              },
+                              "reference" : {
+                                 "percent_coverage" : 0,
+                                 "min_non_zero_depth" : 0,
+                                 "kmer_count" : 0,
+                                 "median_depth" : 0,
+                                 "klen" : 21
+                              }
+                           },
+                           "contamination_depths" : [],
+                           "filter" : []
+                        },
+                        "_cls" : "Call.VariantCall",
+                        "variant" : "ref-G2505085A?var_name=G2505085A&num_alts=2&ref=NC_000962.3&enum=0&gene=NA&mut=G2505085A"
+                     }
+                  }
+               }
+            },
+            "lineage" : [
+               "lineage2.2"
+            ]
+         },
+         "sub_complex" : {
+            "Mycobacterium_avium_complex" : {
+               "median_depth" : 11,
+               "percent_coverage" : 95.006
+            }
+         },
+         "phylo_group" : {
+            "Non_tuberculosis_mycobacterium_complex" : {
+               "median_depth" : 10,
+               "percent_coverage" : 80.373
+            },
+            "Mycobacterium_tuberculosis_complex" : {
+               "percent_coverage" : 98.887,
+               "median_depth" : 63
+            }
+         }
+      },
+      "file_paths" : {
+         "ref_fa" : "../../resources/tuberculosis.fasta",
+         "clockwork_ref_dir" : "../../resources/tuberculosis"
+      },
+      "susceptibility" : {
+         "Ofloxacin" : {
+            "predict" : "S"
+         },
+         "Streptomycin" : {
+            "called_by" : {
+               "rpsL_K88R-AAG781821AGG" : {
+                  "info" : {
+                     "filter" : [],
+                     "coverage" : {
+                        "reference" : {
+                           "percent_coverage" : 0,
+                           "min_non_zero_depth" : 0,
+                           "klen" : 21,
+                           "median_depth" : 0,
+                           "kmer_count" : 0
+                        },
+                        "alternate" : {
+                           "percent_coverage" : 100,
+                           "min_non_zero_depth" : 57,
+                           "median_depth" : 61,
+                           "kmer_count" : 1149,
+                           "klen" : 20
+                        }
+                     },
+                     "conf" : 7300,
+                     "contamination_depths" : [],
+                     "expected_depths" : [
+                        63
+                     ]
+                  },
+                  "genotype" : [
+                     1,
+                     1
+                  ],
+                  "_cls" : "Call.VariantCall",
+                  "variant" : null,
+                  "genotype_likelihoods" : [
+                     -7356.13,
+                     -99999999,
+                     -56.6085
+                  ]
+               }
+            },
+            "predict" : "R"
+         },
+         "Capreomycin" : {
+            "predict" : "S"
+         },
+         "Amikacin" : {
+            "predict" : "S"
+         },
+         "Ciprofloxacin" : {
+            "predict" : "S"
+         },
+         "Kanamycin" : {
+            "predict" : "S"
+         },
+         "Pyrazinamide" : {
+            "predict" : "S"
+         },
+         "Moxifloxacin" : {
+            "predict" : "S"
+         },
+         "Rifampicin" : {
+            "called_by" : {
+               "rpoB_S450L-TCG761154TTG" : {
+                  "genotype_likelihoods" : [
+                     -5701.59,
+                     -99999999,
+                     -187.178
+                  ],
+                  "_cls" : "Call.VariantCall",
+                  "variant" : null,
+                  "info" : {
+                     "coverage" : {
+                        "alternate" : {
+                           "percent_coverage" : 100,
+                           "kmer_count" : 749,
+                           "median_depth" : 39,
+                           "klen" : 20,
+                           "min_non_zero_depth" : 38
+                        },
+                        "reference" : {
+                           "median_depth" : 0,
+                           "kmer_count" : 1,
+                           "klen" : 21,
+                           "min_non_zero_depth" : 1,
+                           "percent_coverage" : 5
+                        }
+                     },
+                     "conf" : 5514,
+                     "filter" : [],
+                     "contamination_depths" : [],
+                     "expected_depths" : [
+                        63
+                     ]
+                  },
+                  "genotype" : [
+                     1,
+                     1
+                  ]
+               }
+            },
+            "predict" : "R"
+         },
+         "Isoniazid" : {
+            "called_by" : {
+               "katG_S315G-GCT2155167GGT" : {
+                  "info" : {
+                     "expected_depths" : [
+                        63
+                     ],
+                     "filter" : [],
+                     "conf" : 6264,
+                     "coverage" : {
+                        "alternate" : {
+                           "percent_coverage" : 100,
+                           "min_non_zero_depth" : 41,
+                           "median_depth" : 43,
+                           "kmer_count" : 899,
+                           "klen" : 20
+                        },
+                        "reference" : {
+                           "percent_coverage" : 0,
+                           "min_non_zero_depth" : 0,
+                           "median_depth" : 0,
+                           "kmer_count" : 0,
+                           "klen" : 21
+                        }
+                     },
+                     "contamination_depths" : []
+                  },
+                  "genotype" : [
+                     1,
+                     1
+                  ],
+                  "variant" : null,
+                  "_cls" : "Call.VariantCall",
+                  "genotype_likelihoods" : [
+                     -6385.01,
+                     -99999999,
+                     -121.158
+                  ]
+               }
+            },
+            "predict" : "R"
+         },
+         "Ethambutol" : {
+            "predict" : "S"
+         }
+      },
+      "name" : "Mycobacterium tuberculosis"
+   },
+   "summary_questions" : {
+      "were_contaminants_removed" : "no",
+      "are_there_contaminants" : "no",
+      "continue_to_clockwork" : "yes",
+      "is_the_top_species_appropriate" : "yes"
+   },
+   "warnings" : [
+      "warning: sample contains a mixture of mycobacteria, its principal species (Mycobacterium tuberculosis) mixed with reads from Mycobacterium intracellulare. As you have chosen to ignore this (--unmix_myco no), Mycobacterium intracellulare is NOT being counted as a contaminant"
+   ]
+}
