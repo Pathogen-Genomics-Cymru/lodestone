@@ -62,6 +62,7 @@ process alignToRef {
     error_log = "${sample_name}.err"
 
     """
+    touch ${sample_name}.fa
     touch ${bam}
     touch ${bai}
     touch ${stats}

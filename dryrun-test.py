@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import subprocess
-import filecmp
+import os
 
-def run_tests():
+def go():
 
     scenario1 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun']
     scenario2 = ['fastq', '"*_R{1,2}.fastq.gz"', 'null', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null']
@@ -31,22 +31,23 @@ def run_tests():
         result = subprocess.run([toRun], shell=True)
         count+=1
 
-def compare_with_truth_set():
-
     for num in range(1, 11):
         filename = 'scenario' + str(num) + '.txt'
-        truthset = './tests/' + filename 
-        filecmp.cmp(filename, truthset)
-        if filecmp.cmp:
-            print (filename + ' pass')
+        with open(filename) as in_file:
+            data = in_file.readlines()
+            tail = data[-24:]
+        with open(filename, 'w') as out_file:
+            out_file.write(''.join(tail))
+        filesize = os.stat(filename).st_size
+        truthset = './tests/' + filename
+        truthsize = os.stat(truthset).st_size
+        if filesize == truthsize:
+            print ('scenario' + str(num) + ' passed dry run')
         else:
-            print (filename + ' fail')
+            raise ValueError('scenario' + str(num) + ' failed dry run')
 
 def main():
-
-    run_tests()
-    compare_with_truth_set()
+    go()
 
 if __name__ == '__main__':
     main()
-
