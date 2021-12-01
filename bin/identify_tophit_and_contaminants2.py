@@ -5,9 +5,6 @@ import argparse
 import re
 import copy
 
-# jsoncomparison for testing against perl. DELETE after
-from jsoncomparison import Compare, NO_DIFF
-
 # define process requirements function
 def process_requirements(args):
     # REQUIREMENTS
@@ -486,17 +483,3 @@ if __name__ == "__main__":
     out_file2 = sample_id + '_species_in_sample.json'
     with open(out_file2, 'w') as f:
         json.dump(out, f, indent = 4)
-
-    # compare json with perl output
-    # perl_output = open("tests/data/test_species_in_sample_unmix_myco_no.json")
-    # perl_json = json.load(perl_output)
-    # config = {
-    #     "types": {
-    #         "float": {
-    #             "allow_round": 2
-    #         }
-    #     }
-    # }
-    # diff = Compare(config).check(perl_json, out)
-    # with open ('diff.json', "w") as g:
-    #     json.dump(diff, g, indent = 4)

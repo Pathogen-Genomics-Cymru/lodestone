@@ -3,9 +3,6 @@ import os
 import sys
 import argparse
 
-# jsoncomparison for testing against perl. DELETE after
-from jsoncomparison import Compare, NO_DIFF
-
 # function to read kraken report
 def read_kraken_report(input, pct_threshold, num_threshold):
     # input - full path to kraken report
@@ -252,10 +249,3 @@ if __name__ == "__main__":
     # CREATE OUTPUT FILE
     with open(out_file, 'w') as f:
         json.dump(out, f, indent = 4)
-
-    # compare json with Perl output
-    # perl_output = open("tests/perl.json")
-    # perl_json = json.load(perl_output)
-    # diff = Compare().check(perl_json, out)
-    # with open("diff.json", "w") as g:
-    #     json.dump(diff, g, indent = 4)
