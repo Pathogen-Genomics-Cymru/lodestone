@@ -1,0 +1,64 @@
+ 89.30	42892	42892	U	0	unclassified
+ 10.70	5140	8	R	1	root
+ 10.58	5083	617	R1	131567	  cellular organisms
+  9.30	4466	7	D	2	    Bacteria
+  9.20	4418	7	D1	1783272	      Terrabacteria group
+  9.14	4389	2	P	201174	        Actinobacteria
+  9.13	4387	15	C	1760	          Actinobacteria
+  9.08	4362	4	O	85007	            Corynebacteriales
+  8.90	4275	0	F	1653	              Corynebacteriaceae
+  8.90	4275	4268	G	1716	                Corynebacterium
+  0.01	7	7	S	136857	                  Corynebacterium testudinoris
+  0.17	83	0	F	1762	              Mycobacteriaceae
+  0.17	83	25	G	1763	                Mycobacterium
+  0.09	44	44	G1	77643	                  Mycobacterium tuberculosis complex
+  0.01	3	3	S	1804	                  Mycobacterium gilvum
+  0.00	2	1	G1	120793	                  Mycobacterium avium complex (MAC)
+  0.00	1	1	S	222805	                    Mycobacterium chimaera
+  0.00	2	2	S	134601	                  Mycobacterium goodii
+  0.00	2	2	S	482462	                  Mycobacterium dioxanotrophicus
+  0.00	2	2	S	1682113	                  Mycobacterium sp. YC-RL4
+  0.00	1	1	S	1768	                  Mycobacterium kansasii
+  0.00	1	0	S	110539	                  Mycobacterium vanbaalenii
+  0.00	1	1	S1	350058	                    Mycobacterium vanbaalenii PYR-1
+  0.00	1	0	G1	670516	                  Mycobacterium chelonae group
+  0.00	1	0	G2	670506	                    Mycobacterium abscessus subgroup
+  0.00	1	1	S	36809	                      Mycobacterium abscessus
+  0.01	5	0	O	85006	            Micrococcales
+  0.01	5	0	F	1268	              Micrococcaceae
+  0.01	5	5	G	1663	                Arthrobacter
+  0.01	5	0	O	1643684	            Nakamurellales
+  0.01	5	0	F	85031	              Nakamurellaceae
+  0.01	5	0	G	53460	                Nakamurella
+  0.01	5	0	S	53461	                  Nakamurella multipartita
+  0.01	5	5	S1	479431	                    Nakamurella multipartita DSM 44233
+  0.04	20	0	P	1239	        Firmicutes
+  0.04	20	0	C	186801	          Clostridia
+  0.04	20	0	O	186802	            Clostridiales
+  0.04	20	0	F	990719	              Christensenellaceae
+  0.04	20	0	G	990721	                Christensenella
+  0.04	20	20	S	1805714	                  Christensenella massiliensis
+  0.00	2	0	P	544448	        Tenericutes
+  0.00	2	0	C	31969	          Mollicutes
+  0.00	2	0	O	2085	            Mycoplasmatales
+  0.00	2	0	F	2092	              Mycoplasmataceae
+  0.00	2	0	G	2093	                Mycoplasma
+  0.00	2	0	S	28227	                  Mycoplasma penetrans
+  0.00	2	2	S1	272633	                    Mycoplasma penetrans HF-2
+  0.09	41	0	P	1224	      Proteobacteria
+  0.09	41	33	C	28211	        Alphaproteobacteria
+  0.02	8	0	O	356	          Rhizobiales
+  0.02	8	8	F	41294	            Bradyrhizobiaceae
+  0.10	49	0	D	10239	  Viruses
+  0.10	48	0	D1	35268	    Retro-transcribing viruses
+  0.10	48	0	F	11632	      Retroviridae
+  0.10	48	0	F1	327045	        Orthoretrovirinae
+  0.10	48	0	G	11646	          Lentivirus
+  0.10	48	0	G1	11652	            Primate lentivirus group
+  0.10	48	48	S	11676	              Human immunodeficiency virus 1
+  0.00	1	0	D1	29258	    ssDNA viruses
+  0.00	1	0	F	10841	      Microviridae
+  0.00	1	0	F1	1910950	        Bullavirinae
+  0.00	1	0	G	1910954	          Phix174microvirus
+  0.00	1	0	G1	1910975	            unclassified Phix174microvirus
+  0.00	1	1	S	374840	              Enterobacteria phage phiX174 sensu lato

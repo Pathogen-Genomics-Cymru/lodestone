@@ -1,0 +1,63 @@
+  0.01	24	24	U	0	unclassified
+ 99.99	345582	0	R	1	root
+ 99.99	345582	0	R1	131567	  cellular organisms
+ 99.99	345582	0	D	2	    Bacteria
+ 99.99	345582	0	D1	1783272	      Terrabacteria group
+ 99.99	345582	0	P	201174	        Actinobacteria
+ 99.99	345582	0	C	1760	          Actinobacteria
+ 99.99	345582	0	O	85007	            Corynebacteriales
+ 99.99	345582	0	F	1762	              Mycobacteriaceae
+ 99.99	345582	5856	G	1763	                Mycobacterium
+ 93.38	322723	2104	G1	670516	                  Mycobacterium chelonae group
+ 92.44	319481	0	G2	670506	                    Mycobacterium abscessus subgroup
+ 92.44	319481	319481	S	36809	                      Mycobacterium abscessus
+  0.33	1138	1138	S	1774	                    Mycobacterium chelonae
+  2.15	7442	1149	G1	77643	                  Mycobacterium tuberculosis complex
+  1.47	5097	4832	S	1773	                    Mycobacterium tuberculosis
+  0.03	104	104	S1	83332	                      Mycobacterium tuberculosis H37Rv
+  0.02	68	68	S1	659019	                      Mycobacterium tuberculosis W-148
+  0.01	20	20	S1	1267358	                      Mycobacterium tuberculosis TKK-01-0021
+  0.00	16	16	S1	1267360	                      Mycobacterium tuberculosis TKK-01-0026
+  0.00	15	15	S1	1267357	                      Mycobacterium tuberculosis TKK-01-0020
+  0.00	11	11	S1	795205	                      Mycobacterium tuberculosis HN2602
+  0.00	10	10	S1	83331	                      Mycobacterium tuberculosis CDC1551
+  0.00	8	8	S1	1267363	                      Mycobacterium tuberculosis TKK-01-0072
+  0.00	7	7	S1	1267361	                      Mycobacterium tuberculosis TKK-01-0032
+  0.00	3	3	S1	1267356	                      Mycobacterium tuberculosis TKK-01-0017
+  0.00	3	3	S1	1267364	                      Mycobacterium tuberculosis TKK-01-0080
+  0.35	1194	1087	S	1765	                    Mycobacterium bovis
+  0.03	107	0	S1	33892	                      Mycobacterium bovis BCG
+  0.03	107	107	S2	410289	                        Mycobacterium bovis BCG str. Pasteur 1173P2
+  0.00	2	2	S	194542	                    Mycobacterium pinnipedii
+  1.60	5542	2342	G1	120793	                  Mycobacterium avium complex (MAC)
+  0.66	2294	2294	S	222805	                    Mycobacterium chimaera
+  0.17	577	577	S	1767	                    Mycobacterium intracellulare
+  0.06	213	141	S	1764	                    Mycobacterium avium
+  0.02	72	56	S1	1770	                      Mycobacterium avium subsp. paratuberculosis
+  0.00	16	16	S2	262316	                        Mycobacterium avium subsp. paratuberculosis K-10
+  0.03	116	116	S	701042	                    Mycobacterium marseillense
+  0.86	2972	2972	S	1768	                  Mycobacterium kansasii
+  0.09	313	313	S	1769	                  Mycobacterium leprae
+  0.04	138	4	G1	1073531	                  Mycobacterium terrae complex
+  0.02	86	86	S	354243	                    Mycobacterium kumamotonense
+  0.01	48	48	S	1782	                    Mycobacterium nonchromogenicum
+  0.02	81	20	S	1772	                  Mycobacterium smegmatis
+  0.02	61	61	S1	246196	                    Mycobacterium smegmatis str. MC2 155
+  0.02	60	60	S	43348	                  Mycobacterium branderi
+  0.02	52	52	S	480418	                  Mycobacterium lepromatosis
+  0.01	43	43	S	1787	                  Mycobacterium szulgai
+  0.01	42	42	S	1780	                  Mycobacterium malmoense
+  0.01	36	36	S	43304	                  Mycobacterium peregrinum
+  0.01	35	35	S	141349	                  Mycobacterium lentiflavum
+  0.01	32	32	S	98668	                  Mycobacterium septicum
+  0.01	31	31	S	1781	                  Mycobacterium marinum
+  0.01	31	0	G1	1866885	                  Mycobacterium fortuitum complex
+  0.01	31	31	S	1766	                    Mycobacterium fortuitum
+  0.01	28	28	S	1786	                  Mycobacterium sphagni
+  0.01	24	24	S	451644	                  Mycobacterium conceptionense
+  0.01	22	22	S	1789	                  Mycobacterium xenopi
+  0.01	19	19	S	39693	                  Mycobacterium porcinum
+  0.00	17	17	S	36812	                  Mycobacterium genavense
+  0.00	16	16	S	53378	                  Mycobacterium paraffinicum
+  0.00	14	14	S	47839	                  Mycobacterium triplex
+  0.00	13	13	S	1809	                  Mycobacterium ulcerans

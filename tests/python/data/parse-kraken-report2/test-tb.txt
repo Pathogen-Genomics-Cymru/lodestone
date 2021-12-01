@@ -1,0 +1,12 @@
+  0.83	1166	1166	U	0	unclassified
+ 99.17	140109	0	R	1	root
+ 99.17	140109	0	R1	131567	  cellular organisms
+ 99.17	140109	0	D	2	    Bacteria
+ 99.17	140109	0	D1	1783272	      Terrabacteria group
+ 99.17	140109	0	P	201174	        Actinobacteria
+ 99.17	140109	0	C	1760	          Actinobacteria
+ 99.17	140109	0	O	85007	            Corynebacteriales
+ 99.17	140109	0	F	1762	              Mycobacteriaceae
+ 99.17	140109	0	G	1763	                Mycobacterium
+ 99.17	140109	0	G1	77643	                  Mycobacterium tuberculosis complex
+ 99.17	140109	140109	S	1773	                    Mycobacterium tuberculosis

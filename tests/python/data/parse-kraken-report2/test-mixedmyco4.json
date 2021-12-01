@@ -1,0 +1,38 @@
+{
+    "Thresholds": {
+        "reads": 2000,
+        "percentage": 10.0
+    },
+    "Family": [
+        {
+            "reads": 7292,
+            "percentage": 80.27,
+            "name": "Mycobacteriaceae",
+            "taxon_id": "1762"
+        }
+    ],
+    "Genus": [
+        {
+            "reads": 7292,
+            "percentage": 80.27,
+            "name": "Mycobacterium",
+            "taxon_id": "1763"
+        }
+    ],
+    "Errors": [
+        "error: there are < 100k reads classified as Mycobacteriaceae"
+    ],
+    "Mykrobe": "false",
+    "Species complex": [
+        {
+            "reads": 4514,
+            "percentage": 49.69,
+            "name": "Mycobacterium tuberculosis complex",
+            "taxon_id": "77643"
+        }
+    ],
+    "Warnings": [
+        "warning: no species classifications meet thresholds of > 2000 reads and > 10 % of total reads (human excepted)",
+        "warning: top family classification is mycobacterial, but this is not consistent with top genus and species classifications"
+    ]
+}
