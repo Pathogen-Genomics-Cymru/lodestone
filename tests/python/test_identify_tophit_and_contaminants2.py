@@ -107,7 +107,7 @@ def test_unmatched_ids():
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
-    assert str(pytest_wrapped_e.value) == "ERROR: the sample IDs of %s and %s are mismatched" %(os.path.join(data_dir_name, "mismatched_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"))
+    assert str(pytest_wrapped_e.value) == "ERROR: the sample IDs of %s and %s are mismatched" %(args[1], args[2])
 
     # test mismatched previous species id
     args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, os.path.join(data_dir_name, "mismatched_species_in_sample.json")]
@@ -115,7 +115,7 @@ def test_unmatched_ids():
         identify_tophit_and_contaminants2.process_requirements(args)
 
     assert pytest_wrapped_e.type == SystemExit
-    assert str(pytest_wrapped_e.value) == "ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(args[7], os.path.join(data_dir_name, 'test'))
+    assert str(pytest_wrapped_e.value) == "ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(args[7], 'test')
 
 def test_read_assembly_summary():
     # test reading assembly data

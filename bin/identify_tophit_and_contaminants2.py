@@ -57,7 +57,7 @@ def process_requirements(args):
         sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
 
     # check IDs from the file names
-    res_myk1 = re.findall(r"^.+\/(.*?)\_mykrobe\_report\.json$", mykrobe_json)
+    res_myk1 = re.findall(r"^.+[\/|\\](.*?)\_mykrobe\_report\.json$", mykrobe_json)
     res_myk2 = re.findall(r"^(.*?)\_mykrobe\_report\.json$", mykrobe_json)
     if len(res_myk1) > 0:
         sample_id_MYK = res_myk1[0]
@@ -66,7 +66,7 @@ def process_requirements(args):
     else:
         sample_id_MYK = ''
 
-    res_kra1 = re.findall(r"^.+\/(.*?)\_kraken\_report\.json$", kraken_json)
+    res_kra1 = re.findall(r"^.+[\/|\\](.*?)\_kraken\_report\.json$", kraken_json)
     res_kra2 = re.findall(r"^(.*?)\_kraken\_report\.json$", kraken_json)
     if len(res_kra1) > 0:
         sample_id_KRA = res_kra1[0]
@@ -82,7 +82,7 @@ def process_requirements(args):
         sample_id = sample_id_MYK
 
     if prev_species_json != 'null':
-        res_pre1 = re.findall(r"^.+\/(.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
+        res_pre1 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
         res_pre2 = re.findall(r"^(.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
         if len(res_pre1) > 0:
             sample_id_PRE = res_pre1[0]

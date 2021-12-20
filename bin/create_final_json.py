@@ -25,7 +25,7 @@ def process_requirements(args):
         sys.exit('ERROR: %s is empty' %(report_file))
 
     # check IDs from the file names
-    res_stats1 = re.findall(r"^.+\/(.*?)\_alignmentStats\.json$", stats_file)
+    res_stats1 = re.findall(r"^.+[\/|\\](.*?)\_alignmentStats\.json$", stats_file)
     res_stats2 = re.findall(r"^(.*?)\_alignmentStats\.json$", stats_file)
     if len(res_stats1) > 0:
         sample_id_STA = res_stats1[0]
@@ -34,7 +34,7 @@ def process_requirements(args):
     else:
         sample_id_STA = ''
 
-    res_report1 = re.findall(r"^.+\/(.*?)\_species\_in\_sample\.json$", report_file)
+    res_report1 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\.json$", report_file)
     res_report2 = re.findall(r"^(.*?)_species\_in\_sample\.json$", report_file)
     if len(res_report1) > 0:
         sample_id_REP = res_report1[0]
