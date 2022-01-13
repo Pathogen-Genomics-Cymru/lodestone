@@ -1,0 +1,64 @@
+  0.16	181	181	U	0	unclassified
+ 99.84	114967	0	R	1	root
+ 99.84	114967	0	R1	131567	  cellular organisms
+ 99.84	114967	0	D	2	    Bacteria
+ 99.84	114967	0	D1	1783272	      Terrabacteria group
+ 99.84	114967	0	P	201174	        Actinobacteria
+ 99.84	114967	0	C	1760	          Actinobacteria
+ 99.84	114967	0	O	85007	            Corynebacteriales
+ 99.84	114967	0	F	1762	              Mycobacteriaceae
+ 99.84	114967	49378	G	1763	                Mycobacterium
+ 37.86	43595	20826	G1	120793	                  Mycobacterium avium complex (MAC)
+ 18.50	21302	21302	S	222805	                    Mycobacterium chimaera
+  0.79	913	602	S	1764	                    Mycobacterium avium
+  0.27	311	247	S1	1770	                      Mycobacterium avium subsp. paratuberculosis
+  0.06	64	64	S2	262316	                        Mycobacterium avium subsp. paratuberculosis K-10
+  0.26	295	295	S	1767	                    Mycobacterium intracellulare
+  0.22	259	259	S	701042	                    Mycobacterium marseillense
+ 11.62	13385	1347	G1	77643	                  Mycobacterium tuberculosis complex
+  8.09	9316	8810	S	1773	                    Mycobacterium tuberculosis
+  0.15	167	167	S1	83332	                      Mycobacterium tuberculosis H37Rv
+  0.11	132	132	S1	659019	                      Mycobacterium tuberculosis W-148
+  0.04	50	50	S1	1267358	                      Mycobacterium tuberculosis TKK-01-0021
+  0.04	48	48	S1	1267357	                      Mycobacterium tuberculosis TKK-01-0020
+  0.03	31	31	S1	1267360	                      Mycobacterium tuberculosis TKK-01-0026
+  0.02	25	25	S1	1267363	                      Mycobacterium tuberculosis TKK-01-0072
+  0.02	18	18	S1	795205	                      Mycobacterium tuberculosis HN2602
+  0.01	11	11	S1	1267356	                      Mycobacterium tuberculosis TKK-01-0017
+  0.01	11	11	S1	1267361	                      Mycobacterium tuberculosis TKK-01-0032
+  0.01	9	9	S1	83331	                      Mycobacterium tuberculosis CDC1551
+  0.00	4	4	S1	1267364	                      Mycobacterium tuberculosis TKK-01-0080
+  2.36	2713	2412	S	1765	                    Mycobacterium bovis
+  0.26	301	0	S1	33892	                      Mycobacterium bovis BCG
+  0.26	301	301	S2	410289	                        Mycobacterium bovis BCG str. Pasteur 1173P2
+  0.00	5	5	S	194542	                    Mycobacterium pinnipedii
+  0.00	4	4	S	115862	                    Mycobacterium caprae
+  2.01	2317	123	G1	1073531	                  Mycobacterium terrae complex
+  0.95	1097	1097	S	1782	                    Mycobacterium nonchromogenicum
+  0.95	1097	1097	S	354243	                    Mycobacterium kumamotonense
+  1.01	1165	1165	S	1769	                  Mycobacterium leprae
+  0.94	1080	56	G1	670516	                  Mycobacterium chelonae group
+  0.59	679	0	G2	670506	                    Mycobacterium abscessus subgroup
+  0.59	679	679	S	36809	                      Mycobacterium abscessus
+  0.30	345	345	S	1774	                    Mycobacterium chelonae
+  0.46	534	534	S	1768	                  Mycobacterium kansasii
+  0.43	498	498	S	1781	                  Mycobacterium marinum
+  0.31	359	359	S	43304	                  Mycobacterium peregrinum
+  0.29	333	333	S	43348	                  Mycobacterium branderi
+  0.26	301	301	S	480418	                  Mycobacterium lepromatosis
+  0.25	283	105	S	1772	                  Mycobacterium smegmatis
+  0.15	178	178	S1	246196	                    Mycobacterium smegmatis str. MC2 155
+  0.20	230	230	S	98668	                  Mycobacterium septicum
+  0.18	212	212	S	141349	                  Mycobacterium lentiflavum
+  0.15	176	176	S	1787	                  Mycobacterium szulgai
+  0.14	162	162	S	1786	                  Mycobacterium sphagni
+  0.14	160	160	S	1780	                  Mycobacterium malmoense
+  0.13	146	146	S	36812	                  Mycobacterium genavense
+  0.13	144	144	S	39693	                  Mycobacterium porcinum
+  0.12	133	0	G1	1866885	                  Mycobacterium fortuitum complex
+  0.12	133	133	S	1766	                    Mycobacterium fortuitum
+  0.10	116	116	S	451644	                  Mycobacterium conceptionense
+  0.09	106	106	S	1789	                  Mycobacterium xenopi
+  0.06	64	64	S	1809	                  Mycobacterium ulcerans
+  0.05	55	55	S	47839	                  Mycobacterium triplex
+  0.03	35	35	S	53378	                  Mycobacterium paraffinicum

@@ -1,0 +1,55 @@
+{
+    "Thresholds": {
+        "reads": 5000,
+        "percentage": 0.5
+    },
+    "Family": [
+        {
+            "reads": 1404682,
+            "percentage": 99.6,
+            "name": "Mycobacteriaceae",
+            "taxon_id": "1762"
+        }
+    ],
+    "Genus": [
+        {
+            "reads": 1393167,
+            "percentage": 98.78,
+            "name": "Mycobacterium",
+            "taxon_id": "1763"
+        }
+    ],
+    "Species": [
+        {
+            "reads": 142104,
+            "percentage": 10.08,
+            "name": "Mycobacterium tuberculosis",
+            "taxon_id": "1773"
+        },
+        {
+            "reads": 78001,
+            "percentage": 5.53,
+            "name": "Mycobacterium intracellulare",
+            "taxon_id": "1767"
+        }
+    ],
+    "Mykrobe": "true",
+    "Species complex": [
+        {
+            "reads": 1124355,
+            "percentage": 79.72,
+            "name": "Mycobacterium tuberculosis complex",
+            "taxon_id": "77643"
+        },
+        {
+            "reads": 122223,
+            "percentage": 8.67,
+            "name": "Mycobacterium avium complex (MAC)",
+            "taxon_id": "120793"
+        }
+    ],
+    "Warnings": [
+        "warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to Mykrobe report for superior mycobacterial classification",
+        "warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to Mykrobe report)"
+    ]
+}

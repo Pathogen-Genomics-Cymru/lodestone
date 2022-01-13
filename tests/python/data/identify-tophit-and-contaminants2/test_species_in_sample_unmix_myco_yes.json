@@ -1,0 +1,539 @@
+{
+    "top_hit": {
+        "name": "Mycobacterium tuberculosis",
+        "file_paths": {
+            "ref_fa": "../../resources/tuberculosis.fasta",
+            "clockwork_ref_dir": "../../resources/tuberculosis"
+        },
+        "susceptibility": {
+            "Ofloxacin": {
+                "predict": "S"
+            },
+            "Moxifloxacin": {
+                "predict": "S"
+            },
+            "Isoniazid": {
+                "predict": "R",
+                "called_by": {
+                    "katG_S315G-GCT2155167GGT": {
+                        "variant": null,
+                        "genotype": [
+                            1,
+                            1
+                        ],
+                        "genotype_likelihoods": [
+                            -6385.014722890684,
+                            -99999999,
+                            -121.15773981998346
+                        ],
+                        "info": {
+                            "coverage": {
+                                "reference": {
+                                    "percent_coverage": 0.0,
+                                    "median_depth": 0,
+                                    "min_non_zero_depth": 0,
+                                    "kmer_count": 0,
+                                    "klen": 21
+                                },
+                                "alternate": {
+                                    "percent_coverage": 100.0,
+                                    "median_depth": 43,
+                                    "min_non_zero_depth": 41,
+                                    "kmer_count": 899,
+                                    "klen": 20
+                                }
+                            },
+                            "expected_depths": [
+                                63.0
+                            ],
+                            "contamination_depths": [],
+                            "filter": [],
+                            "conf": 6264
+                        },
+                        "_cls": "Call.VariantCall"
+                    }
+                }
+            },
+            "Kanamycin": {
+                "predict": "S"
+            },
+            "Ethambutol": {
+                "predict": "S"
+            },
+            "Streptomycin": {
+                "predict": "R",
+                "called_by": {
+                    "rpsL_K88R-AAG781821AGG": {
+                        "variant": null,
+                        "genotype": [
+                            1,
+                            1
+                        ],
+                        "genotype_likelihoods": [
+                            -7356.132030387634,
+                            -99999999,
+                            -56.6084953648152
+                        ],
+                        "info": {
+                            "coverage": {
+                                "reference": {
+                                    "percent_coverage": 0.0,
+                                    "median_depth": 0,
+                                    "min_non_zero_depth": 0,
+                                    "kmer_count": 0,
+                                    "klen": 21
+                                },
+                                "alternate": {
+                                    "percent_coverage": 100.0,
+                                    "median_depth": 61,
+                                    "min_non_zero_depth": 57,
+                                    "kmer_count": 1149,
+                                    "klen": 20
+                                }
+                            },
+                            "expected_depths": [
+                                63.0
+                            ],
+                            "contamination_depths": [],
+                            "filter": [],
+                            "conf": 7300
+                        },
+                        "_cls": "Call.VariantCall"
+                    }
+                }
+            },
+            "Ciprofloxacin": {
+                "predict": "S"
+            },
+            "Pyrazinamide": {
+                "predict": "S"
+            },
+            "Rifampicin": {
+                "predict": "R",
+                "called_by": {
+                    "rpoB_S450L-TCG761154TTG": {
+                        "variant": null,
+                        "genotype": [
+                            1,
+                            1
+                        ],
+                        "genotype_likelihoods": [
+                            -5701.592325211946,
+                            -99999999,
+                            -187.17793952032386
+                        ],
+                        "info": {
+                            "coverage": {
+                                "reference": {
+                                    "percent_coverage": 5.0,
+                                    "median_depth": 0,
+                                    "min_non_zero_depth": 1,
+                                    "kmer_count": 1,
+                                    "klen": 21
+                                },
+                                "alternate": {
+                                    "percent_coverage": 100.0,
+                                    "median_depth": 39,
+                                    "min_non_zero_depth": 38,
+                                    "kmer_count": 749,
+                                    "klen": 20
+                                }
+                            },
+                            "expected_depths": [
+                                63.0
+                            ],
+                            "contamination_depths": [],
+                            "filter": [],
+                            "conf": 5514
+                        },
+                        "_cls": "Call.VariantCall"
+                    }
+                }
+            },
+            "Amikacin": {
+                "predict": "S"
+            },
+            "Capreomycin": {
+                "predict": "S"
+            }
+        },
+        "phylogenetics": {
+            "phylo_group": {
+                "Mycobacterium_tuberculosis_complex": {
+                    "percent_coverage": 98.887,
+                    "median_depth": 63.0
+                },
+                "Non_tuberculosis_mycobacterium_complex": {
+                    "percent_coverage": 80.373,
+                    "median_depth": 10
+                }
+            },
+            "sub_complex": {
+                "Mycobacterium_avium_complex": {
+                    "percent_coverage": 95.006,
+                    "median_depth": 11.0
+                }
+            },
+            "species": {
+                "Mycobacterium_tuberculosis": {
+                    "percent_coverage": 98.459,
+                    "median_depth": 56.0
+                },
+                "Mycobacterium_intracellulare": {
+                    "percent_coverage": 87.445,
+                    "median_depth": 10.0
+                }
+            },
+            "lineage": {
+                "lineage": [
+                    "lineage2.2"
+                ],
+                "calls_summary": {
+                    "lineage2.2": {
+                        "good_nodes": 2,
+                        "tree_depth": 2,
+                        "genotypes": {
+                            "lineage2": 1,
+                            "lineage2.2": 1
+                        }
+                    }
+                },
+                "calls": {
+                    "lineage2.2": {
+                        "lineage2": {
+                            "G497491A": {
+                                "variant": "ref-G497491A?var_name=G497491A&num_alts=1&ref=NC_000962.3&enum=0&gene=NA&mut=G497491A",
+                                "genotype": [
+                                    1,
+                                    1
+                                ],
+                                "genotype_likelihoods": [
+                                    -7179.367121554749,
+                                    -99999999,
+                                    -62.43836507160623
+                                ],
+                                "info": {
+                                    "coverage": {
+                                        "reference": {
+                                            "percent_coverage": 0.0,
+                                            "median_depth": 0,
+                                            "min_non_zero_depth": 0,
+                                            "kmer_count": 0,
+                                            "klen": 21
+                                        },
+                                        "alternate": {
+                                            "percent_coverage": 100.0,
+                                            "median_depth": 56,
+                                            "min_non_zero_depth": 53,
+                                            "kmer_count": 1118,
+                                            "klen": 21
+                                        }
+                                    },
+                                    "expected_depths": [
+                                        63.0
+                                    ],
+                                    "contamination_depths": [],
+                                    "filter": [],
+                                    "conf": 7117
+                                },
+                                "_cls": "Call.VariantCall"
+                            }
+                        },
+                        "lineage2.2": {
+                            "G2505085A": {
+                                "variant": "ref-G2505085A?var_name=G2505085A&num_alts=2&ref=NC_000962.3&enum=0&gene=NA&mut=G2505085A",
+                                "genotype": [
+                                    1,
+                                    1
+                                ],
+                                "genotype_likelihoods": [
+                                    -8695.787888741304,
+                                    -99999999,
+                                    -55.92881256967203
+                                ],
+                                "info": {
+                                    "coverage": {
+                                        "reference": {
+                                            "percent_coverage": 0.0,
+                                            "median_depth": 0,
+                                            "min_non_zero_depth": 0,
+                                            "kmer_count": 0,
+                                            "klen": 21
+                                        },
+                                        "alternate": {
+                                            "percent_coverage": 100.0,
+                                            "median_depth": 74,
+                                            "min_non_zero_depth": 70,
+                                            "kmer_count": 1490,
+                                            "klen": 21
+                                        }
+                                    },
+                                    "expected_depths": [
+                                        63.0
+                                    ],
+                                    "contamination_depths": [],
+                                    "filter": [],
+                                    "conf": 8640
+                                },
+                                "_cls": "Call.VariantCall"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "contaminants": {
+        "Mycobacterium intracellulare": [
+            {
+                "infraspecific_name": "strain=ATCC 13950",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/277/125/GCF_000277125.1_ASM27712v1/GCF_000277125.1_ASM27712v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "representative genome",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=MOTT-02",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/277/145/GCF_000277145.1_ASM27714v1/GCF_000277145.1_ASM27714v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=MTCC 9506",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/298/095/GCF_000298095.1_ASM29809v1/GCF_000298095.1_ASM29809v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=05-1390",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/418/535/GCF_000418535.1_ASM41853v2/GCF_000418535.1_ASM41853v2_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=AH16",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/750/065/GCF_001750065.2_ASM175006v2/GCF_001750065.2_ASM175006v2_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=Asan 36912",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/148/175/GCF_002148175.1_ASM214817v1/GCF_002148175.1_ASM214817v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=Asan 36527",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/148/195/GCF_002148195.1_ASM214819v1/GCF_002148195.1_ASM214819v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=CDC 2015-22-71",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/166/795/GCF_002166795.1_ASM216679v1/GCF_002166795.1_ASM216679v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=ZUERICH-2",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/219/245/GCF_002219245.1_ASM221924v1/GCF_002219245.1_ASM221924v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=ZUERICH-1",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/219/265/GCF_002219265.1_ASM221926v1/GCF_002219265.1_ASM221926v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=DSM 44623",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/219/285/GCF_002219285.1_ASM221928v1/GCF_002219285.1_ASM221928v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=SJ42",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/240/155/GCF_002240155.1_ASM224015v1/GCF_002240155.1_ASM224015v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=FLAC0181",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/285/675/GCF_002285675.1_ASM228567v1/GCF_002285675.1_ASM228567v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=FLAC0133",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/285/695/GCF_002285695.1_ASM228569v1/GCF_002285695.1_ASM228569v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=FLAC0070",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/287/605/GCF_002287605.1_ASM228760v1/GCF_002287605.1_ASM228760v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=AUSMDU00007395",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/664/715/GCF_009664715.1_ASM966471v1/GCF_009664715.1_ASM966471v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M.i.198",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/755/915/GCF_016755915.1_ASM1675591v1/GCF_016755915.1_ASM1675591v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M.i.27",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/755/935/GCF_016755935.1_ASM1675593v1/GCF_016755935.1_ASM1675593v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M016",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/755/995/GCF_016755995.1_ASM1675599v1/GCF_016755995.1_ASM1675599v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M018",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/075/GCF_016756075.1_ASM1675607v1/GCF_016756075.1_ASM1675607v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M002",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/095/GCF_016756095.1_ASM1675609v1/GCF_016756095.1_ASM1675609v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M008",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/115/GCF_016756115.1_ASM1675611v1/GCF_016756115.1_ASM1675611v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M006",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/135/GCF_016756135.1_ASM1675613v1/GCF_016756135.1_ASM1675613v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M023",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/155/GCF_016756155.1_ASM1675615v1/GCF_016756155.1_ASM1675615v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M025",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/175/GCF_016756175.1_ASM1675617v1/GCF_016756175.1_ASM1675617v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M005",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/195/GCF_016756195.1_ASM1675619v1/GCF_016756195.1_ASM1675619v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M026",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/215/GCF_016756215.1_ASM1675621v1/GCF_016756215.1_ASM1675621v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M009",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/235/GCF_016756235.1_ASM1675623v1/GCF_016756235.1_ASM1675623v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=M007",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/756/255/GCF_016756255.1_ASM1675625v1/GCF_016756255.1_ASM1675625v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            },
+            {
+                "infraspecific_name": "strain=Mycobacterium chimaera MC045",
+                "url": "ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/116/695/GCF_900116695.1_ASM90011669v1/GCF_900116695.1_ASM90011669v1_genomic.fna.gz",
+                "assembly_level": "Complete Genome",
+                "genome_representation": "Full",
+                "refseq_category": "na",
+                "taxid": 1767
+            }
+        ]
+    },
+    "summary_questions": {
+        "are_there_contaminants": "yes",
+        "were_contaminants_removed": "no",
+        "is_the_top_species_appropriate": "yes",
+        "continue_to_clockwork": "no"
+    },
+    "warnings": [
+        "warning: sample contains a mixture of mycobacteria, its principal species (tuberculosis) mixed with reads from 1 other Mycobacterium: intracellulare"
+    ]
+}
