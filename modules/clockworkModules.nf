@@ -47,7 +47,7 @@ process alignToRef {
     samtools stats ${bam} > ${stats}
 
     python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
-    perl ${baseDir}/bin/create_final_json.pl ${stats_json} ${json}
+    python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${json}
 
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
     if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo "error: insufficient number and/or quality of read alignments to the reference genome" >> ${error_log}; fi

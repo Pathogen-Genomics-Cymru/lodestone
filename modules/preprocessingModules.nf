@@ -187,7 +187,7 @@ process fastp {
     
     rm -rf ${fastp_html}
 
-    num_reads=\$(jq '.summary.after_filtering.total_reads' ${fastp_json} | awk '{sum+=\$0} END{print sum}')
+    num_reads=\$(fqtools count $fq1 $fq2)
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
     """
@@ -278,7 +278,7 @@ process kraken2 {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
+    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
 
     ${baseDir}/bin/extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
@@ -426,7 +426,7 @@ process identifyBacterialContaminants {
     error_log = "${sample_name}.err"
 
     """
-    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
     
     cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
 
@@ -582,7 +582,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    perl ${baseDir}/bin/parse_kraken_report2.pl ${kraken2_report} ${kraken2_json} 0.5 5000
+    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -653,7 +653,7 @@ process summarise {
     error_log = "${sample_name}.err"
 	
     """
-    perl ${baseDir}/bin/identify_tophit_and_contaminants2.pl ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
+    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
 	
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
