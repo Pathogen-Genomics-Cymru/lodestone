@@ -187,7 +187,7 @@ process fastp {
     
     rm -rf ${fastp_html}
 
-    num_reads=\$(jq '.summary.after_filtering.total_reads' ${fastp_json} | awk '{sum+=\$0} END{print sum}')
+    num_reads=\$(fqtools count $fq1 $fq2)
 
     if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
     """
