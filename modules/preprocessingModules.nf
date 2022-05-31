@@ -6,6 +6,7 @@ process checkBamValidity {
     */
 
     tag { bam_file.getBaseName() }
+    label 'preprocessing'
   
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
@@ -42,6 +43,7 @@ process checkFqValidity {
     */
    
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
@@ -79,6 +81,7 @@ process bam2fastq {
     */
 
     tag { bam_file.getBaseName() }
+    label 'preprocessing'
 
     memory '5 GB'
     
@@ -119,6 +122,7 @@ process countReads {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
@@ -215,6 +219,7 @@ process fastQC {
     */
 	
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
 
@@ -246,6 +251,7 @@ process kraken2 {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_kraken_report.*'
@@ -317,6 +323,7 @@ process mykrobe {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.json'
 
@@ -357,6 +364,7 @@ process bowtie2 {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
@@ -406,6 +414,7 @@ process identifyBacterialContaminants {
     */    
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
@@ -455,6 +464,7 @@ process downloadContamGenomes {
     */
     
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
@@ -512,6 +522,7 @@ process mapToContamFa {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
@@ -560,6 +571,7 @@ process reKraken {
     */
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_kraken_report.*'
 
@@ -604,6 +616,7 @@ process reMykrobe {
     */
      
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_mykrobe_report.json'
 	
@@ -638,6 +651,7 @@ process summarise {
     */    
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'

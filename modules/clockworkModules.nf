@@ -6,6 +6,7 @@ process alignToRef {
     */
 
     tag { sample_name }
+    label 'clockwork'
 
     publishDir "${params.output_dir}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
@@ -79,6 +80,7 @@ process callVarsMpileup {
     */
 
     tag { sample_name }
+    label 'clockwork'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
@@ -113,6 +115,7 @@ process callVarsMpileup {
 process callVarsCortex {
 
     tag { sample_name }
+    label 'clockwork'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
@@ -152,6 +155,7 @@ process callVarsCortex {
 process minos {
 
     tag { sample_name }
+    label 'clockwork'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
@@ -184,6 +188,7 @@ process minos {
 process gvcf {
 
     tag { sample_name }
+    label 'clockwork'
 
     publishDir "${params.output_dir}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
