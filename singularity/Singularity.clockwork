@@ -18,6 +18,7 @@ cortex_version=3a235272e4e0121be64527f01e73f9e066d378d3
 vcftools_version=0.1.15
 mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51
 python_version=3.6.5
+clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 
 PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl locales locales-all libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
 PYTHON="python2.7 python-dev"
@@ -101,7 +102,9 @@ git clone --recursive https://github.com/iqbal-lab/cortex.git \
 && cp -s mccortex/bin/mccortex31 . \
 && cd .. \
 && git clone https://github.com/iqbal-lab-org/clockwork \
-&& cd clockwork/python \
+&& cd clockwork \
+&& git checkout ${clockwork_version} \
+&& cd python \
 && pip3 install . \
 && chmod +x scripts/clockwork
 
@@ -125,6 +128,7 @@ export cortex_version=3a235272e4e0121be64527f01e73f9e066d378d3
 export vcftools_version=0.1.15
 export mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51
 export python_version=3.6.5
+export clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 export PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl locales locales-all libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common"
 export PYTHON="python2.7 python-dev"
 export CLOCKWORK_CORTEX_DIR=/cortex
