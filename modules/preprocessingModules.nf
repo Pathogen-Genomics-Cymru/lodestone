@@ -259,7 +259,7 @@ process kraken2 {
 
     cpus 8
 
-    memory '10 GB'
+    memory '18 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
@@ -577,7 +577,7 @@ process reKraken {
 
     cpus 8
 
-    memory '10 GB'
+    memory '18 GB'
     
     input:
     tuple val(sample_name), path(fq1), path(fq2)
