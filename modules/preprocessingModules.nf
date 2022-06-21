@@ -161,6 +161,7 @@ process fastp {
     */
      
     tag { sample_name }
+    label 'preprocessing'
  
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
