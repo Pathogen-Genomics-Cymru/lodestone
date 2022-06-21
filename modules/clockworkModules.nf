@@ -150,10 +150,9 @@ process minos {
 
     tag { sample_name }
     label 'clockwork'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-
-    label 'medium_memory'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
