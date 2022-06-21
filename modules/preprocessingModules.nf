@@ -248,7 +248,7 @@ process kraken2 {
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
-    label 'medium_memory'
+    label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_kraken_report.*'
@@ -560,7 +560,7 @@ process reKraken {
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
-    label 'medium_memory'
+    label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_kraken_report.*'
     
