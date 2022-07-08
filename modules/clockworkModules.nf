@@ -6,13 +6,12 @@ process alignToRef {
     */
 
     tag { sample_name }
+    label 'clockwork'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
-
-    cpus 8
-
-    memory '10 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
@@ -79,12 +78,11 @@ process callVarsMpileup {
     */
 
     tag { sample_name }
+    label 'clockwork'
+    label 'normal_cpu'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-
-    cpus 8
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
@@ -113,13 +111,12 @@ process callVarsMpileup {
 process callVarsCortex {
 
     tag { sample_name }
+    label 'clockwork'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-
-    cpus 8
-
-    memory '10 GB'
-
+    
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
 
@@ -152,10 +149,10 @@ process callVarsCortex {
 process minos {
 
     tag { sample_name }
+    label 'clockwork'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-
-    memory '10 GB'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
@@ -184,15 +181,14 @@ process minos {
 process gvcf {
 
     tag { sample_name }
+    label 'clockwork'
+    label 'normal_cpu'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
-
-    cpus 8
-
-    memory '5 GB'
-
+    
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(minos_vcf)
 
