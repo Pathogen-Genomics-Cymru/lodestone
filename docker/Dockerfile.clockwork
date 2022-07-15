@@ -17,7 +17,7 @@ mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51 \
 python_version=3.6.5 \
 clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 
-ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev perl locales locales-all libjson-perl libfindbin-libs-perl cpanminus jq cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common" \
+ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common" \
 PYTHON="python2.7 python-dev"
 
 RUN apt-get update \
@@ -30,7 +30,6 @@ RUN apt-get update \
 && ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools \
-&& cpanm JSON::Create Test::Script Test::More \
 && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
 && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
 && apt-get update && apt-get install -y adoptopenjdk-8-hotspot
