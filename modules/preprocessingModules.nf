@@ -6,14 +6,14 @@ process checkBamValidity {
     */
 
     tag { bam_file.getBaseName() }
-  
-    publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    label 'preprocessing'
+    label 'low_memory'
 
-    memory '5 GB'
+    publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     path(bam_file)
-   
+
     output:
     tuple path(bam_file), stdout, emit: checkValidity_bam
 
@@ -42,10 +42,10 @@ process checkFqValidity {
     */
    
     tag { sample_name }
+    label 'preprocessing'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -79,8 +79,8 @@ process bam2fastq {
     */
 
     tag { bam_file.getBaseName() }
-
-    memory '5 GB'
+    label 'preprocessing'
+    label 'low_memory'
     
     input:
     tuple path(bam_file), val(is_ok)
@@ -119,10 +119,10 @@ process countReads {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(is_ok)
@@ -157,12 +157,12 @@ process fastp {
     */
      
     tag { sample_name }
+    label 'preprocessing'
+    label 'low_memory'
  
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_fastp)
@@ -215,10 +215,10 @@ process fastQC {
     */
 	
     tag { sample_name }
+    label 'preprocessing'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
@@ -246,14 +246,13 @@ process kraken2 {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_kraken_report.*'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
-
-    cpus 8
-
-    memory '18 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
@@ -317,12 +316,11 @@ process mykrobe {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.json'
-
-    cpus 8
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_mykrobe)
@@ -357,12 +355,11 @@ process bowtie2 {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
-
-    cpus 8
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_myco_reads)
@@ -406,6 +403,7 @@ process identifyBacterialContaminants {
     */    
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
@@ -455,6 +453,7 @@ process downloadContamGenomes {
     */
     
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
@@ -512,12 +511,11 @@ process mapToContamFa {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
-
-    cpus 8
-
-    memory '10 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(contam_fa), val(does_fa_pass)
@@ -560,12 +558,11 @@ process reKraken {
     */
 
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_kraken_report.*'
-
-    cpus 8
-
-    memory '18 GB'
     
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -604,12 +601,11 @@ process reMykrobe {
     */
      
     tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_mykrobe_report.json'
-	
-    cpus 8
-
-    memory '5 GB'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
@@ -638,6 +634,7 @@ process summarise {
     */    
 
     tag { sample_name }
+    label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
