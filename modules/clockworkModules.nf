@@ -2,7 +2,7 @@
 
 process alignToRef {
     /**
-    * @QCcheckpoint none
+    * @QCcheckpoint fail if insufficient number and/or quality of read alignments to the reference genome
     */
 
     tag { sample_name }
@@ -111,6 +111,9 @@ process callVarsMpileup {
 }
 
 process callVarsCortex {
+    /**
+    * @QCcheckpoint none
+    */
 
     tag { sample_name }
 
@@ -150,6 +153,9 @@ process callVarsCortex {
 }
 
 process minos {
+    /**
+    * @QCcheckpoint none
+    */
 
     tag { sample_name }
 
@@ -182,6 +188,9 @@ process minos {
 }
 
 process gvcf {
+    /**
+    * @QCcheckpoint none
+    */
 
     tag { sample_name }
 
