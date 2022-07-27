@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM ubuntu:focal
 
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the preprocessing workflow"
@@ -11,18 +11,21 @@ fastp_version=0.20.1 \
 fastqc_version=0.11.9 \
 fqtools_version=2.3 \
 kraken2_version=2.1.1 \
-mykrobe_version=0.9.0 \
+mykrobe_version=0.12.1 \
 bwa_version=0.7.17
 
-ENV PACKAGES="procps curl git wget=1.20.1-1.1 build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq unzip libtbb-dev openjdk-11-jre-headless autoconf r-base-core" \
+ENV PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all" \
 PYTHON="python3 python3-pip python3-dev" \
 PYTHON_PACKAGES="biopython"
 
 ENV PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version} \
 LD_LIBRARY_PATH=/usr/local/lib
 
+RUN export DEBIAN_FRONTEND="noninteractive"
+
 RUN apt-get update \
-&& apt-get install -y $PACKAGES $PYTHON \
+&& DEBIAN_FRONTEND="noninteractive" apt-get install -y $PACKAGES $PYTHON \
+&& pip3 install --upgrade pip \
 && pip3 install $PYTHON_PACKAGES
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
@@ -84,7 +87,7 @@ RUN git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex
 && cd mykrobe-${mykrobe_version} \
 && pip3 install -r requirements.txt \
 && pip3 install . \
-&& ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.7/dist-packages/mykrobe/cortex/mccortex31 \
+&& ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.8/dist-packages/mykrobe/cortex/mccortex31 \
 && mykrobe panels update_metadata \
 && mykrobe panels update_species all \
 && cd ..
@@ -93,4 +96,9 @@ RUN curl -fsSL https://github.com/lh3/bwa/archive/v${bwa_version}.tar.gz | tar -
 && make -C /usr/local/bin/bwa-${bwa_version} \
 && chmod +x /usr/local/bin/bwa-${bwa_version}/bwa
 
-ENV LC_ALL en_US.UTF-8 LANG en_US.UTF-8 LANGUAGE en_US.UTF-8
+RUN unset DEBIAN_FRONTEND
+
+ENV LC_ALL en_US.UTF-8 \
+LANG en_US.UTF-8 \
+LANGUAGE en_US.UTF-8
+
