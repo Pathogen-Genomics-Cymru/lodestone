@@ -1,7 +1,7 @@
 FROM debian:buster
 
 LABEL maintainer="pricea35@cardiff.ac.uk" \
-about.summary="clockwork cortex container"
+about.summary="container for the clockwork workflow"
 
 ENV samtools_version=1.12 \
 htslib_version=1.12 \
@@ -14,10 +14,11 @@ minos_version=0.11.0 \
 cortex_version=3a235272e4e0121be64527f01e73f9e066d378d3 \
 vcftools_version=0.1.15 \
 mccortex_version=97aba198d632ee98ac1aa496db33d1a7a8cb7e51 \
+stampy_version=1.0.32r3761 \
 python_version=3.6.5 \
 clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 
-ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix pkg-config libvcflib-tools libssl-dev software-properties-common" \
+ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix libvcflib-tools libssl-dev software-properties-common perl locales locales-all" \
 PYTHON="python2.7 python-dev"
 
 RUN apt-get update \
@@ -29,6 +30,7 @@ RUN apt-get update \
 && cd .. \
 && ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
+&& pip3 install --upgrade pip \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools \
 && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
 && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
@@ -81,7 +83,7 @@ RUN git clone --recursive https://github.com/iqbal-lab/cortex.git \
 && cd .. \
 && mkdir bioinf-tools \
 && cd bioinf-tools \
-&& curl -fsSL http://www.well.ox.ac.uk/~gerton/software/Stampy/stampy-latest.tgz | tar -xz \
+&& curl -fsSL http://www.well.ox.ac.uk/~gerton/software/Stampy/stampy-${stampy_version}.tgz | tar -xz \
 && make -C stampy-* \
 && cp -s stampy-*/stampy.py . \
 && curl -fsSL https://github.com/vcftools/vcftools/releases/download/v${vcftools_version}/vcftools-${vcftools_version}.tar.gz | tar -xz \
@@ -92,7 +94,7 @@ RUN git clone --recursive https://github.com/iqbal-lab/cortex.git \
 && cd .. \
 && git clone --recursive https://github.com/mcveanlab/mccortex \
 && cd mccortex \
-&& git checkout 97aba198d632ee98ac1aa496db33d1a7a8cb7e51 \
+&& git checkout ${mccortex_version} \
 && make all \
 && cd .. \
 && cp -s mccortex/bin/mccortex31 . \
@@ -108,4 +110,7 @@ ENV CLOCKWORK_CORTEX_DIR=/cortex \
 PATH=${PATH}:/clockwork/python/scripts \
 PICARD_JAR=/usr/local/bin/picard.jar
 
-ENV LC_ALL en_US.UTF-8 LANG en_US.UTF-8 LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8 \
+LANG en_US.UTF-8 \
+LANGUAGE en_US.UTF-8
+
