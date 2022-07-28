@@ -336,7 +336,7 @@ process mykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 	
     """
-    mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
     printf ${sample_name}
     """
 
@@ -473,7 +473,7 @@ process downloadContamGenomes {
 	
     """
     wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
-    cat linktestlog.txt | awk '/listing\" \\[1\\]/{print \$4}' > confirmedurllist.txt
+    grep -o 'ftp://.*fna.gz' linktestlog.txt > confirmedurllist.txt
 
     mkdir contam_dir
     cd contam_dir
@@ -513,7 +513,7 @@ process mapToContamFa {
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
-    label 'medium_memory'
+    label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
@@ -617,7 +617,7 @@ process reMykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 	
     """
-    mykrobe predict ${sample_name} tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
     """
 
     stub:
