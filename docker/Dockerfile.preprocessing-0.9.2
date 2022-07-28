@@ -27,7 +27,8 @@ RUN export DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y $PACKAGES $PYTHON \
 && pip3 install --upgrade pip \
-&& pip3 install $PYTHON_PACKAGES
+&& pip3 install $PYTHON_PACKAGES \
+&& ln -s /usr/bin/python3 /usr/bin/python
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
