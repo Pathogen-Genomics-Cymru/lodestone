@@ -1,0 +1,68 @@
+name: build-push-quay
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Dockerfile*'
+
+  workflow_dispatch:
+
+jobs:
+
+  docker_matrix:
+
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.GIT-COMMITS }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get Dockerfile names from commits
+        id: set_matrix
+        run: |
+          echo -n ::set-output name=GIT-COMMITS::
+          COMMITS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} **/Dockerfile* | jq -R '[.]' | jq -s -c 'add')
+          echo "${COMMITS}"
+
+  build:
+
+    needs: docker_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dockerfile: ${{ fromJson(needs.docker_matrix.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get image name
+        id: image_name
+        run: |
+          echo -n ::set-output name=IMAGE_NAME::
+          NAME=$(echo ${{ matrix.dockerfile }} | awk -F '[.-]' '{print $2}')
+          echo "${NAME}"
+
+      - name: Get image tags
+        id: image_tags
+        run: |
+          echo -n ::set-output name=IMAGE_TAGS::
+          TAGS=$(echo ${{ matrix.dockerfile }} | awk -F '[-]' '{print $2}')
+          TAGS+=('latest')
+          ( IFS=$','; echo "${TAGS[*]}" )
+
+      - name: Build and publish image to Quay
+        uses: docker/build-push-action@v1
+        with:
+          path: ${{ steps.image_name.outputs.IMAGE_NAME }}
+          dockerfile: ${{ matrix.dockerfile }}
+          registry: ${{ secrets.REGISTRY_SERVER }}
+          repository: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.image_name.outputs.IMAGE_NAME }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          tags: "${{ steps.image_tags.outputs.IMAGE_TAGS }}"
+
