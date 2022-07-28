@@ -58,7 +58,7 @@ jobs:
       - name: Build and publish image to Quay
         uses: docker/build-push-action@v1
         with:
-          path: ${{ steps.image_name.outputs.IMAGE_NAME }}
+          path: docker
           dockerfile: ${{ matrix.dockerfile }}
           registry: ${{ secrets.REGISTRY_SERVER }}
           repository: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.image_name.outputs.IMAGE_NAME }}
