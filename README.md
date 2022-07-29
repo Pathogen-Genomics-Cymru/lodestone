@@ -1,4 +1,5 @@
 # TB Pipeline #
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/build-push-quay/badge.svg)
   
 This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
@@ -7,7 +8,7 @@ Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & M
 ## Quick Start ## 
 Requires `NXF_VER>=20.11.0-edge`
 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. Before running the workflow, the images will need to be built by running either `docker/docker_build.sh` or  `singularity/singularity_build.sh` 
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay and a singularity cache directory is set in the `nextflow.config`. 
 
 E.g. to run the workflow:
 ```
