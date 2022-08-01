@@ -409,7 +409,7 @@ process identifyBacterialContaminants {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
-    tuple val(sample_name), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+    tuple val(sample_name), path(fq1), path(fq2), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -418,6 +418,7 @@ process identifyBacterialContaminants {
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
+    tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
     path("${sample_name}.err", emit: contam_log)
 		
     script:
@@ -432,7 +433,7 @@ process identifyBacterialContaminants {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
     """
 
     stub:

@@ -166,16 +166,23 @@ workflow {
       preprocessing(input_files, krakenDB, bowtie_dir)
 
       if ( params.unmix_myco == "yes" ) {
+
           clockwork_seqs = preprocessing.out.decontam_seqs
           clockwork_json = preprocessing.out.decontam_json
+
+          nomix_seqs_json = preprocessing.out.nocontam_seqs_json
+
+          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+
       }
 
       if ( params.unmix_myco == "no" ) {
-          clockwork_seqs = preprocessing.out.uncontam_seqs
-          clockwork_json = preprocessing.out.uncontam_json
-      }
 
-      clockwork(clockwork_seqs.join(clockwork_json, by: 0))
+          clockwork_seqs = preprocessing.out.contam_seqs
+          clockwork_json = preprocessing.out.contam_json
+
+          clockwork(clockwork_seqs.join(clockwork_json, by: 0))
+      }
 }
 
 workflow.onComplete {
