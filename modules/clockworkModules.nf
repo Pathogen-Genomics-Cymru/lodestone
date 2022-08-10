@@ -17,7 +17,7 @@ process alignToRef {
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
 
     when:
-    doWeAlign = ~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
+    doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     output:
     tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
