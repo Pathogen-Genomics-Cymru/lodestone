@@ -91,20 +91,20 @@ process callVarsMpileup {
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}.samtools.vcf"), emit: mpileup_vcf
+    tuple val(sample_name), path("${sample_name}.bcftools.vcf"), emit: mpileup_vcf
 
     script:
-    samtools_vcf = "${sample_name}.samtools.vcf"
+    bcftools_vcf = "${sample_name}.bcftools.vcf"
 
     """
-    samtools mpileup -ugf ${ref} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${samtools_vcf}
+    bcftools mpileup -Ou -a 'INFO/AD' -f ${ref} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${bcftools_vcf}
     """
 
     stub:
-    samtools_vcf = "${sample_name}.samtools.vcf"
+    bcftools_vcf = "${sample_name}.bcftools.vcf"
 
     """
-    touch ${samtools_vcf}
+    touch ${bcftools_vcf}
     """
 }
 
@@ -151,7 +151,7 @@ process callVarsCortex {
 
 process minos {
     /**
-    * @QCcheckpoint none
+    * @QCcheckpoint check if top species if TB, is yes pass vcf to gnomon
     */
 
     tag { sample_name }
@@ -161,19 +161,24 @@ process minos {
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
     input:
-    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(samtools_vcf)
+    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(bcftools_vcf)
 
     output:
-    tuple val(sample_name), path("${sample_name}.minos.vcf"), emit: minos_vcf
+    tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
 
     """
     awk '{print \$1}' ${ref} > ref.fa
-    minos adjudicate --force --reads ${bam} minos ref.fa ${samtools_vcf} ${cortex_vcf}
+
+    minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
+
+    top_hit=\$(jq -r '.top_hit.name' ${sample_name}_report.json
+
+    if [ \$top_hit == "Mycobacterium tuberculosis"]; then printf "" >> ${error_log} && printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo "error: sample is not TB so can't produce antibiogram using gnomon" >> ${error_log} && printf "no"; fi
     """
 
     stub:
@@ -213,11 +218,15 @@ process gvcf {
 
     """
     awk '{print \$1}' ${ref} > ref.fa
+
     samtools mpileup -ugf ref.fa ${bam} | bcftools call --threads ${task.cpus} -m -O v -o samtools_all_pos.vcf
+
     clockwork gvcf_from_minos_and_samtools ref.fa ${minos_vcf} samtools_all_pos.vcf ${gvcf}
     clockwork gvcf_to_fasta ${gvcf} ${gvcf_fa}
+
     rm samtools_all_pos.vcf
     gzip ${gvcf}
+
     printf "workflow complete without error" >> ${error_log}
     """
 

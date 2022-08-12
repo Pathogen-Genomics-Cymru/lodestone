@@ -25,4 +25,10 @@ workflow clockwork {
       minos(alignToRef.out.alignToRef_bam.join(callVarsCortex.out.cortex_vcf, by: 0).join(callVarsMpileup.out.mpileup_vcf, by: 0))
 
       gvcf(alignToRef.out.alignToRef_bam.join(minos.out.minos_vcf, by: 0))
+
+    emit:
+
+      mpileup_vcf = callVarsMpileup.out.mpileup_vcf
+      minos_vcf = minos.out.minos_vcf
+
 }

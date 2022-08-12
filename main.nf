@@ -183,6 +183,12 @@ workflow {
 
           clockwork(clockwork_seqs.join(clockwork_json, by: 0))
       }
+
+      mpileup_vcf = clockwork.out.mpileup_vcf
+      minos_vcf = clockwork.out.minos_vcf
+
+      vcfpredict(mpileup_vcf, minos_vcf)
+
 }
 
 workflow.onComplete {
