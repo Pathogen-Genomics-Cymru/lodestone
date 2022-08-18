@@ -166,6 +166,7 @@ process minos {
 
     output:
     tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
+    path("${sample_name}.err", emit: minos_log)
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
