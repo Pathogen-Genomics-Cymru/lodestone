@@ -4,11 +4,11 @@ Stage: spython-base
 
 %labels
 maintainer="pricea35@cardiff.ac.uk" 
-about.summary="container for the vcfpredict workflow"
+about.summary="container for the vcf predict workflow"
 %post
 
 
-PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core"
+PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 PYTHON="python3 python3-pip python3-dev"
 
 vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
@@ -50,7 +50,7 @@ git clone https://github.com/oxfordmmm/tuberculosis_amr_catalogues.git \
 && cd ..
 
 %environment
-export PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core"
+export PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 export PYTHON="python3 python3-pip python3-dev"
 export vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
 export gumpy_version=1.0.3
