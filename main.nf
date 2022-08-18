@@ -7,6 +7,7 @@ nextflow.enable.dsl=2
 include {preprocessing} from './workflows/preprocessing.nf'
 include {clockwork} from './workflows/clockwork.nf'
 include {vcfpredict} from './workflows/vcfpredict.nf'
+include {getversion} from './workflows/getversion.nf'
 
 /*
  ANSI escape codes to allow colour-coded output messages
@@ -161,11 +162,18 @@ workflow {
     krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
     bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
 
-    // call preprocressing subworkflow
+
+    // main workflow
     main:
 
+      // GETVERSION SUB-WORKFLOW
+      getversion()
+
+      // PREPROCESSING SUB-WORKFLOW
       preprocessing(input_files, krakenDB, bowtie_dir)
 
+
+      // CLOCKWORK SUB-WORKFLOW
       if ( params.unmix_myco == "yes" ) {
 
           clockwork_seqs = preprocessing.out.decontam_seqs
@@ -188,6 +196,7 @@ workflow {
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
 
+      // VCFPREDICT SUB-WORKFLOW
       vcfpredict(mpileup_vcf, minos_vcf)
 
 }
