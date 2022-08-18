@@ -6,6 +6,7 @@ nextflow.enable.dsl=2
 // import subworkflows
 include {preprocessing} from './workflows/preprocessing.nf'
 include {clockwork} from './workflows/clockwork.nf'
+include {vcfpredict} from './workflows/vcfpredict.nf'
 
 /*
  ANSI escape codes to allow colour-coded output messages

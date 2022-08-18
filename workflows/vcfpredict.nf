@@ -3,6 +3,7 @@ nextflow.enable.dsl = 2
 
 // import modules
 include {vcfmix} from '../modules/vcfpredictModules.nf' params(params)
+include {gnomon} from '../modules/vcfpredictModules.nf' params(params)
 
 // define workflow component
 workflow vcfpredict {
