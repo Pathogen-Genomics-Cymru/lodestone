@@ -24,7 +24,6 @@ apt-get update \
 && git clone https://github.com/AlexOrlek/VCFMIX.git \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
-&& pip3 install --upgrade pip \
 && pip3 install recursive_diff \
 && pip3 install -r requirements.txt \
 && cd ..
@@ -61,3 +60,4 @@ export tuberculosis_amr_catalogues=86a12f8160083ce33e2e11bc6f2934b3bfc3db91
 exec /bin/bash "$@"
 %startscript
 exec /bin/bash "$@"
+

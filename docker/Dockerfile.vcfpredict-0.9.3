@@ -19,7 +19,6 @@ RUN apt-get update \
 && git clone https://github.com/AlexOrlek/VCFMIX.git \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
-&& pip3 install --upgrade pip \
 && pip3 install recursive_diff \
 && pip3 install -r requirements.txt \
 && cd ..
