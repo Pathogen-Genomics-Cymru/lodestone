@@ -122,6 +122,8 @@ Parameters used:
 --bowtie2_index         ${params.bowtie2_index}
 --bowtie_index_name     ${params.bowtie_index_name}
 --species		${params.species}
+--vcfmix		${params.vcfmix}
+--amr_cat		${params.amr_cat}
 
 Runtime data:
 ------------------------------------------------------------------------

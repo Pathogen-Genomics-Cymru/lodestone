@@ -61,7 +61,7 @@ process gnomon {
     error_log = "${sample_name}.err"
 
     """
-    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue /tuberculosis_amr_catalogues/catalogues/NC_000962.3/NC_000962.3_CRyPTIC_v1.311_GARC1_RUS.csv --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
 
     mv gnomon-out.json ${sample_name}.gnomon.json
