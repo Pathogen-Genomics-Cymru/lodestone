@@ -21,6 +21,10 @@ workflow vcfpredict {
 
       }
 
-      gnomon(clockwork_minos)
+      if ( params.gnomon == "yes" ) {
+
+          gnomon(clockwork_minos)
+
+      }
 
 }
