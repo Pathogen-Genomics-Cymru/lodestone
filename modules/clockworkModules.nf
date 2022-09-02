@@ -166,7 +166,7 @@ process minos {
 
     output:
     tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
-    path("${sample_name}.err", emit: minos_log)
+    path "${sample_name}.err", emit: minos_log optional true
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
@@ -181,7 +181,7 @@ process minos {
 
     top_hit=\$(jq -r '.top_hit.name' ${json})
 
-    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "" >> ${error_log} && printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo "warning: sample is not TB so can't produce antibiogram using gnomon" >> ${error_log} && printf "no"; fi
+    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo "warning: sample is not TB so can't produce antibiogram using gnomon" >> ${error_log} && printf "no"; fi
     """
 
     stub:
@@ -215,7 +215,7 @@ process gvcf {
     output:
     path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
     path("${sample_name}.fa", emit: gvcf_fa)
-    path("${sample_name}.err", emit: gvcf_log)
+    path "${sample_name}.err", emit: gvcf_log optional true
 
     script:
     gvcf = "${sample_name}.gvcf.vcf"
@@ -233,7 +233,7 @@ process gvcf {
     rm samtools_all_pos.vcf
     gzip ${gvcf}
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; else printf "" >> ${error_log}; fi
+    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
     """
 
     stub:

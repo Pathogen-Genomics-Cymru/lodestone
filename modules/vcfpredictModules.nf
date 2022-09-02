@@ -16,7 +16,7 @@ process vcfmix {
 
     output:
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
-    path("${sample_name}.err", emit: vcfmix_log)
+    path "${sample_name}.err", emit: vcfmix_log optional true
 
     script:
     bcftools_vcf = "${sample_name}.bcftools.vcf"
@@ -25,7 +25,7 @@ process vcfmix {
     """
     python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
 
-    if [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; else printf "" >> ${error_log}; fi
+    if [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
     """
 
     stub:
