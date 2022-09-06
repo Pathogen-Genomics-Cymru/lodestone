@@ -19,7 +19,7 @@ process checkBamValidity {
 
     script:
     error_log = "${bam_file.getBaseName()}.err"
-			
+
     """
     is_ok=\$(samtools quickcheck $bam_file && echo 'OK' || echo 'FAIL' )
 
@@ -40,7 +40,7 @@ process checkFqValidity {
     /**
     * @QCcheckpoint confirm that fqtools validates both fastqs
     */
-   
+
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
@@ -49,14 +49,14 @@ process checkFqValidity {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
-	
+
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: checkValidity_fqs
     path("${sample_name}.err", emit: checkValidity_log)
-		
+
     script:
     error_log = "${sample_name}.err"
-	
+
     """
     is_ok=\$(fqtools validate $fq1 $fq2)
 
@@ -81,13 +81,13 @@ process bam2fastq {
     tag { bam_file.getBaseName() }
     label 'preprocessing'
     label 'low_memory'
-    
+
     input:
     tuple path(bam_file), val(is_ok)
 
     when:
     is_ok == 'OK'
-    
+
     output:
     tuple val("${bam_file.getBaseName()}"), path("${bam_file.getBaseName()}_1.fq.gz"), path("${bam_file.getBaseName()}_2.fq.gz"), stdout, emit: bam2fastq_fqs
 
@@ -150,16 +150,16 @@ process countReads {
     touch ${error_log}
     """
 }
-	
+
 process fastp {
     /**
     * @QCcheckpoint confirm that there > 100k reads after cleaning with fastp
     */
-     
+
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
- 
+
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
@@ -169,22 +169,22 @@ process fastp {
 
     when:
     run_fastp =~ /${sample_name}/
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: fastp_fqs
     path("${sample_name}_fastp.json", emit: fastp_json)
     path("${sample_name}.err", emit: fastp_log)
-   
+
     script:
     clean_fq1  = "${sample_name}_cleaned_1.fq.gz"
     clean_fq2  = "${sample_name}_cleaned_2.fq.gz"
     fastp_json = "${sample_name}_fastp.json"
     fastp_html = "${sample_name}_fastp.html"
     error_log  = "${sample_name}.err"
-	
+
     """
     fastp -i $fq1 -I $fq2 -o ${clean_fq1} -O ${clean_fq2} -j ${fastp_json} -h ${fastp_html} --length_required 50 --average_qual 10 --low_complexity_filter --correction --cut_right --cut_tail --cut_tail_window_size 1 --cut_tail_mean_quality 20
-    
+
     rm -rf ${fastp_html}
 
     num_reads=\$(fqtools count $fq1 $fq2)
@@ -206,14 +206,14 @@ process fastp {
     touch ${clean_fq2}
     touch ${fastp_json}
     touch ${fastp_html}
-    """    
+    """
 }
 
 process fastQC {
     /**
     * @QCcheckpoint none
     */
-	
+
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
@@ -222,10 +222,10 @@ process fastQC {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
-	
+
     output:
     path("*", emit: fastQC_all)
-	
+
     script:
     """
     cat $fq1 $fq2 > ${sample_name}.fq.gz
@@ -260,12 +260,12 @@ process kraken2 {
 
     when:
     enough_reads =~ /${sample_name}/
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: kraken2_fqs
     path("${sample_name}.err", emit: kraken2_log)
-			
+
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
     kraken2_json = "${sample_name}_kraken_report.json"
@@ -273,7 +273,7 @@ process kraken2 {
     nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq"
     nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq"
     error_log = "${sample_name}.err"
-	
+
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
@@ -310,6 +310,47 @@ process kraken2 {
     """
 }
 
+process afanc {
+  /**
+  * @QCcheckpoint none
+  */
+
+  tag { sample_name }
+  // label 'preprocessing'
+  label 'normal_cpu'
+  label 'medium_memory'
+
+  publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
+
+  input:
+  tuple val(sample_name), path(fq1), path(fq2), val(run_afanc)
+  path(afanc_myco_db)
+
+  when:
+  run_afanc =~ /${sample_name}/
+
+  output:
+  tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_report
+  // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
+
+  script:
+  afanc_report = "${sample_name}_afanc_report.json"
+
+  """
+  afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+  python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+  printf ${sample_name}
+  """
+
+  stub:
+  afanc_report = "${sample_name}_afanc_report.json"
+
+  """
+  touch ${afanc_report}
+  printf ${sample_name}
+  """
+}
+
 process mykrobe {
     /**
     * @QCcheckpoint none
@@ -327,14 +368,14 @@ process mykrobe {
 
     when:
     run_mykrobe =~ /${sample_name}/
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), stdout, emit: mykrobe_report
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: mykrobe_fqs
 
     script:
     mykrobe_report = "${sample_name}_mykrobe_report.json"
-	
+
     """
     mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
     printf ${sample_name}
@@ -375,7 +416,7 @@ process bowtie2 {
     bam = "${sample_name}.bam"
     humanfree_fq1 = "${sample_name}_cleaned_1.fq"
     humanfree_fq2 = "${sample_name}_cleaned_2.fq"
-	
+
     """
     bowtie2 --very-sensitive -p ${task.cpus} -x ./${params.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
     samtools fastq -1 ${humanfree_fq1} -2 ${humanfree_fq2} -s singleton.fq ${bam}
@@ -394,13 +435,13 @@ process bowtie2 {
     """
     touch ${humanfree_fq1}.gz
     touch ${humanfree_fq2}.gz
-    """	
+    """
 }
 
 process identifyBacterialContaminants {
     /**
     * @QCcheckpoint if urllist.txt is empty, there are no contaminant genomes to download, so skip next process
-    */    
+    */
 
     tag { sample_name }
     label 'preprocessing'
@@ -413,20 +454,20 @@ process identifyBacterialContaminants {
 
     when:
     enough_myco_reads =~ /${sample_name}/
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
     path("${sample_name}.err", emit: contam_log)
-		
+
     script:
     error_log = "${sample_name}.err"
 
     """
     python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
-    
+
     cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
@@ -452,7 +493,7 @@ process downloadContamGenomes {
     /**
     * @QCcheckpoint confirm that we could download every genome in the list of contaminants
     */
-    
+
     tag { sample_name }
     label 'preprocessing'
 
@@ -463,15 +504,15 @@ process downloadContamGenomes {
 
     when:
     run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
     path("${sample_name}.err", emit: downcontam_log)
-	
+
     script:
     contaminant_fa = "${sample_name}_contaminants.fa"
     error_log = "${sample_name}.err"
-	
+
     """
     wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
     grep -o 'ftp://.*fna.gz' linktestlog.txt > confirmedurllist.txt
@@ -523,7 +564,7 @@ process mapToContamFa {
 
     when:
     does_fa_pass =~ /${sample_name}/
-			
+
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: reClassification_fqs
 
@@ -531,7 +572,7 @@ process mapToContamFa {
     bam = "${sample_name}.bam"
     decontam_fq1 = "${sample_name}_cleaned_1.fq"
     decontam_fq2 = "${sample_name}_cleaned_2.fq"
-	
+
     """
     bwa index ${contam_fa}
     bwa mem -t ${task.cpus} -M ${contam_fa} ${fq1} ${fq2} | samtools view -f 4 -f 8 -Shb - > ${bam}
@@ -564,11 +605,11 @@ process reKraken {
     label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_kraken_report.*'
-    
+
     input:
     tuple val(sample_name), path(fq1), path(fq2)
     path(database)
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
 
@@ -576,7 +617,7 @@ process reKraken {
     kraken2_report = "${sample_name}_kraken_report.txt"
     kraken2_json = "${sample_name}_kraken_report.json"
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
-    
+
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
@@ -596,11 +637,49 @@ process reKraken {
     """
 }
 
+process reAfanc {
+  /**
+  * @QCcheckpoint none
+  */
+
+  tag { sample_name }
+  // label 'preprocessing'
+  label 'normal_cpu'
+  label 'medium_memory'
+
+  publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
+
+  input:
+  tuple val(sample_name), path(fq1), path(fq2)
+  path(afanc_myco_db)
+
+  output:
+  tuple val(sample_name), path("${sample_name}_afanc_report.json"), emit: reAfanc_report
+  // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
+
+  script:
+  afanc_report = "${sample_name}_afanc_report.json"
+
+  """
+  afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+  python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+  printf ${sample_name}
+  """
+
+  stub:
+  afanc_report = "${sample_name}_afanc_report.json"
+
+  """
+  touch ${afanc_report}
+  printf ${sample_name}
+  """
+}
+
 process reMykrobe {
     /**
     * @QCcheckpoint none
     */
-     
+
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
@@ -610,13 +689,13 @@ process reMykrobe {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), emit: reMykrobe_report
 
     script:
     mykrobe_report = "${sample_name}_mykrobe_report.json"
-	
+
     """
     mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
     """
@@ -632,7 +711,7 @@ process reMykrobe {
 process summarise {
     /**
     * @QCcheckpoint none
-    */    
+    */
 
     tag { sample_name }
     label 'preprocessing'
@@ -642,23 +721,23 @@ process summarise {
 
     input:
     tuple val(sample_name), path(mykrobe_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam)
-		
+
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     path("${sample_name}.err", emit: summary_log)
-	
+
     script:
     error_log = "${sample_name}.err"
-	
+
     """
     python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
-	
+
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
-	
+
     if [ \$contam_to_remove == 'yes' ]; then echo "error: sample remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
-	
+
     if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "error: top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
     """
 
@@ -671,4 +750,3 @@ process summarise {
     printf ${params.summary_doWeAlign}
     """
 }
-

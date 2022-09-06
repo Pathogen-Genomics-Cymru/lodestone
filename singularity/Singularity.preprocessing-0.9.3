@@ -3,7 +3,7 @@ From: ubuntu:focal
 Stage: spython-base
 
 %labels
-maintainer="pricea35@cardiff.ac.uk" 
+maintainer="pricea35@cardiff.ac.uk"
 about.summary="container for the preprocessing workflow"
 %post
 
@@ -16,6 +16,7 @@ fastp_version=0.20.1
 fastqc_version=0.11.9
 fqtools_version=2.3
 kraken2_version=2.1.1
+afanc_version=0.7.1-alpha
 mykrobe_version=0.12.1
 bwa_version=0.7.17
 
@@ -85,6 +86,13 @@ curl -fsSL https://github.com/DerrickWood/kraken2/archive/v${kraken2_version}.ta
 && ./install_kraken2.sh /usr/local/bin \
 && cd ..
 
+curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}.tar.gz | tar -xz \
+&& cd Afanc-${afanc_version} \
+&& pip3 install ./ \
+&& cd ..
+
+sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)"
+
 git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
 && make -C mccortex \
 && mv mccortex /usr/local/bin \
@@ -115,6 +123,8 @@ export fastp_version=0.20.1
 export fastqc_version=0.11.9
 export fqtools_version=2.3
 export kraken2_version=2.1.1
+export afanc_version=0.7.1-alpha
+export PATH=${PATH}:${HOME}/edirect
 export mykrobe_version=0.12.1
 export bwa_version=0.7.17
 export PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
@@ -129,4 +139,3 @@ export LANGUAGE=en_US.UTF-8
 exec /bin/bash "$@"
 %startscript
 exec /bin/bash "$@"
-

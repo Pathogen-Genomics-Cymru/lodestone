@@ -49,31 +49,50 @@ def process_requirements(args):
             sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
         if not os.path.exists(spec_mmi_path):
             sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
-    
+
     if ((supposed_species != 'null') & (supposed_species not in species)):
-        sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')            
-    
+        sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
+
     if ((unmix_myco != 'yes') & (unmix_myco != 'no')):
         sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
 
     # check IDs from the file names
-    res_myk1 = re.findall(r"^.+[\/|\\](.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    res_myk2 = re.findall(r"^(.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    if len(res_myk1) > 0:
-        sample_id_MYK = res_myk1[0]
-    elif len(res_myk2) > 0:
-        sample_id_MYK = res_myk2[0]
+
+    if mykrobe_json.endswith("_mykrobe_report.json"):
+        sample_id_MYK = mykrobe_json.split("_mykrobe")[0]
+    elif mykrobe_json.endswith("_afanc_report.json"):
+        sample_id_MYK = mykrobe_json.split("_afanc")[0]
     else:
         sample_id_MYK = ''
 
-    res_kra1 = re.findall(r"^.+[\/|\\](.*?)\_kraken\_report\.json$", kraken_json)
-    res_kra2 = re.findall(r"^(.*?)\_kraken\_report\.json$", kraken_json)
-    if len(res_kra1) > 0:
-        sample_id_KRA = res_kra1[0]
-    elif len(res_kra2) > 0:
-        sample_id_KRA = res_kra2[0]
+    # res_myk1 = re.findall(r"^.+[\/|\\](.*?)\_mykrobe\_report\.json$", mykrobe_json)
+    # res_myk2 = re.findall(r"^(.*?)\_mykrobe\_report\.json$", mykrobe_json)
+    #
+    # print(res_myk1, res_myk2)
+    # if len(res_myk1) > 0:
+    #     sample_id_MYK = res_myk1[0]
+    # elif len(res_myk2) > 0:
+    #     sample_id_MYK = res_myk2[0]
+    # else:
+    #     sample_id_MYK = ''
+
+    if kraken_json.endswith("_kraken_report.json"):
+        sample_id_KRA = kraken_json.split("_kraken")[0]
     else:
         sample_id_KRA = ''
+
+    # res_kra1 = re.findall(r"^.+[\/|\\](.*?)\_kraken\_report\.json$", kraken_json)
+    # res_kra2 = re.findall(r"^(.*?)\_kraken\_report\.json$", kraken_json)
+    #
+    # print(res_kra1, res_kra2)
+    # if len(res_kra1) > 0:
+    #     sample_id_KRA = res_kra1[0]
+    # elif len(res_kra2) > 0:
+    #     sample_id_KRA = res_kra2[0]
+    # else:
+    #     sample_id_KRA = ''
+
+    print(sample_id_MYK, sample_id_KRA)
 
     sample_id = ''
     if sample_id_MYK != sample_id_KRA:
@@ -90,7 +109,7 @@ def process_requirements(args):
             sample_id_PRE = res_pre2[0]
         else:
             sample_id_PRE = ''
-        
+
         if sample_id != sample_id_PRE:
             sys.exit("ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(prev_species_json, sample_id))
 
@@ -128,7 +147,7 @@ def read_assembly_summary(assembly_file_path):
             tax_ids[species_name] = species_taxid
             if species_taxid not in urls: urls[species_taxid] = []
             urls[species_taxid].append([species_name, infraspecific_name, ftp_path, assembly_level, genome_rep, refseq_category])
-    
+
     return urls, tax_ids
 
 # define main function to process data
@@ -140,14 +159,14 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
 
     # OPEN JSON FILES
     with open(mykrobe_json_path, 'r') as f:
-        mykrobe = json.load(f) 
+        mykrobe = json.load(f)
     with open(kraken_json_path, 'r') as f:
         kraken = json.load(f)
     prev_species = ''
     if (prev_species_json_path != 'null'):
         with open(prev_species_json_path, 'r') as f:
             prev_species = json.load(f)
-    
+
     # WHAT IS THE TOP HIT MYCOBACTERIAL SPECIES IN THE SAMPLE, ACCORDING TO MYKROBE, AND ON THE BASIS OF % COVERAGE?
     species = []
     mykrobe_finds_nothing = 0
@@ -238,7 +257,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
             if ((assembly_level == 'Complete Genome') & (genome_rep == 'Full') & (refseq_species == 'reference genome')):
                 if ftp_path not in reference_genomes: reference_genomes[ftp_path] = 0
                 reference_genomes[ftp_path] += 1
-        
+
         complete_genomes = {}
         for x in range(0, len(arr)):
             refseq_species = arr[x][0]
@@ -297,7 +316,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
             if ((unmix_myco == 'no') & (top_species.startswith('Mycobacterium')) & (spec.startswith('Mycobacterium'))):
                 if spec not in ignored_mixed_myco: ignored_mixed_myco[spec] = 0
                 ignored_mixed_myco[spec] += 1
-        
+
         if (len(complete_genomes) == 0):
             warnings.append("warning: no complete genome was found for the contaminant species '%s'. Alignment-based read removal will not necessarily detect all reads from this species" %spec)
 
@@ -337,7 +356,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         if supposed_species == 'null':
             out['summary_questions']['is_the_top_species_appropriate'] = 'yes'
         elif ((supposed_species != 'null') & (supposed_species == identified_species)):
-            out['summary_questions']['is_the_top_species_appropriate'] = 'yes'      
+            out['summary_questions']['is_the_top_species_appropriate'] = 'yes'
         elif ((supposed_species != 'null') & (supposed_species != identified_species)):
             warnings.append("warning: the top species hit is %s, contrary to the expectation: %s" %(identified_species, supposed_species))
             out['summary_questions']['is_the_top_species_appropriate'] = 'no'
@@ -393,12 +412,15 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                 sys.exit('ERROR: cannot find %s' %(ref_dir))
             if not os.path.exists(ref_mmi):
                 sys.exit('ERROR: cannot find %s' %(ref_mmi))
-        
+
             if 'file_paths' not in out['top_hit']: out['top_hit']['file_paths'] = {}
             out['top_hit']['file_paths']['ref_fa'] = ref_fa
             out['top_hit']['file_paths']['clockwork_ref_dir'] = ref_dir
-            susceptibility = mykrobe[sample_id]['susceptibility']
-            out['top_hit']['susceptibility'] = susceptibility
+
+            ## commented out due to Gnomon presumably taking on drug resistance/susceptibility responsibility
+            # susceptibility = mykrobe[sample_id]['susceptibility']
+            # out['top_hit']['susceptibility'] = susceptibility
+
             out['top_hit']['phylogenetics'] = mykrobe[sample_id]['phylogenetics']
 
     else:
@@ -411,7 +433,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
             warnings.append("warning: regardless of what Kraken reports, Mykrobe did not make a species-level mycobacterial classification. If this is a mixed-mycobacterial sample, then an alignment-based contaminant-removal process may not be appropriate. Suggestion: re-run with --unmix_myco 'no'")
         elif out['summary_questions']['were_contaminants_removed'] == 'no':
             warnings.append("warning: regardless of what Kraken reports, Mykrobe did not make a species-level mycobacterial classification")
-    
+
     # IF THE TOP HIT IS APPROPRIATE AND THERE ARE NO CONTAMINANTS, WE CAN CONTINUE TO RUN CLOCKWORK
     if ((out['summary_questions']['is_the_top_species_appropriate'] == 'yes') & (out['summary_questions']['are_there_contaminants'] == 'no')):
         out['summary_questions']['continue_to_clockwork'] = 'yes'
@@ -446,7 +468,7 @@ if __name__ == "__main__":
     description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
     usage = "perl identify_tophit_and_contaminants.pl [path to Mykrobe JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
     usage += "E.G.:\tperl identify_tophit_and_contaminants.pl mykrobe_report.json mykrobe_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
-    
+
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('mykrobe_json', metavar='mykrobe_json', type=str, help='Path to Mykrobe json report')
     parser.add_argument('kraken_json', metavar='kraken_json', type=str, help='Path to Kraken json report')
