@@ -32,7 +32,6 @@ def reformat_json(afanc_report):
 
 def main(argv):
     afanc_report =  argv[1]
-    # afanc_report = "/home/amorris/BioInf/Lodestone/Afanc_Mykrobe_fork/tb-pipeline/TM03.2_afanc/TM03.2.D1/speciation_reports_for_reads_postFastP/TM03.2.D1.json"
     reformat_json(afanc_report)
 
 if __name__=="__main__":
