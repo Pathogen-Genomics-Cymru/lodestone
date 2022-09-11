@@ -15,8 +15,16 @@ workflow vcfpredict {
 
     main:
 
-      vcfmix(clockwork_bcftools)
+      if ( params.vcfmix == "yes" ) {
 
-      gnomon(clockwork_minos)
+          vcfmix(clockwork_bcftools)
+
+      }
+
+      if ( params.gnomon == "yes" ) {
+
+          gnomon(clockwork_minos)
+
+      }
 
 }

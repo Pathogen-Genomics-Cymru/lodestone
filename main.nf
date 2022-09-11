@@ -35,20 +35,24 @@ Produces as output one directory per sample, containing the relevant reports & a
 
 Mandatory and conditional parameters:
 ------------------------------------------------------------------------
---input_dir           directory containing fastq OR bam files. Workflow will process one or the other, so don't mix
---filetype	      file type in input_dir. One of either "fastq" or "bam". fastq files can be gzipped and do not
+--input_dir           Directory containing fastq OR bam files. Workflow will process one or the other, so don't mix
+--filetype	      File type in input_dir. One of either "fastq" or "bam". fastq files can be gzipped and do not
                       have to literally take the form "*.fastq"; see --pattern
---pattern             regex to match files in input_dir, e.g. "*_R{1,2}.fq.gz". Only mandatory if --filetype is "fastq"
---output_dir          output directory, in which will be created subdirectories matching base name of fastq/bam files
---unmix_myco	      do you want to disambiguate mixed-mycobacterial samples by read alignment? One of "yes" or "no"
-	              if "yes" workflow will remove reads mapping to any minority mycobacterial genomes but in doing so
+--pattern             Regex to match files in input_dir, e.g. "*_R{1,2}.fq.gz". Only mandatory if --filetype is "fastq"
+--output_dir          Output directory, in which will be created subdirectories matching base name of fastq/bam files
+--unmix_myco	      Do you want to disambiguate mixed-mycobacterial samples by read alignment? One of "yes" or "no"
+	              If "yes" workflow will remove reads mapping to any minority mycobacterial genomes but in doing so
                       WILL ALMOST CERTAINLY ALSO reduce coverage of the principal species
-	              if "no" then mixed-mycobacterial samples will be left alone. Mixtures of mycobacteria + non-mycobacteria
+	              If "no" then mixed-mycobacterial samples will be left alone. Mixtures of mycobacteria + non-mycobacteria
                       will still be disambiguated
---kraken_db           directory containing Kraken2 database files (obtain from https://benlangmead.github.io/aws-indexes/k2)
---bowtie2_index       directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip
+--kraken_db           Directory containing Kraken2 database files (obtain from https://benlangmead.github.io/aws-indexes/k2)
+--bowtie2_index       Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip
                       This is the Langmead lab pre-built major-allele-SNP reference; see https://github.com/BenLangmead/bowtie-majref)
---bowtie_index_name   name of the bowtie index, e.g. hg19_1kgmaj
+--bowtie_index_name   Name of the bowtie index, e.g. hg19_1kgmaj
+--vcfmix	      Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
+--gnomon              Run gnomon "yes" or "no"
+--amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
+                      in the vcfpredict container)
 
 Optional parameters:
 ------------------------------------------------------------------------
@@ -128,6 +132,9 @@ Parameters used:
 --bowtie2_index         ${params.bowtie2_index}
 --bowtie_index_name     ${params.bowtie_index_name}
 --species		${params.species}
+--vcfmix		${params.vcfmix}
+--gnomon		${params.gnomon}
+--amr_cat		${params.amr_cat}
 
 Speciation software:    ${speciation_tool}
 

@@ -9,27 +9,34 @@ process vcfmix {
 
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     tuple val(sample_name), path(vcf)
 
     output:
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
+    path "${sample_name}.err", emit: vcfmix_log optional true
 
     script:
     bcftools_vcf = "${sample_name}.bcftools.vcf"
+    error_log = "${sample_name}.err"
 
     """
     python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
+
+    if [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
     """
 
     stub:
     vcfmix_json = "${sample_name}_f-stats.json"
     vcfmix_csv = "${sample_name}_vcfmix-regions.csv"
+    error_log = "${sample_name}.err"
 
     """
     touch ${vcfmix_json}
     touch ${vcfmix_csv}
+    touch ${error_log}
     """
 }
 
@@ -61,7 +68,7 @@ process gnomon {
     error_log = "${sample_name}.err"
 
     """
-    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue /tuberculosis_amr_catalogues/catalogues/NC_000962.3/NC_000962.3_CRyPTIC_v1.311_GARC1_RUS.csv --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
 
     mv gnomon-out.json ${sample_name}.gnomon.json
