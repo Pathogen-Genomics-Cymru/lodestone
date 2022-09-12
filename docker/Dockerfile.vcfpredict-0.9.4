@@ -7,10 +7,10 @@ ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base
 PYTHON="python3 python3-pip python3-dev"
 
 ENV vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46 \
-gumpy_version=1.0.6 \
+gumpy_version=1.0.8 \
 piezo_version=0.3 \
-gnomon_version=1.0.0-alpha.10 \
-tuberculosis_amr_catalogues=86a12f8160083ce33e2e11bc6f2934b3bfc3db91
+gnomon_version=1.0.0-alpha.13 \
+tuberculosis_amr_catalogues=c32479610d6d752187177837f194b43c8abcb9ee
 
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
