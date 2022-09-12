@@ -59,8 +59,8 @@ process gnomon {
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}.gnomon.json"), path("${sample_name}-effects.csv"), path("${sample_name}-mutations.csv"), emit: gnomon_json_csv
-    tuple val(sample_name), path("${sample_name}-fixed.fasta"), emit: gnomon_fasta
+    tuple val(sample_name), path("${sample_name}.gnomon-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
+    tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
     path("${sample_name}.err", emit: gnomon_log)
 
     script:
@@ -70,19 +70,14 @@ process gnomon {
     """
     gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
-
-    mv gnomon-out.json ${sample_name}.gnomon.json
-    mv effects.csv ${sample_name}-effects.csv
-    mv mutations.csv ${sample_name}-mutations.csv
-
     printf "workflow complete without error" >> ${error_log} 
     """
 
     stub:
-    gnomon_json = "${sample_name}.gnomon.json"
+    gnomon_json = "${sample_name}.gnomon-out.json"
     gnomon_fasta = "${sample_name}-fixed.fasta"
-    gnomon_effects = "${sample_name}-effects.csv"
-    gnomon_mutations = "${sample_name}-mutations.csv"
+    gnomon_effects = "${sample_name}.effects.csv"
+    gnomon_mutations = "${sample_name}.mutations.csv"
     error_log = "${sample_name}.err"
 
     """
