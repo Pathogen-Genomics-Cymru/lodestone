@@ -1,18 +1,18 @@
-executor >  local (9)
-[ee/29067b] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
-[e9/b31e19] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
-[97/c817fb] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
-[c4/6422b3] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
-[b9/6471a3] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
-[a7/b69336] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
-[94/bffd5b] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
-[2c/360f8a] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+[01/f9dd83] process > getversion                                           [100%] 1 of 1 ✔
+[df/68c4fc] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[66/b011e3] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[e4/177258] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[17/b63fd8] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[b4/3bda17] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[84/9a965b] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[18/5b8e9b] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[12/016aaa] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
 [-        ] process > preprocessing:downloadContamGenomes                  -
 [-        ] process > preprocessing:mapToContamFa                          -
 [-        ] process > preprocessing:reKraken                               -
 [-        ] process > preprocessing:reMykrobe                              -
 [-        ] process > preprocessing:summarise                              -
-[56/5a8eda] process > clockwork:alignToRef (dryRun)                        [100%] 1 of 1 ✔
+[-        ] process > clockwork:alignToRef                                 -
 [-        ] process > clockwork:callVarsMpileup                            -
 [-        ] process > clockwork:callVarsCortex                             -
 [-        ] process > clockwork:minos                                      -

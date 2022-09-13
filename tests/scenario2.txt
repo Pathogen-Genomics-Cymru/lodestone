@@ -1,5 +1,5 @@
-executor >  local (1)
-[b3/7f7330] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
+[19/45f932] process > getversion                                  [100%] 1 of 1 ✔
+[28/9a0ae0] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
 [-        ] process > preprocessing:countReads                    -
 [-        ] process > preprocessing:fastp                         -
 [-        ] process > preprocessing:fastQC                        -

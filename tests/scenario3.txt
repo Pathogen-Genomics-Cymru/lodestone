@@ -1,6 +1,6 @@
-executor >  local (2)
-[3e/495e53] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
-[d1/9d3fb4] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
+[60/b54009] process > getversion                                  [100%] 1 of 1 ✔
+[15/edfbed] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
+[43/220f71] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
 [-        ] process > preprocessing:fastp                         -
 [-        ] process > preprocessing:fastQC                        -
 [-        ] process > preprocessing:kraken2                       -
