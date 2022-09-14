@@ -1,10 +1,11 @@
 # TB Pipeline #
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/build-push-quay/badge.svg)
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/pytest/badge.svg)
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/stub-run/badge.svg)
   
 This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
-Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, and summary reports.
+Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, F2 and F47 statistics, an antibiogram and summary reports.
 
 ## Quick Start ## 
 Requires `NXF_VER>=20.11.0-edge`
@@ -45,6 +46,12 @@ Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb_20200919 rec
 Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip). The specified path should NOT include the index name
 * **bowtie_index_name**<br />
 Name of the bowtie index, e.g. hg19_1kgmaj<br />
+* **vcfmix**<br />
+Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
+* **gnomon**<br />
+Run [gnomon](https://github.com/oxfordmmm/gnomon), yes or no<br />
+* **amr_cat**<br />
+Path to AMR catalogue for gnomon<br />
 <br />
 
 For more information on the parameters run `nextflow run main.nf --help`
@@ -100,3 +107,6 @@ process clockwork:alignToRef\
 23. (Fail) If < 100k reads could be aligned to the reference genome\
 24. (Fail) If, after aligning to the reference genome, the average read mapping quality < 10\
 25. (Fail) If < 50% of the reference genome was covered at 10-fold depth
+
+process minos\
+26. (Warn) If sample is not TB, then it is not passed to gnomon
