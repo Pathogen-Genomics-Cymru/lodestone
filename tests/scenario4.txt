@@ -1,8 +1,8 @@
-executor >  local (4)
-[47/ea4b59] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
-[6a/02a736] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
-[10/307c1f] process > preprocessing:fastp (dryRun)                [100%] 1 of 1 ✔
-[03/34b836] process > preprocessing:fastQC (dryRun)               [100%] 1 of 1 ✔
+[b8/b6891d] process > getversion                                  [100%] 1 of 1 ✔
+[73/7b8d3c] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
+[f9/be115a] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
+[93/c2cd00] process > preprocessing:fastp (dryRun)                [100%] 1 of 1 ✔
+[4f/138abb] process > preprocessing:fastQC (dryRun)               [100%] 1 of 1 ✔
 [-        ] process > preprocessing:kraken2                       -
 [-        ] process > preprocessing:mykrobe                       -
 [-        ] process > preprocessing:bowtie2                       -

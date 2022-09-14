@@ -5,16 +5,16 @@ import os
 
 def go():
 
-    scenario1 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun']
-    scenario2 = ['fastq', '"*_R{1,2}.fastq.gz"', 'null', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null']
-    scenario3 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null']
-    scenario4 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'fail', 'null', 'null', 'null', 'null', 'null']
-    scenario5 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null']
-    scenario6 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null']
-    scenario7 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun']
-    scenario8 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'fail', 'null', 'null']
-    scenario9 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'null', 'null']
-    scenario10 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'null']
+    scenario1 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'yes', 'yes']
+    scenario2 = ['fastq', '"*_R{1,2}.fastq.gz"', 'null', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no']
+    scenario3 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no']
+    scenario4 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no']
+    scenario5 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no']
+    scenario6 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'no', 'no']
+    scenario7 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'no', 'no']
+    scenario8 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'fail', 'null', 'null', 'null', 'no', 'no']
+    scenario9 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'null', 'null', 'null', 'no', 'no']
+    scenario10 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'null', 'null', 'no', 'no']
     
     scenarios=[]
     for num in range(1, 11):
@@ -27,6 +27,7 @@ def go():
         + ' --checkFqValidity_isok ' + scenario[2] + ' --checkBamValidity_isok ' + scenario[3] + ' --countReads_runfastp ' + scenario[4] \
         + ' --fastp_enoughreads ' + scenario[5] + ' --kraken2_runmykrobe ' + scenario[6] + ' --identifyBacContam_rundecontam ' + scenario[7] \
         + ' --downloadContamGenomes_fapass ' + scenario[8] + ' --summary_doWeAlign ' + scenario[9] + ' --alignToRef_doWeVarCall ' + scenario[10] \
+        + ' --minos_isSampleTB ' + scenario[11] + ' --vcfmix ' + scenario[12] + ' --gnomon ' + scenario[13] \
         + ' > scenario' + str(count) + '.txt' 
         result = subprocess.run([toRun], shell=True)
         count+=1

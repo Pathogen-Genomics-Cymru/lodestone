@@ -1,18 +1,18 @@
-executor >  local (10)
-[5f/f3ba2e] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
-[e7/fadab6] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
-[0a/39aa13] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
-[e9/98a642] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
-[03/7f047b] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
-[ad/878f9a] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
-[de/3c8ed0] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
-[cf/5da858] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
-[10/4b0094] process > preprocessing:downloadContamGenomes (dryRun)         [100%] 1 of 1 ✔
+[44/ce8756] process > getversion                                           [100%] 1 of 1 ✔
+[44/8ade48] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[47/4c54da] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[e6/24ae67] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[5d/a5ed5b] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[f1/0081a4] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[9a/590155] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[51/ed0cc2] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[89/1dfd12] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+[1b/14b782] process > preprocessing:downloadContamGenomes (dryRun)         [100%] 1 of 1 ✔
 [-        ] process > preprocessing:mapToContamFa                          -
 [-        ] process > preprocessing:reKraken                               -
 [-        ] process > preprocessing:reMykrobe                              -
 [-        ] process > preprocessing:summarise                              -
-[27/169f30] process > clockwork:alignToRef (dryRun)                        [100%] 1 of 1 ✔
+[-        ] process > clockwork:alignToRef                                 -
 [-        ] process > clockwork:callVarsMpileup                            -
 [-        ] process > clockwork:callVarsCortex                             -
 [-        ] process > clockwork:minos                                      -
