@@ -15,10 +15,24 @@ jobs:
     steps:
     
       - uses: actions/checkout@v3
+      
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
         with:
           python-version: '3.8'
+          
+      - name: checkout playbook
+        uses: actions/checkout@v3
+        with:
+          repository: annacprice/ansible.nextflow-container
+          ref: lodestone
+
+      - name: Run playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: playbook.yml
+          options: |
+            --verbose
               
       - name: Test stub run
         run: |
