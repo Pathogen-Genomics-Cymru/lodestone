@@ -39,3 +39,4 @@ jobs:
       - name: Test stub run
         run: |
           python dryrun-test.py
+          cat scenario1.txt
