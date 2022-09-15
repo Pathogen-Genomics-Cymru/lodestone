@@ -3,6 +3,9 @@
 import subprocess
 import os
 
+file_dir = os.path.dirname(os.path.abspath(__file__))
+truth_dir = os.path.join(file_dir, 'tests')
+
 def go():
 
     scenario1 = ['fastq', '"*_R{1,2}.fastq.gz"', 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'yes', 'yes']
@@ -40,7 +43,7 @@ def go():
         with open(filename, 'w') as out_file:
             out_file.write(''.join(tail))
         filesize = os.stat(filename).st_size
-        truthset = './tests/' + filename
+        truthset = os.path.join(truth_dir, filename)
         truthsize = os.stat(truthset).st_size
         if filesize == truthsize:
             print ('scenario' + str(num) + ' passed dry run')
