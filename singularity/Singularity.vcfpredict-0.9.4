@@ -12,9 +12,9 @@ PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-cor
 PYTHON="python3 python3-pip python3-dev"
 
 vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
-gumpy_version=1.0.8
+gumpy_version=1.0.10
 piezo_version=0.3
-gnomon_version=1.0.0-alpha.13
+gnomon_version=1.0.0-alpha.14
 tuberculosis_amr_catalogues=c32479610d6d752187177837f194b43c8abcb9ee
 
 apt-get update \
@@ -52,9 +52,9 @@ git clone https://github.com/oxfordmmm/tuberculosis_amr_catalogues.git \
 export PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 export PYTHON="python3 python3-pip python3-dev"
 export vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
-export gumpy_version=1.0.8
+export gumpy_version=1.0.10
 export piezo_version=0.3
-export gnomon_version=1.0.0-alpha.13
+export gnomon_version=1.0.0-alpha.14
 export tuberculosis_amr_catalogues=c32479610d6d752187177837f194b43c8abcb9ee
 %runscript
 exec /bin/bash "$@"
