@@ -7,31 +7,31 @@ process vcfmix {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.json', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*_f-stats.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(vcf)
 
     output:
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
-    path "${sample_name}.err", emit: vcfmix_log optional true
+    path "${sample_name}_err.json", emit: vcfmix_log optional true
 
     script:
     bcftools_vcf = "${sample_name}.bcftools.vcf"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
 
-    if [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
+    if [ ${params.gnomon} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
     vcfmix_json = "${sample_name}_f-stats.json"
     vcfmix_csv = "${sample_name}_vcfmix-regions.csv"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${vcfmix_json}
@@ -47,10 +47,10 @@ process gnomon {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.json', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*gnomon-out.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(vcf), val(isSampleTB)
@@ -61,16 +61,16 @@ process gnomon {
     output:
     tuple val(sample_name), path("${sample_name}.gnomon-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
     tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
-    path("${sample_name}.err", emit: gnomon_log)
+    path("${sample_name}_err.json", emit: gnomon_log)
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
-    printf "workflow complete without error" >> ${error_log} 
+    echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}
     """
 
     stub:
@@ -78,7 +78,7 @@ process gnomon {
     gnomon_fasta = "${sample_name}-fixed.fasta"
     gnomon_effects = "${sample_name}.effects.csv"
     gnomon_mutations = "${sample_name}.mutations.csv"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${gnomon_json}

@@ -9,7 +9,7 @@ process checkBamValidity {
     label 'preprocessing'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     path(bam_file)
@@ -18,17 +18,17 @@ process checkBamValidity {
     tuple path(bam_file), stdout, emit: checkValidity_bam
 
     script:
-    error_log = "${bam_file.getBaseName()}.err"
+    error_log = "${bam_file.getBaseName()}_err.json"
 
     """
     is_ok=\$(samtools quickcheck $bam_file && echo 'OK' || echo 'FAIL' )
 
-    if [ \$is_ok == 'OK' ]; then printf "" >> ${error_log}; else echo "error: bam did not pass samtools quickcheck" >> ${error_log}; fi
+    if [ \$is_ok == 'OK' ]; then printf "" >> ${error_log}; else echo '{"error":"bam did not pass samtools quickcheck"}' | jq '.' >> ${error_log}; fi
     printf \$is_ok
     """
 
     stub:
-    error_log = "${bam_file.getBaseName()}.err"
+    error_log = "${bam_file.getBaseName()}_err.json"
 
     """
     touch ${error_log}
@@ -45,26 +45,26 @@ process checkFqValidity {
     label 'preprocessing'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2)
 
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: checkValidity_fqs
-    path("${sample_name}.err", emit: checkValidity_log)
+    path("${sample_name}_err.json", emit: checkValidity_log)
 
     script:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     is_ok=\$(fqtools validate $fq1 $fq2)
 
-    if [ \$is_ok == 'OK' ]; then printf 'OK' && printf "" >> ${error_log}; else echo "error: sample did not pass fqtools validation check" >> ${error_log}; fi
+    if [ \$is_ok == 'OK' ]; then printf 'OK' && printf "" >> ${error_log}; else echo '{"error":"sample did not pass fqtools validation check"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
-    error_log  = "${sample_name}.err"
+    error_log  = "${sample_name}_err.json"
 
     """
     printf ${params.checkFqValidity_isok}
@@ -122,7 +122,7 @@ process countReads {
     label 'preprocessing'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(is_ok)
@@ -132,18 +132,18 @@ process countReads {
 
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: countReads_fqs
-    path("${sample_name}.err", emit: countReads_log)
+    path("${sample_name}_err.json", emit: countReads_log)
 
     script:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
     """
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: sample did not have > 100k pairs of raw reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
+    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"sample did not have > 100k pairs of raw reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     printf ${params.countReads_runfastp}
@@ -160,9 +160,9 @@ process fastp {
     label 'preprocessing'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*_fastp.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_fastp)
@@ -173,14 +173,14 @@ process fastp {
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: fastp_fqs
     path("${sample_name}_fastp.json", emit: fastp_json)
-    path("${sample_name}.err", emit: fastp_log)
+    path("${sample_name}_err.json", emit: fastp_log)
 
     script:
     clean_fq1  = "${sample_name}_cleaned_1.fq.gz"
     clean_fq2  = "${sample_name}_cleaned_2.fq.gz"
     fastp_json = "${sample_name}_fastp.json"
     fastp_html = "${sample_name}_fastp.html"
-    error_log  = "${sample_name}.err"
+    error_log  = "${sample_name}_err.json"
 
     """
     fastp -i $fq1 -I $fq2 -o ${clean_fq1} -O ${clean_fq2} -j ${fastp_json} -h ${fastp_html} --length_required 50 --average_qual 10 --low_complexity_filter --correction --cut_right --cut_tail --cut_tail_window_size 1 --cut_tail_mean_quality 20
@@ -189,7 +189,7 @@ process fastp {
 
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)" >> ${error_log} && printf "fail"; fi
+    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
@@ -197,7 +197,7 @@ process fastp {
     clean_fq2  = "${sample_name}_cleaned_2.fq.gz"
     fastp_json = "${sample_name}_fastp.json"
     fastp_html = "${sample_name}_fastp.html"
-    error_log  = "${sample_name}.err"
+    error_log  = "${sample_name}_err.json"
 
     """
     printf ${params.fastp_enoughreads}
@@ -252,7 +252,7 @@ process kraken2 {
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_kraken_report.*'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(enough_reads)
@@ -272,7 +272,7 @@ process kraken2 {
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
     nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq"
     nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
@@ -288,7 +288,7 @@ process kraken2 {
 
     run_mykrobe=\$(jq '.Mykrobe' ${kraken2_json})
 
-    if [ \$run_mykrobe == '\"true\"' ]; then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads" >> ${error_log} && printf "no"; fi
+    if [ \$run_mykrobe == '\"true\"' ]; then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' >> ${error_log} && printf "no"; fi
     """
 
     stub:
@@ -297,7 +297,7 @@ process kraken2 {
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
     nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq.gz"
     nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq.gz"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     printf ${params.kraken2_runmykrobe}
@@ -447,7 +447,7 @@ process identifyBacterialContaminants {
     label 'preprocessing'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
@@ -460,10 +460,10 @@ process identifyBacterialContaminants {
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
-    path("${sample_name}.err", emit: contam_log)
+    path("${sample_name}_err.json", emit: contam_log)
 
     script:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
@@ -474,11 +474,11 @@ process identifyBacterialContaminants {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${sample_name}_species_in_sample.json
@@ -497,7 +497,7 @@ process downloadContamGenomes {
     tag { sample_name }
     label 'preprocessing'
 
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(contam_list), val(run_decontaminator)
@@ -511,7 +511,7 @@ process downloadContamGenomes {
 
     script:
     contaminant_fa = "${sample_name}_contaminants.fa"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
@@ -533,12 +533,12 @@ process downloadContamGenomes {
     rm -rf linktestlog.txt confirmedurllist.txt
     rm -r contam_dir
 
-    if (( \$num_urls_in == \$num_urls_out )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo "error: there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded" >> ${error_log} && printf "fail"; fi
+    if (( \$num_urls_in == \$num_urls_out )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
     contaminant_fa = "${sample_name}_contaminants.fa"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     printf ${params.downloadContamGenomes_fapass}
@@ -710,7 +710,7 @@ process reMykrobe {
 
 process summarise {
     /**
-    * @QCcheckpoint none
+    * @QCcheckpoint checks whether there are still contaminants and if top species hit is supported
     */
 
     tag { sample_name }
@@ -736,9 +736,9 @@ process summarise {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then echo "error: sample remains contaminated, even after attempting to resolve this" >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' >> ${error_log}; fi
 
-    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo "error: top hit (\$top_hit) is not one of the 10 accepted mycobacteria" >> ${error_log}; fi
+    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
