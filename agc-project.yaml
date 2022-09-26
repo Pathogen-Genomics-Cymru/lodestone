@@ -1,0 +1,7 @@
+name: tbpipeline
+schemaVersion: 1
+contexts:
+    ctx1:
+        engines:
+            - type: nextflow
+              engine: nextflow
