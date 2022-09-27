@@ -70,7 +70,7 @@ process gnomon {
     error_log = "${sample_name}.err"
 
     """
-    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
     printf "workflow complete without error" >> ${error_log} 
     """
