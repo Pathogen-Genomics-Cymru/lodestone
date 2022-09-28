@@ -1,0 +1,16 @@
+{
+  "filetype": "fastq",
+  "pattern": "*_R{1,2}.fastq.gz",
+  "checkFqValidity_isok": "OK",
+  "checkBamValidity_isok": "null",
+  "countReads_runfastp": "dryRun",
+  "fastp_enoughreads": "dryRun",
+  "kraken2_runmykrobe": "dryRun",
+  "identifyBacContam_rundecontam": "NOW_DECONTAMINATE_dryRun",
+  "downloadContamGenomes_fapass": "dryRun",
+  "summary_doWeAlign": "NOW_ALIGN_TO_REF_dryRun",
+  "alignToRef_doWeVarCall": "NOW_VARCALL_dryRun",
+  "minos_isSampleTB": "CREATE_ANTIBIOGRAM_dryRun",
+  "vcfmix": "yes",
+  "gnomon": "yes"
+}
