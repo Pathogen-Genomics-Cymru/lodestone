@@ -1,7 +1,21 @@
 name: tbpipeline
 schemaVersion: 1
+workflows:
+    tbpipeline:
+        type:
+            language: nextflow
+            version: dsl2
+        sourceURL: ./
+data:
+    - location: s3://tbpipeline
+      readOnly: true
 contexts:
-    ctx1:
+    defaultCtx:
+        engines:
+            - type: nextflow
+              engine: nextflow
+    spotCtx:
+        requestSpotInstances: true
         engines:
             - type: nextflow
               engine: nextflow
