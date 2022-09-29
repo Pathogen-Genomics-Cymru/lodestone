@@ -182,7 +182,7 @@ process minos {
 
     top_hit=\$(jq -r '.top_hit.name' ${json})
 
-    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"warning":"sample is not TB so can't produce antibiogram using gnomon"}' | jq '.' >> ${error_log} && printf "no"; fi
+    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"error":"sample is not TB so cannot produce antibiogram using gnomon"}' | jq '.' >> ${error_log} && printf "no"; fi
     """
 
     stub:
