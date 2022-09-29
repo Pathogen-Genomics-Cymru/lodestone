@@ -152,7 +152,7 @@ process callVarsCortex {
 
 process minos {
     /**
-    * @QCcheckpoint check if top species if TB, is yes pass vcf to gnomon
+    * @QCcheckpoint check if top species is TB, if yes pass vcf to gnomonicus
     */
 
     tag { sample_name }
@@ -182,7 +182,7 @@ process minos {
 
     top_hit=\$(jq -r '.top_hit.name' ${json})
 
-    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"error":"sample is not TB so cannot produce antibiogram using gnomon"}' | jq '.' >> ${error_log} && printf "no"; fi
+    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"error":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' >> ${error_log} && printf "no"; fi
     """
 
     stub:
@@ -234,7 +234,7 @@ process gvcf {
     rm samtools_all_pos.vcf
     gzip ${gvcf}
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomon} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}; fi
+    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:

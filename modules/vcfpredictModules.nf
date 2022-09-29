@@ -40,7 +40,7 @@ process vcfmix {
     """
 }
 
-process gnomon {
+process gnomonicus {
 
     tag {sample_name}
     label 'vcfpredict'
@@ -49,7 +49,7 @@ process gnomon {
 
     errorStrategy 'ignore'
 
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.json', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.gnomonicus-out.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
@@ -76,17 +76,17 @@ process gnomon {
     """
 
     stub:
-    gnomon_json = "${sample_name}.gnomonicus-out.json"
-    gnomon_fasta = "${sample_name}-fixed.fasta"
-    gnomon_effects = "${sample_name}.effects.csv"
-    gnomon_mutations = "${sample_name}.mutations.csv"
+    gnomonicus_json = "${sample_name}.gnomonicus-out.json"
+    gnomonicus_fasta = "${sample_name}-fixed.fasta"
+    gnomonicus_effects = "${sample_name}.effects.csv"
+    gnomonicus_mutations = "${sample_name}.mutations.csv"
     error_log = "${sample_name}_err.json"
 
     """
-    touch ${gnomon_json}
-    touch ${gnomon_fasta}
-    touch ${gnomon_effects}
-    touch ${gnomon_mutations}
+    touch ${gnomonicus_json}
+    touch ${gnomonicus_fasta}
+    touch ${gnomonicus_effects}
+    touch ${gnomonicus_mutations}
     touch ${error_log}
     """
 }
