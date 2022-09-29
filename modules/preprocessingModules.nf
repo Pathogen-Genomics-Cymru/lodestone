@@ -16,6 +16,7 @@ process checkBamValidity {
 
     output:
     tuple path(bam_file), stdout, emit: checkValidity_bam
+    path "${bam_file.getBaseName()}_err.json", emit: checkValidityBam_log optional true
 
     script:
     error_log = "${bam_file.getBaseName()}_err.json"
@@ -23,8 +24,7 @@ process checkBamValidity {
     """
     is_ok=\$(samtools quickcheck $bam_file && echo 'OK' || echo 'FAIL' )
 
-    if [ \$is_ok == 'OK' ]; then printf "" >> ${error_log}; else echo '{"error":"bam did not pass samtools quickcheck"}' | jq '.' >> ${error_log}; fi
-    printf \$is_ok
+    if [ \$is_ok == 'OK' ]; then printf \$is_ok; else echo '{"error":"bam did not pass samtools quickcheck"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
@@ -52,7 +52,7 @@ process checkFqValidity {
 
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: checkValidity_fqs
-    path("${sample_name}_err.json", emit: checkValidity_log)
+    path "${sample_name}_err.json", emit: checkValidity_log optional true
 
     script:
     error_log = "${sample_name}_err.json"
@@ -60,7 +60,7 @@ process checkFqValidity {
     """
     is_ok=\$(fqtools validate $fq1 $fq2)
 
-    if [ \$is_ok == 'OK' ]; then printf 'OK' && printf "" >> ${error_log}; else echo '{"error":"sample did not pass fqtools validation check"}' | jq '.' >> ${error_log}; fi
+    if [ \$is_ok == 'OK' ]; then printf 'OK'; else echo '{"error":"sample did not pass fqtools validation check"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
@@ -132,14 +132,14 @@ process countReads {
 
     output:
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: countReads_fqs
-    path("${sample_name}_err.json", emit: countReads_log)
+    path "${sample_name}_err.json", emit: countReads_log optional true
 
     script:
     error_log = "${sample_name}_err.json"
     """
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"sample did not have > 100k pairs of raw reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
+    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"sample did not have > 100k pairs of raw reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
@@ -173,7 +173,7 @@ process fastp {
     output:
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: fastp_fqs
     path("${sample_name}_fastp.json", emit: fastp_json)
-    path("${sample_name}_err.json", emit: fastp_log)
+    path "${sample_name}_err.json", emit: fastp_log optional true
 
     script:
     clean_fq1  = "${sample_name}_cleaned_1.fq.gz"
@@ -189,7 +189,7 @@ process fastp {
 
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
+    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
@@ -264,7 +264,7 @@ process kraken2 {
     output:
     tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, emit: kraken2_fqs
-    path("${sample_name}.err", emit: kraken2_log)
+    path "${sample_name}_err.json", emit: kraken2_log optional true
 
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
@@ -288,7 +288,7 @@ process kraken2 {
 
     run_mykrobe=\$(jq '.Mykrobe' ${kraken2_json})
 
-    if [ \$run_mykrobe == '\"true\"' ]; then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' >> ${error_log} && printf "no"; fi
+    if [ \$run_mykrobe == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' >> ${error_log} && printf "no"; fi
     """
 
     stub:
@@ -311,44 +311,44 @@ process kraken2 {
 }
 
 process afanc {
-  /**
-  * @QCcheckpoint none
-  */
+    /**
+    * @QCcheckpoint none
+    */
 
-  tag { sample_name }
-  // label 'preprocessing'
-  label 'normal_cpu'
-  label 'medium_memory'
+    tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
-  publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
 
-  input:
-  tuple val(sample_name), path(fq1), path(fq2), val(run_afanc)
-  path(afanc_myco_db)
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), val(run_afanc)
+    path(afanc_myco_db)
 
-  when:
-  run_afanc =~ /${sample_name}/
+    when:
+    run_afanc =~ /${sample_name}/
 
-  output:
-  tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_report
-  // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
+    output:
+    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_report
+    // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
-  script:
-  afanc_report = "${sample_name}_afanc_report.json"
+    script:
+    afanc_report = "${sample_name}_afanc_report.json"
 
-  """
-  afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
-  python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
-  printf ${sample_name}
-  """
+    """
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+    python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+    printf ${sample_name}
+    """
 
-  stub:
-  afanc_report = "${sample_name}_afanc_report.json"
+    stub:
+    afanc_report = "${sample_name}_afanc_report.json"
 
-  """
-  touch ${afanc_report}
-  printf ${sample_name}
-  """
+    """
+    touch ${afanc_report}
+    printf ${sample_name}
+    """
 }
 
 process mykrobe {
@@ -446,7 +446,7 @@ process identifyBacterialContaminants {
     tag { sample_name }
     label 'preprocessing'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '_species_in_samp*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
@@ -457,10 +457,10 @@ process identifyBacterialContaminants {
 
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, emit: contam_list
-    tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, emit: prev_sample_json optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
-    path("${sample_name}_err.json", emit: contam_log)
+    path "${sample_name}_err.json", emit: contam_log optional true
 
     script:
     error_log = "${sample_name}_err.json"
@@ -468,13 +468,13 @@ process identifyBacterialContaminants {
     """
     python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
 
-    cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
-
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json; fi
+
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
@@ -507,7 +507,7 @@ process downloadContamGenomes {
 
     output:
     tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
-    path("${sample_name}.err", emit: downcontam_log)
+    path "${sample_name}_err.json", emit: downcontam_log optional true
 
     script:
     contaminant_fa = "${sample_name}_contaminants.fa"
@@ -533,7 +533,7 @@ process downloadContamGenomes {
     rm -rf linktestlog.txt confirmedurllist.txt
     rm -r contam_dir
 
-    if (( \$num_urls_in == \$num_urls_out )); then printf "" >> ${error_log} && printf "${sample_name}"; else echo '{"error":"there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded"}' | jq '.' >> ${error_log} && printf "fail"; fi
+    if (( \$num_urls_in == \$num_urls_out )); then printf "${sample_name}"; else echo '{"error":"there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded"}' | jq '.' >> ${error_log} && printf "fail"; fi
     """
 
     stub:
@@ -638,41 +638,41 @@ process reKraken {
 }
 
 process reAfanc {
-  /**
-  * @QCcheckpoint none
-  */
+    /**
+    * @QCcheckpoint none
+    */
 
-  tag { sample_name }
-  // label 'preprocessing'
-  label 'normal_cpu'
-  label 'medium_memory'
+    tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
-  publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
 
-  input:
-  tuple val(sample_name), path(fq1), path(fq2)
-  path(afanc_myco_db)
+    input:
+    tuple val(sample_name), path(fq1), path(fq2)
+    path(afanc_myco_db)
 
-  output:
-  tuple val(sample_name), path("${sample_name}_afanc_report.json"), emit: reAfanc_report
-  // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
+    output:
+    tuple val(sample_name), path("${sample_name}_afanc_report.json"), emit: reAfanc_report
+    // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
-  script:
-  afanc_report = "${sample_name}_afanc_report.json"
+    script:
+    afanc_report = "${sample_name}_afanc_report.json"
 
-  """
-  afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
-  python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
-  printf ${sample_name}
-  """
+    """
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+    python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+    printf ${sample_name}
+    """
 
-  stub:
-  afanc_report = "${sample_name}_afanc_report.json"
+    stub:
+    afanc_report = "${sample_name}_afanc_report.json"
 
-  """
-  touch ${afanc_report}
-  printf ${sample_name}
-  """
+    """
+    touch ${afanc_report}
+    printf ${sample_name}
+    """
 }
 
 process reMykrobe {
@@ -716,18 +716,18 @@ process summarise {
     tag { sample_name }
     label 'preprocessing'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_species_in_sample.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
 
     input:
     tuple val(sample_name), path(mykrobe_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam)
 
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
-    path("${sample_name}.err", emit: summary_log)
+    path "${sample_name}_err.json", emit: summary_log optional true
 
     script:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
@@ -738,11 +738,11 @@ process summarise {
 
     if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' >> ${error_log}; fi
 
-    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && printf "" >> ${error_log}; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
+    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${sample_name}_species_in_sample.json

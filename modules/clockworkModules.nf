@@ -23,7 +23,7 @@ process alignToRef {
     tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
-    path("${sample_name}_err.json", emit: alignToRef_err)
+    path "${sample_name}_err.json", emit: alignToRef_log optional true
 
     script:
     bam = "${sample_name}.bam"
@@ -49,7 +49,8 @@ process alignToRef {
     python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${json}
 
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
-    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo '{"error":"insufficient number and/or quality of read alignments to the reference genome"}' | jq '.' >> ${error_log}; fi
+
+    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}"; elif [ \$continue == 'no' ]; then echo '{"error":"insufficient number and/or quality of read alignments to the reference genome"}' | jq '.' >> ${error_log}; fi
     """
 
     stub:
@@ -220,7 +221,7 @@ process gvcf {
     script:
     gvcf = "${sample_name}.gvcf.vcf"
     gvcf_fa = "${sample_name}.fa"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     awk '{print \$1}' ${ref} > ref.fa
