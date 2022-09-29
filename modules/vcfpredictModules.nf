@@ -47,7 +47,9 @@ process gnomon {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*gnomon-out.json', overwrite: 'true'
+    errorStrategy 'ignore'
+
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
@@ -59,7 +61,7 @@ process gnomon {
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}.gnomon-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
+    tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
     tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
     path("${sample_name}_err.json", emit: gnomon_log)
 
@@ -68,13 +70,13 @@ process gnomon {
     error_log = "${sample_name}_err.json"
 
     """
-    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
     echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}
     """
 
     stub:
-    gnomon_json = "${sample_name}.gnomon-out.json"
+    gnomon_json = "${sample_name}.gnomonicus-out.json"
     gnomon_fasta = "${sample_name}-fixed.fasta"
     gnomon_effects = "${sample_name}.effects.csv"
     gnomon_mutations = "${sample_name}.mutations.csv"
