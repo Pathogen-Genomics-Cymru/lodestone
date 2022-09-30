@@ -23,7 +23,7 @@ process vcfmix {
     error_log = "${sample_name}.err"
 
     """
-    python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
+    python3 /nextflow-bin/vcfmix.py ${bcftools_vcf}
 
     if [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
     """
