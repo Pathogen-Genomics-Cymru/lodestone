@@ -56,6 +56,7 @@ process gnomon {
 
     input:
     tuple val(sample_name), path(vcf), val(isSampleTB)
+    path resources_dir
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -70,7 +71,7 @@ process gnomon {
     error_log = "${sample_name}.err"
 
     """
-    gnomon --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomon --genome_object ${resources_dir}/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
     printf "workflow complete without error" >> ${error_log} 
     """

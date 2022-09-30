@@ -410,6 +410,7 @@ process identifyBacterialContaminants {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+    path resources_dir
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -425,7 +426,7 @@ process identifyBacterialContaminants {
     error_log = "${sample_name}.err"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+    python3 /nextflow-bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${resources_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${resources_dir} null
     
     cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
 
@@ -642,6 +643,7 @@ process summarise {
 
     input:
     tuple val(sample_name), path(mykrobe_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam)
+    path resources_dir
 		
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json

@@ -172,6 +172,8 @@ workflow {
     krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
     bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
 
+    // create channel for resources
+    resources_dir_ch = Channel.fromPath( "${params.resources_dir}" )
 
     // main workflow
     main:
@@ -180,7 +182,7 @@ workflow {
       getversion(sing_dir_ch)
 
       // PREPROCESSING SUB-WORKFLOW
-      preprocessing(input_files, krakenDB, bowtie_dir)
+      preprocessing(input_files, krakenDB, bowtie_dir, resources_dir_ch)
 
 
       // CLOCKWORK SUB-WORKFLOW
@@ -207,7 +209,7 @@ workflow {
       minos_vcf = clockwork.out.minos_vcf
 
       // VCFPREDICT SUB-WORKFLOW
-      vcfpredict(mpileup_vcf, minos_vcf)
+      vcfpredict(mpileup_vcf, minos_vcf, resources_dir_ch)
 
 }
 
