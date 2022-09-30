@@ -165,6 +165,9 @@ workflow {
 	       .set{ input_files }
     }
 
+    // create channel for singularity directory
+    sing_dir_ch = Channel.fromPath( "${params.sing_dir}" )
+
     // create channels for kraken2 database and bowtie2 index
     krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
     bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
@@ -174,7 +177,7 @@ workflow {
     main:
 
       // GETVERSION SUB-WORKFLOW
-      getversion()
+      getversion(sing_dir_ch)
 
       // PREPROCESSING SUB-WORKFLOW
       preprocessing(input_files, krakenDB, bowtie_dir)

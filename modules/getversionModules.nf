@@ -6,13 +6,16 @@ process getversion {
 
     publishDir "${params.output_dir}", mode: 'copy', pattern: '*.json', overwrite: 'true'
 
+    input:
+    path sing_dir
+
     output:
     path("version.json", emit: getversion_json)
 
     script:
 
     """
-    python3 ${baseDir}/bin/software-json.py ${params.sing_dir}
+    python3 /nextflow-bin/software-json.py ${sing_dir}
     """
 
     stub:
