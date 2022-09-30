@@ -17,7 +17,7 @@ def go(path):
     for filename in glob.glob(os.path.join(path, "Singularity.*")):
         extension = filename.split('.', 1)[1]
         version = filename.split('-')[-1]
-        with open(os.path.join(path, filename), 'r') as infile:
+        with open(os.path.join(filename), 'r') as infile:
             copy = False
             for line in infile:
                 if line.strip() == "%environment":
