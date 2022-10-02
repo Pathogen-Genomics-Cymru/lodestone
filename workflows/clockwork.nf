@@ -13,14 +13,15 @@ workflow clockwork {
 
     take:
       input_seqs_json
+      resources_dir
 
     main:
 
-      alignToRef(input_seqs_json)
+      alignToRef(input_seqs_json, resources_dir)
 
       callVarsMpileup(alignToRef.out.alignToRef_bam)
 
-      callVarsCortex(alignToRef.out.alignToRef_bam)
+      callVarsCortex(alignToRef.out.alignToRef_bam, resources_dir)
 
       minos(alignToRef.out.alignToRef_bam.join(callVarsCortex.out.cortex_vcf, by: 0).join(callVarsMpileup.out.mpileup_vcf, by: 0))
 

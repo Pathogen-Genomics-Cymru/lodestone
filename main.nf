@@ -193,7 +193,7 @@ workflow {
 
           nomix_seqs_json = preprocessing.out.nocontam_seqs_json
 
-          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json), resources_dir_ch)
 
       }
 

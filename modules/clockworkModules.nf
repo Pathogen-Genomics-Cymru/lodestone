@@ -15,6 +15,7 @@ process alignToRef {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
+    path resources_dir
 
     when:
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -122,6 +123,7 @@ process callVarsCortex {
     
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
+    path resources_dir
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
