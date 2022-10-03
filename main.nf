@@ -185,7 +185,8 @@ workflow {
       getversion()
 
       // PREPROCESSING SUB-WORKFLOW
-      preprocessing(input_files, krakenDB, bowtie_dir, params.afanc_myco_db)
+      preprocessing(input_files.combine(getversion.out.software_json), krakenDB, bowtie_dir, params.afanc_myco_db)
+
 
 
       // CLOCKWORK SUB-WORKFLOW

@@ -9,10 +9,10 @@ process vcfmix {
 
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*_f-stats.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(vcf)
+    tuple val(sample_name), path(vcf), path(report_json)
 
     output:
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
@@ -25,7 +25,9 @@ process vcfmix {
     """
     python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
 
-    if [ ${params.gnomon} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}; fi
+    jq -s ".[0] * .[1]" ${report_json} ${sample_name}_f-stats.json >> ${report_json}
+
+    if [ ${params.gnomon} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}; fi
     """
 
     stub:
@@ -52,10 +54,10 @@ process gnomonicus {
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.gnomonicus-out.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_err.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(vcf), val(isSampleTB)
+    tuple val(sample_name), path(vcf), val(isSampleTB), path(report_json)
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -72,7 +74,11 @@ process gnomonicus {
     """
     gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
+    jq -s ".[0] * .[1]" ${report_json} ${sample_name}.gnomonicus-out.json >> ${report_json}
+
     echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}
+
+    jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}
     """
 
     stub:

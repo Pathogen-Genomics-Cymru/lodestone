@@ -11,5 +11,9 @@ workflow vcfpredict {
 
       getversion()
 
+    emit:
+
+      software_json = gerversion.out.getversion_json
+
 }
 
