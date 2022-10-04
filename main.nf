@@ -73,6 +73,7 @@ Profiles:
 ------------------------------------------------------------------------
 singularity        to run with singularity
 docker		   to run with docker
+agc            to run with Amazon Genomics CLI
 
 			   
 Examples:
