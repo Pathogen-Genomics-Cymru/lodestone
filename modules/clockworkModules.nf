@@ -14,7 +14,7 @@ process alignToRef {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(software_json) path(species_json), val(doWeAlign)
+    tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(species_json), val(doWeAlign)
 
     when:
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -35,7 +35,7 @@ process alignToRef {
     error_log = "${sample_name}_err.json"
 
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${species_json})
 
     cp \${ref_fa} ${sample_name}.fa
 
@@ -49,11 +49,13 @@ process alignToRef {
     python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
     python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${species_json}
 
-    jq -s ".[0] * .[1]" ${software_json} ${report_json} >> ${report_json}
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    jq -s ".[0] * .[1]" ${software_json} ${sample_name}_report_previous.json > ${report_json}
 
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${report_json})
 
-    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}"; elif [ \$continue == 'no' ]; then echo '{"error":"insufficient number and/or quality of read alignments to the reference genome"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}; fi
+    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}"; elif [ \$continue == 'no' ]; then echo '{"error":"insufficient number and/or quality of read alignments to the reference genome"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -137,7 +139,7 @@ process callVarsCortex {
     cortex_vcf = "${sample_name}.cortex.vcf"
 
     """
-    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${json})
+    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${report_json})
 
     cp -r \${ref_dir}/* .
 
@@ -171,7 +173,7 @@ process minos {
     output:
     tuple val(sample_name), path(report_json), path(bam), path(ref), emit: minos_bam
     tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
-    tuple val(sample_name), path("${sample_name}_report.json)", emit: minos_report
+    tuple val(sample_name), path("${sample_name}_report.json"), emit: minos_report
     path "${sample_name}_err.json", emit: minos_log optional true
 
     script:
@@ -185,9 +187,11 @@ process minos {
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
 
-    top_hit=\$(jq -r '.top_hit.name' ${json})
+    top_hit=\$(jq -r '.top_hit.name' ${report_json})
 
-    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"error":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' >> ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}; fi
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"error":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -239,7 +243,9 @@ process gvcf {
     rm samtools_all_pos.vcf
     gzip ${gvcf}
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}; fi
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:

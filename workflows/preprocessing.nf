@@ -64,7 +64,7 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
-      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(speciation_report, by: 0).join(kraken2.out.kraken2_report, by: 0))
+      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(speciation_report, by: 0).join(kraken2.out.kraken2_json, by: 0))
 
       downloadContamGenomes(identifyBacterialContaminants.out.contam_list)
 

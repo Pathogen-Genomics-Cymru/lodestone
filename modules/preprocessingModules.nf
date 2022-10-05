@@ -26,7 +26,7 @@ process checkBamValidity {
     """
     is_ok=\$(samtools quickcheck $bam_file && echo 'OK' || echo 'FAIL' )
 
-    if [ \$is_ok == 'OK' ]; then printf \$is_ok; else echo '{"error":"bam did not pass samtools quickcheck"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${software_json} ${error_log} >> ${report_json}; fi
+    if [ \$is_ok == 'OK' ]; then printf \$is_ok; else echo '{"error":"bam did not pass samtools quickcheck"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -64,7 +64,7 @@ process checkFqValidity {
     """
     is_ok=\$(fqtools validate $fq1 $fq2)
 
-    if [ \$is_ok == 'OK' ]; then printf 'OK'; else echo '{"error":"sample did not pass fqtools validation check"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${software_json} ${error_log} >> ${report_json}; fi
+    if [ \$is_ok == 'OK' ]; then printf 'OK'; else echo '{"error":"sample did not pass fqtools validation check"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -146,7 +146,7 @@ process countReads {
     """
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"sample did not have > 100k pairs of raw reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail" && jq -s ".[0] * .[1]" ${software_json} ${error_log} >> ${report_json}; fi
+    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"sample did not have > 100k pairs of raw reads (it only contained \$num_reads)"}' | jq '.' > ${error_log} && printf "fail" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -189,6 +189,7 @@ process fastp {
     fastp_json = "${sample_name}_fastp.json"
     fastp_html = "${sample_name}_fastp.html"
     error_log  = "${sample_name}_err.json"
+    report_json = "${sample_name}_report.json"
 
     """
     fastp -i $fq1 -I $fq2 -o ${clean_fq1} -O ${clean_fq2} -j ${fastp_json} -h ${fastp_html} --length_required 50 --average_qual 10 --low_complexity_filter --correction --cut_right --cut_tail --cut_tail_window_size 1 --cut_tail_mean_quality 20
@@ -197,7 +198,7 @@ process fastp {
 
     num_reads=\$(fqtools count $fq1 $fq2)
 
-    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' >> ${error_log} && printf "fail" && jq -s ".[0] * .[1]" ${software_json} ${error_log} >> ${report_json}; fi
+    if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' > ${error_log} && printf "fail" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -270,7 +271,7 @@ process kraken2 {
     enough_reads =~ /${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_report
+    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_json
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, path(software_json), emit: kraken2_fqs
     path "${sample_name}_err.json", emit: kraken2_log optional true
     path "${sample_name}_report.json", emit: kraken2_report optional true
@@ -298,7 +299,7 @@ process kraken2 {
 
     run_mykrobe=\$(jq '.Mykrobe' ${kraken2_json})
 
-    if [ \$run_mykrobe == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' >> ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} >> ${report_json}; fi
+    if [ \$run_mykrobe == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -466,7 +467,7 @@ process identifyBacterialContaminants {
     enough_myco_reads =~ /${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, path(software_json), path("${sample_name}_species_in_sample_previous.json"), emit: contam_list
+    tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, path(software_json), path("${sample_name}_species_in_sample_previous.json"), emit: contam_list optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, path(software_json), emit: prev_sample_json optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
     tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path(software_json), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
@@ -486,7 +487,7 @@ process identifyBacterialContaminants {
 
     if [ \$contam_to_remove == 'yes' ]; then cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json; fi
 
-    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json >> ${report_json}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
 
     stub:
@@ -547,7 +548,7 @@ process downloadContamGenomes {
     rm -rf linktestlog.txt confirmedurllist.txt
     rm -r contam_dir
 
-    if (( \$num_urls_in == \$num_urls_out )); then printf "${sample_name}"; else echo '{"error":"there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded"}' | jq '.' >> ${error_log} && printf "fail" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${prev_species_json} >> ${report_json}; fi
+    if (( \$num_urls_in == \$num_urls_out )); then printf "${sample_name}"; else echo '{"error":"there were \$num_urls_in contaminant genomes but only \$num_urls_out could be downloaded"}' | jq '.' > ${error_log} && printf "fail" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${prev_species_json} > ${report_json}; fi
     """
 
     stub:
@@ -752,9 +753,9 @@ process summarise {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' >> ${error_log}; fi
+    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log}; fi
 
-    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json >> ${report_json}; fi
+    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then echo '{"error":"top hit (\$top_hit) is not one of the 10 accepted mycobacteria"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
 
     stub:

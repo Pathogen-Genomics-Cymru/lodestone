@@ -25,9 +25,11 @@ process vcfmix {
     """
     python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
 
-    jq -s ".[0] * .[1]" ${report_json} ${sample_name}_f-stats.json >> ${report_json}
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [ ${params.gnomon} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}; fi
+    jq -s ".[0] * .[1]" ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}
+
+    if [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -74,11 +76,11 @@ process gnomonicus {
     """
     gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
-    jq -s ".[0] * .[1]" ${report_json} ${sample_name}.gnomonicus-out.json >> ${report_json}
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    echo '{"complete":"workflow complete without error"}' | jq '.' >> ${error_log}
+    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
 
-    jq -s ".[0] * .[1]" ${error_log} ${report_json} >> ${report_json}
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_previous_report.json ${sample_name}.gnomonicus-out.json > ${report_json}
     """
 
     stub:

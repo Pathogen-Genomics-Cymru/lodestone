@@ -185,9 +185,9 @@ workflow {
       getversion()
 
       // PREPROCESSING SUB-WORKFLOW
-      preprocessing(input_files.combine(getversion.out.software_json), krakenDB, bowtie_dir, params.afanc_myco_db)
+      input_files_vjson = input_files.combine(getversion.out.getversion_json).view()
 
-
+      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db)
 
       // CLOCKWORK SUB-WORKFLOW
       if ( params.unmix_myco == "yes" ) {
