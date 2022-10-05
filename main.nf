@@ -185,7 +185,7 @@ workflow {
       getversion()
 
       // PREPROCESSING SUB-WORKFLOW
-      input_files_vjson = input_files.combine(getversion.out.getversion_json).view()
+      input_files_vjson = input_files.combine(getversion.out.getversion_json)
 
       preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db)
 

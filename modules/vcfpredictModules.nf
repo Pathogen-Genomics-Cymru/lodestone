@@ -7,6 +7,8 @@ process vcfmix {
     label 'normal_cpu'
     label 'low_memory'
 
+    errorStrategy 'ignore'
+
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*_f-stats.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -51,8 +53,6 @@ process gnomonicus {
     label 'normal_cpu'
     label 'low_memory'
 
-    errorStrategy 'ignore'
-
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.gnomonicus-out.json', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
@@ -80,7 +80,7 @@ process gnomonicus {
 
     echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
 
-    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_previous_report.json ${sample_name}.gnomonicus-out.json > ${report_json}
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}.gnomonicus-out.json > ${report_json}
     """
 
     stub:
