@@ -271,14 +271,14 @@ process kraken2 {
     enough_reads =~ /${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken.json"), emit: kraken2_json
+    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: kraken2_json
     tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), stdout, path(software_json), emit: kraken2_fqs
     path "${sample_name}_err.json", emit: kraken2_log optional true
     path "${sample_name}_report.json", emit: kraken2_report optional true
 
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
-    kraken2_json = "${sample_name}_kraken.json"
+    kraken2_json = "${sample_name}_kraken_report.json"
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
     nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq"
     nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq"
@@ -626,11 +626,11 @@ process reKraken {
     path(database)
 
     output:
-    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken.json"), emit: reKraken_report
+    tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
 
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
-    kraken2_json = "${sample_name}_kraken.json"
+    kraken2_json = "${sample_name}_kraken_report.json"
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
 
     """
