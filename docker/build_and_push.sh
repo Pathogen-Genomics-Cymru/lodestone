@@ -35,25 +35,24 @@ region=$(aws configure get region)
 region=${region:-us-west-2}
 
 dockerfile="Dockerfile.${image}-${version}"
-image="tb-pipeline/${image}"
 ecr_repo="${account}.dkr.ecr.${region}.amazonaws.com"
-local_tag="${image}:${version}"
-ecr_tag="${ecr_repo}/${image}:${version}"
+local_tag="tb-pipeline/${image}:${version}"
+ecr_tag="${ecr_repo}/tb-pipeline/${image}:${version}"
 
 
-echo $region
-echo $dockerfile
-echo $image
-echo $fullname
+echo "AWS Region: ${region}"
+echo "Dockerfile: ${dockerfile}"
+echo "Local tag : ${local_tag}"
+echo "ECR tag   : ${ecr_tag}"
 
 
 # If the repository doesn't exist in ECR, create it.
-aws ecr describe-repositories --repository-names "${image}" > /dev/null 2>&1
+aws ecr describe-repositories --repository-names "tb-pipeline/${image}" > /dev/null 2>&1
 
 if [ $? -ne 0 ]
 then
-    echo "The repository with name ${image} does not exist in the registry ${ecr_repo}. Creating repository."
-    aws ecr create-repository --repository-name "${image}" 
+    echo "The repository with name tb-pipeline/${image} does not exist in the registry ${ecr_repo}. Creating repository."
+    aws ecr create-repository --repository-name "tb-pipeline/${image}" 
 # > /dev/null
 fi
 
