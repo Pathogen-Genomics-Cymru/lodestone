@@ -4,6 +4,7 @@ nextflow.enable.dsl = 2
 // import modules
 include {vcfmix} from '../modules/vcfpredictModules.nf' params(params)
 include {gnomonicus} from '../modules/vcfpredictModules.nf' params(params)
+include {finalJson} from '../modules/vcfpredictModules.nf' params(params)
 
 // define workflow component
 workflow vcfpredict {
@@ -24,6 +25,12 @@ workflow vcfpredict {
       if ( params.gnomonicus == "yes" ) {
 
           gnomonicus(clockwork_minos)
+
+      }
+
+      if ( (params.vcfmix == "yes") && (params.gnomonicus == "yes") ) {
+
+          finalJson(vcfmix.out.vcfmix_json.join(gnomonicus.out.gnomon_json, by: 0))
 
       }
 

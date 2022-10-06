@@ -17,6 +17,7 @@ process vcfmix {
     tuple val(sample_name), path(vcf), path(report_json)
 
     output:
+    tuple val(sample_name), path("${sample_name}_f-stats.json"), emit: vcfmix_json
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
     path "${sample_name}_err.json", emit: vcfmix_log optional true
 
@@ -65,6 +66,7 @@ process gnomonicus {
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
 
     output:
+    tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}_report.json"), emit: gnomon_json
     tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
     tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
     path("${sample_name}_err.json", emit: gnomon_log)
@@ -97,4 +99,35 @@ process gnomonicus {
     touch ${gnomonicus_mutations}
     touch ${error_log}
     """
+}
+
+process finalJson {
+
+    tag {sample_name}
+    label 'vcfpredict'
+    label 'normal_cpu'
+    label 'low_memory'
+
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_report.json'
+
+    input:
+    tuple val(sample_name), path(vcfmix_json), path(gnomon_json), path(report_json)
+
+    output:
+    tuple val(sample_name), path("${sample_name}_report.json"), emit: final_json
+
+    script:
+    """
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    jq -s ".[0] * .[1]" ${sample_name}_report_previous.json ${vcfmix_json} > ${report_json}
+    """
+
+    stub:
+    report_json = "${sample_name}_report.json"
+
+    """
+    touch ${report_json}
+    """
+
 }
