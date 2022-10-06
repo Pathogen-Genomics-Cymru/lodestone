@@ -278,7 +278,7 @@ process kraken2 {
 
     script:
     kraken2_report = "${sample_name}_kraken_report.txt"
-    kraken2_json = "${sample_name}_kraken_report.json"
+    kraken2_json = "${sample_name}_kraken.json"
     kraken2_read_classification = "${sample_name}_read_classifications.txt"
     nonBac_depleted_reads_1 = "${sample_name}_cleaned_1.fq"
     nonBac_depleted_reads_2 = "${sample_name}_cleaned_2.fq"
