@@ -118,6 +118,7 @@ PICARD_JAR=/usr/local/bin/picard.jar
 LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
+
 %environment
 export samtools_version=1.12
 export htslib_version=1.12
@@ -134,7 +135,7 @@ export stampy_version=1.0.32r3761
 export python_version=3.6.5
 export clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 export PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix libvcflib-tools libssl-dev software-properties-common perl locales locales-all"
-export PYTHON="python2.7 python2.7-dev"
+export PYTHON="python2.7 python-dev"
 export CLOCKWORK_CORTEX_DIR=/cortex
 export PATH=${PATH}:/clockwork/python/scripts
 export PICARD_JAR=/usr/local/bin/picard.jar
@@ -145,4 +146,3 @@ export LANGUAGE=en_US.UTF-8
 exec /bin/bash "$@"
 %startscript
 exec /bin/bash "$@"
-
