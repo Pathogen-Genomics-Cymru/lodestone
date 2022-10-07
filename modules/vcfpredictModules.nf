@@ -20,6 +20,7 @@ process vcfmix {
     tuple val(sample_name), path("${sample_name}_f-stats.json"), emit: vcfmix_json
     tuple val(sample_name), path("${sample_name}_f-stats.json"), path("${sample_name}_vcfmix-regions.csv"), emit: vcfmix_json_csv
     path "${sample_name}_err.json", emit: vcfmix_log optional true
+    path ("${sample_name}_report.json", emit: vcfmix_report)
 
     script:
     bcftools_vcf = "${sample_name}.bcftools.vcf"
@@ -32,7 +33,7 @@ process vcfmix {
 
     jq -s ".[0] * .[1]" ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}
 
-    if [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}; fi
     """
 
     stub:
@@ -70,6 +71,7 @@ process gnomonicus {
     tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
     tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
     path("${sample_name}_err.json", emit: gnomon_log)
+    path ("${sample_name}_report.json", emit: gnomon_report)
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
@@ -107,6 +109,8 @@ process finalJson {
     label 'vcfpredict'
     label 'normal_cpu'
     label 'low_memory'
+
+    errorStrategy 'ignore'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_report.json'
 

@@ -225,7 +225,8 @@ process gvcf {
     output:
     path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
     path("${sample_name}.fa", emit: gvcf_fa)
-    path "${sample_name}.err", emit: gvcf_log optional true
+    path "${sample_name}_err.json", emit: gvcf_log optional true
+    path "${sample_name}_report.json", emit: gvcf_report optional true
 
     script:
     gvcf = "${sample_name}.gvcf.vcf"
