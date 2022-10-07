@@ -50,7 +50,7 @@ Mandatory and conditional parameters:
                       This is the Langmead lab pre-built major-allele-SNP reference; see https://github.com/BenLangmead/bowtie-majref)
 --bowtie_index_name   Name of the bowtie index, e.g. hg19_1kgmaj
 --vcfmix	      Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
---gnomon              Run gnomon "yes" or "no"
+--gnomonicus          Run gnomon "yes" or "no"
 --amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
                       in the vcfpredict container)
 
@@ -133,10 +133,10 @@ Parameters used:
 --bowtie_index_name     ${params.bowtie_index_name}
 --species		${params.species}
 --vcfmix		${params.vcfmix}
---gnomon		${params.gnomon}
+--gnomonicus		${params.gnomonicus}
 --amr_cat		${params.amr_cat}
 
-Speciation software:    ${speciation_tool}
+Speciation tool in final report:    ${speciation_tool}
 
 Runtime data:
 ------------------------------------------------------------------------
