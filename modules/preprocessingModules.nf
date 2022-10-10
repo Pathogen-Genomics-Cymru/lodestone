@@ -519,7 +519,7 @@ process downloadContamGenomes {
     run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, path(software_json), emit: contam_fa
+    tuple val(sample_name), path("${sample_name}_contaminants.fa"), stdout, emit: contam_fa
     path "${sample_name}_err.json", emit: downcontam_log optional true
     path "${sample_name}_report.json", emit: downcontam_report optional true
 
@@ -575,7 +575,7 @@ process mapToContamFa {
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(contam_fa), val(does_fa_pass), path(software_json)
+    tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(contam_fa), val(does_fa_pass)
 
     when:
     does_fa_pass =~ /${sample_name}/
