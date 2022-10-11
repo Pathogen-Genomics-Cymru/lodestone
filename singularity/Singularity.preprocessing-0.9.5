@@ -24,7 +24,7 @@ PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-de
 PYTHON="python3 python3-pip python3-dev"
 PYTHON_PACKAGES="biopython"
 
-PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:${HOME}/edirect
+PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:/usr/local/bin/edirect
 LD_LIBRARY_PATH=/usr/local/lib
 
 export DEBIAN_FRONTEND="noninteractive"
@@ -92,7 +92,7 @@ curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}
 && pip3 install ./ \
 && cd ..
 
-sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)"
+curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz | tar -C /usr/local/bin -xz
 
 git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
 && make -C mccortex \
@@ -131,7 +131,7 @@ export bwa_version=0.7.17
 export PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
 export PYTHON="python3 python3-pip python3-dev"
 export PYTHON_PACKAGES="biopython"
-export PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:${HOME}/edirect
+export PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:/usr/local/bin/edirect
 export LD_LIBRARY_PATH=/usr/local/lib
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
