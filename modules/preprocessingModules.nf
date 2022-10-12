@@ -47,6 +47,8 @@ process checkFqValidity {
     label 'preprocessing'
     label 'low_memory'
 
+    errorStrategy 'ignore'
+
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
