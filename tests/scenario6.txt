@@ -1,16 +1,20 @@
-[01/f9dd83] process > getversion                                           [100%] 1 of 1 ✔
-[df/68c4fc] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
-[66/b011e3] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
-[e4/177258] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
-[17/b63fd8] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
-[b4/3bda17] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
-[84/9a965b] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
-[18/5b8e9b] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
-[12/016aaa] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
+
+executor >  local (10)
+[3c/25d7a1] process > getversion                                           [100%] 1 of 1 ✔
+[64/44eb21] process > preprocessing:checkFqValidity (dryRun)               [100%] 1 of 1 ✔
+[7c/87b362] process > preprocessing:countReads (dryRun)                    [100%] 1 of 1 ✔
+[00/182f23] process > preprocessing:fastp (dryRun)                         [100%] 1 of 1 ✔
+[de/24e2d9] process > preprocessing:fastQC (dryRun)                        [100%] 1 of 1 ✔
+[46/6a2c31] process > preprocessing:kraken2 (dryRun)                       [100%] 1 of 1 ✔
+[59/4d26d2] process > preprocessing:mykrobe (dryRun)                       [100%] 1 of 1 ✔
+[08/ee23e9] process > preprocessing:afanc (dryRun)                         [100%] 1 of 1 ✔
+[0e/8543b3] process > preprocessing:bowtie2 (dryRun)                       [100%] 1 of 1 ✔
+[e8/d39e74] process > preprocessing:identifyBacterialContaminants (dryRun) [100%] 1 of 1 ✔
 [-        ] process > preprocessing:downloadContamGenomes                  -
 [-        ] process > preprocessing:mapToContamFa                          -
 [-        ] process > preprocessing:reKraken                               -
 [-        ] process > preprocessing:reMykrobe                              -
+[-        ] process > preprocessing:reAfanc                                -
 [-        ] process > preprocessing:summarise                              -
 [-        ] process > clockwork:alignToRef                                 -
 [-        ] process > clockwork:callVarsMpileup                            -
