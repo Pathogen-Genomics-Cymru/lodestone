@@ -53,13 +53,20 @@ workflow preprocessing {
 
       kraken2(fastp.out.fastp_fqs, krakenDB.toList())
 
+      mykrobe(kraken2.out.kraken2_fqs)
+
+      afanc(kraken2.out.kraken2_fqs, afanc_myco_db)
+
       if ( params.mykrobe == 'yes' ) {
-        mykrobe(kraken2.out.kraken2_fqs)
+
         speciation_report = mykrobe.out.mykrobe_report
+
       }
+
       else {
-        afanc(kraken2.out.kraken2_fqs, afanc_myco_db)
+
         speciation_report = afanc.out.afanc_report
+
       }
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
@@ -72,13 +79,20 @@ workflow preprocessing {
 
       reKraken(mapToContamFa.out.reClassification_fqs, krakenDB.toList())
 
+      reMykrobe(mapToContamFa.out.reClassification_fqs)
+
+      reAfanc(mapToContamFa.out.reClassification_fqs, afanc_myco_db)
+
       if ( params.mykrobe == 'yes' ) {
-        reMykrobe(mapToContamFa.out.reClassification_fqs)
+
         speciation_report = reMykrobe.out.reMykrobe_report
+
       }
+
       else {
-        reAfanc(mapToContamFa.out.reClassification_fqs, afanc_myco_db)
+
         speciation_report = reAfanc.out.reAfanc_report
+
       }
 
       summarise(speciation_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0))
