@@ -459,7 +459,7 @@ process identifyBacterialContaminants {
     tag { sample_name }
     label 'preprocessing'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '_species_in_samp*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_species_in_samp*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
