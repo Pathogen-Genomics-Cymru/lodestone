@@ -466,8 +466,8 @@ if __name__ == "__main__":
     description += "By defining [species] you will automatically select this to be the genome against which reads will be aligned using Clockwork\n"
     description += "[unmix myco] is either 'yes' or 'no', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
     description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
-    usage = "perl identify_tophit_and_contaminants.pl [path to Mykrobe JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
-    usage += "E.G.:\tperl identify_tophit_and_contaminants.pl mykrobe_report.json mykrobe_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
+    usage = "python identify_tophit_and_contaminants2.py [path to Mykrobe JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
+    usage += "E.G.:\tpython identify_tophit_and_contaminants2.py mykrobe_report.json mykrobe_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
 
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('mykrobe_json', metavar='mykrobe_json', type=str, help='Path to Mykrobe json report')

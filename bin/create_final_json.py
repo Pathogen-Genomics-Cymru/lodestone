@@ -111,8 +111,8 @@ def read_and_parse_input_files(stats_file, report_file):
 if __name__ == "__main__":
     # set command line arguments
     description = 'This script will produce the test_report.json\n'
-    usage = 'perl create_final_json.pl [path to stats json] [path to report json]'
-    usage += 'E.G.:\tperl create_final_json.pl stats.json report.json\n\n\n'
+    usage = 'python create_final_json.py [path to stats json] [path to report json]'
+    usage += 'E.G.:\tpython create_final_json.py stats.json report.json\n\n\n'
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('stats_json', metavar='stats_json', type=str, help='Path to stats json')
     parser.add_argument('report_json', metavar='report_json', type=str, help='Path to report json')
