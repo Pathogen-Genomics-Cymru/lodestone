@@ -56,68 +56,44 @@ def process_requirements(args):
     if ((unmix_myco != 'yes') & (unmix_myco != 'no')):
         sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
 
-    # check IDs from the file names
+    ## check IDs from the file names
 
+    # get ID of a Mykrobe/Afanc report depending on which report is provided
     if mykrobe_json.endswith("_mykrobe_report.json"):
-        sample_id_MYK = mykrobe_json.split("_mykrobe")[0]
+        sample_id_MYK = os.path.basename(mykrobe_json).split("_mykrobe")[0]
     elif mykrobe_json.endswith("_afanc_report.json"):
-        sample_id_MYK = mykrobe_json.split("_afanc")[0]
+        sample_id_MYK = os.path.basename(mykrobe_json).split("_afanc")[0]
     else:
         sample_id_MYK = ''
 
-    # res_myk1 = re.findall(r"^.+[\/|\\](.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    # res_myk2 = re.findall(r"^(.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    #
-    # print(res_myk1, res_myk2)
-    # if len(res_myk1) > 0:
-    #     sample_id_MYK = res_myk1[0]
-    # elif len(res_myk2) > 0:
-    #     sample_id_MYK = res_myk2[0]
-    # else:
-    #     sample_id_MYK = ''
-
+    # get ID of a Kraken report
     if kraken_json.endswith("_kraken_report.json"):
-        sample_id_KRA = kraken_json.split("_kraken")[0]
+        sample_id_KRA = os.path.basename(kraken_json).split("_kraken")[0]
     else:
         sample_id_KRA = ''
 
-    # res_kra1 = re.findall(r"^.+[\/|\\](.*?)\_kraken\_report\.json$", kraken_json)
-    # res_kra2 = re.findall(r"^(.*?)\_kraken\_report\.json$", kraken_json)
-    #
-    # print(res_kra1, res_kra2)
-    # if len(res_kra1) > 0:
-    #     sample_id_KRA = res_kra1[0]
-    # elif len(res_kra2) > 0:
-    #     sample_id_KRA = res_kra2[0]
-    # else:
-    #     sample_id_KRA = ''
-
-    print(sample_id_MYK, sample_id_KRA)
-
+    # check if Mykrobe/Afanc report ID matches Kraken report ID
     sample_id = ''
     if sample_id_MYK != sample_id_KRA:
         sys.exit("ERROR: the sample IDs of %s and %s are mismatched" %(mykrobe_json, kraken_json))
     else:
         sample_id = sample_id_MYK
 
+    # if previous top-hit/contaminant report is provided, find its ID and check if that matches sample ID identified earlier
     if prev_species_json != 'null':
-        res_pre1 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
-        res_pre2 = re.findall(r"^(.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
-        if len(res_pre1) > 0:
-            sample_id_PRE = res_pre1[0]
-        elif len(res_pre2) > 0:
-            sample_id_PRE = res_pre2[0]
+        if prev_species_json.endswith("_species_in_sample_previous.json"):
+            sample_id_PRE = os.path.basename(prev_species_json).split("_species")[0]
         else:
             sample_id_PRE = ''
 
         if sample_id != sample_id_PRE:
             sys.exit("ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(prev_species_json, sample_id))
 
+    # if sample ID could not be identified, produce an error message
     if sample_id == '':
         sys.exit("ERROR: could not identify sample ID from the filename of either %s or %s" %(mykrobe_json, kraken_json))
 
     return sample_id
-
 
 # PARSE THE 'ASSEMBLY SUMMARY' FILE TO STORE URLs FOR EACH GENOME ASSOCIATED WITH A GIVEN TAXON ID. WE REQUIRE THAT THIS IS THE LATEST VERSION OF THE GENOME AVAILABLE IN REFSEQ. WE WILL LATER CHECK THAT (A) IT IS DEFINED AS A "COMPLETE GENOME", AND (B) IT HAS FULL GENOME REPRESENTATION.
 ## RefSeq defines a 'complete genome' (see ftp://ftp.ncbi.nlm.nih.gov/genomes/README_assembly_summary.txt) as follows: "all chromosomes are gapless and have no runs of 10 or more ambiguous bases (Ns), there are no unplaced or unlocalized scaffolds, and all the expected chromosomes are present (i.e. the assembly is not noted as having partial genome representation). Plasmids and organelles may or may not be included in the assembly but if present then the sequences are gapless"
