@@ -342,9 +342,9 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         out['summary_questions']['were_contaminants_removed'] = 'no'
 
     # IS THE TOP SPECIES HIT ONE OF THE 10 ACCEPTABLE POSSIBILITIES? IF SO, PROVIDE A LINK TO THE REFERENCE GENOME AND TO THE MYKROBE PHYLOGENETIC AND RESISTANCE PREDICTIONS.
-    re_top_species = re.findall(r"^[Myco]\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
+    re_top_species = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
     if len(re_top_species) > 0:
-        identified_species = re_top_species[0]
+        identified_species = re_top_species[0][1]
         if supposed_species == 'null':
             out['summary_questions']['is_the_top_species_appropriate'] = 'yes'
         elif ((supposed_species != 'null') & (supposed_species == identified_species)):
