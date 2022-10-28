@@ -10,8 +10,8 @@ process alignToRef {
     label 'normal_cpu'
     label 'medium_memory'
 
-    publishDir "${params.output_dir}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
@@ -83,7 +83,7 @@ process callVarsMpileup {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
@@ -119,7 +119,7 @@ process callVarsCortex {
     label 'normal_cpu'
     label 'medium_memory'
 
-    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
     
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
@@ -160,8 +160,8 @@ process minos {
     label 'clockwork'
     label 'medium_memory'
 
-    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(bcftools_vcf)
@@ -207,9 +207,9 @@ process gvcf {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
-    publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
+    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(minos_vcf), val(isSampleTB)
