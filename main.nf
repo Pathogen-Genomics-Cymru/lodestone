@@ -136,6 +136,7 @@ Runtime data:
 Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
 Running as user       ${ANSI_GREEN}${workflow.userName}${ANSI_RESET}
 Launch directory      ${ANSI_GREEN}${workflow.launchDir}${ANSI_RESET}
+Workflow session ID   ${ANSI_GREEN}${workflow.sessionId}${ANSI_RESET}
 """
 .stripIndent()
 
