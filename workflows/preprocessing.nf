@@ -57,17 +57,8 @@ workflow preprocessing {
 
       afanc(kraken2.out.kraken2_fqs, afanc_myco_db)
 
-      if ( params.mykrobe == 'yes' ) {
-
-        speciation_report = mykrobe.out.mykrobe_report
-
-      }
-
-      else {
-
-        speciation_report = afanc.out.afanc_report
-
-      }
+      // set speciation report
+      speciation_report = afanc.out.afanc_report
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
@@ -83,17 +74,8 @@ workflow preprocessing {
 
       reAfanc(mapToContamFa.out.reClassification_fqs, afanc_myco_db)
 
-      if ( params.mykrobe == 'yes' ) {
-
-        speciation_report = reMykrobe.out.reMykrobe_report
-
-      }
-
-      else {
-
-        speciation_report = reAfanc.out.reAfanc_report
-
-      }
+      // set speciation report
+      speciation_report = reAfanc.out.reAfanc_report
 
       summarise(speciation_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0))
 
