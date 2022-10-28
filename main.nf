@@ -110,12 +110,6 @@ if ( ( params.unmix_myco != "yes" ) && ( params.unmix_myco != "no" ) ) {
 if ( ( params.species != "null" ) && ( params.species != "abscessus" ) && ( params.species != "africanum" ) && ( params.species != "avium" ) && ( params.species != "bovis" ) && ( params.species != "chelonae" ) && ( params.species != "chimaera" ) && ( params.species != "fortuitum" ) && ( params.species != "intracellulare" ) && ( params.species != "kansasii" ) && ( params.species != "tuberculosis" ) ) {
     exit 1, "error: --species is optional, but if used should be one of either abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis"
 }
-if ( params.mykrobe == "yes") {
-    speciation_tool = "Mykrobe"
-}
-else {
-    speciation_tool = "Afanc"
-}
 
 log.info """
 ========================================================================
@@ -135,8 +129,6 @@ Parameters used:
 --vcfmix		${params.vcfmix}
 --gnomonicus		${params.gnomonicus}
 --amr_cat		${params.amr_cat}
-
-Speciation tool in final report:    ${speciation_tool}
 
 Runtime data:
 ------------------------------------------------------------------------
