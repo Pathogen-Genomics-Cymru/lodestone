@@ -56,68 +56,44 @@ def process_requirements(args):
     if ((unmix_myco != 'yes') & (unmix_myco != 'no')):
         sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
 
-    # check IDs from the file names
+    ## check IDs from the file names
 
+    # get ID of a Mykrobe/Afanc report depending on which report is provided
     if mykrobe_json.endswith("_mykrobe_report.json"):
-        sample_id_MYK = mykrobe_json.split("_mykrobe")[0]
+        sample_id_MYK = os.path.basename(mykrobe_json).split("_mykrobe")[0]
     elif mykrobe_json.endswith("_afanc_report.json"):
-        sample_id_MYK = mykrobe_json.split("_afanc")[0]
+        sample_id_MYK = os.path.basename(mykrobe_json).split("_afanc")[0]
     else:
         sample_id_MYK = ''
 
-    # res_myk1 = re.findall(r"^.+[\/|\\](.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    # res_myk2 = re.findall(r"^(.*?)\_mykrobe\_report\.json$", mykrobe_json)
-    #
-    # print(res_myk1, res_myk2)
-    # if len(res_myk1) > 0:
-    #     sample_id_MYK = res_myk1[0]
-    # elif len(res_myk2) > 0:
-    #     sample_id_MYK = res_myk2[0]
-    # else:
-    #     sample_id_MYK = ''
-
+    # get ID of a Kraken report
     if kraken_json.endswith("_kraken_report.json"):
-        sample_id_KRA = kraken_json.split("_kraken")[0]
+        sample_id_KRA = os.path.basename(kraken_json).split("_kraken")[0]
     else:
         sample_id_KRA = ''
 
-    # res_kra1 = re.findall(r"^.+[\/|\\](.*?)\_kraken\_report\.json$", kraken_json)
-    # res_kra2 = re.findall(r"^(.*?)\_kraken\_report\.json$", kraken_json)
-    #
-    # print(res_kra1, res_kra2)
-    # if len(res_kra1) > 0:
-    #     sample_id_KRA = res_kra1[0]
-    # elif len(res_kra2) > 0:
-    #     sample_id_KRA = res_kra2[0]
-    # else:
-    #     sample_id_KRA = ''
-
-    print(sample_id_MYK, sample_id_KRA)
-
+    # check if Mykrobe/Afanc report ID matches Kraken report ID
     sample_id = ''
     if sample_id_MYK != sample_id_KRA:
         sys.exit("ERROR: the sample IDs of %s and %s are mismatched" %(mykrobe_json, kraken_json))
     else:
         sample_id = sample_id_MYK
 
+    # if previous top-hit/contaminant report is provided, find its ID and check if that matches sample ID identified earlier
     if prev_species_json != 'null':
-        res_pre1 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
-        res_pre2 = re.findall(r"^(.*?)\_species\_in\_sample\_previous\.json$", prev_species_json)
-        if len(res_pre1) > 0:
-            sample_id_PRE = res_pre1[0]
-        elif len(res_pre2) > 0:
-            sample_id_PRE = res_pre2[0]
+        if prev_species_json.endswith("_species_in_sample_previous.json"):
+            sample_id_PRE = os.path.basename(prev_species_json).split("_species")[0]
         else:
             sample_id_PRE = ''
 
         if sample_id != sample_id_PRE:
             sys.exit("ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(prev_species_json, sample_id))
 
+    # if sample ID could not be identified, produce an error message
     if sample_id == '':
         sys.exit("ERROR: could not identify sample ID from the filename of either %s or %s" %(mykrobe_json, kraken_json))
 
     return sample_id
-
 
 # PARSE THE 'ASSEMBLY SUMMARY' FILE TO STORE URLs FOR EACH GENOME ASSOCIATED WITH A GIVEN TAXON ID. WE REQUIRE THAT THIS IS THE LATEST VERSION OF THE GENOME AVAILABLE IN REFSEQ. WE WILL LATER CHECK THAT (A) IT IS DEFINED AS A "COMPLETE GENOME", AND (B) IT HAS FULL GENOME REPRESENTATION.
 ## RefSeq defines a 'complete genome' (see ftp://ftp.ncbi.nlm.nih.gov/genomes/README_assembly_summary.txt) as follows: "all chromosomes are gapless and have no runs of 10 or more ambiguous bases (Ns), there are no unplaced or unlocalized scaffolds, and all the expected chromosomes are present (i.e. the assembly is not noted as having partial genome representation). Plasmids and organelles may or may not be included in the assembly but if present then the sequences are gapless"
@@ -149,6 +125,21 @@ def read_assembly_summary(assembly_file_path):
             urls[species_taxid].append([species_name, infraspecific_name, ftp_path, assembly_level, genome_rep, refseq_category])
 
     return urls, tax_ids
+
+## Function to match species according to the NCBI taxonomy for Mycobacteriaceae. Check is case-independent.
+# Old taxonomy: "Mycobacterium"
+# New taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
+def match_taxonomy(spec):
+    ## old taxonomy
+    # if spec.lower().startswith('mycobact'):
+    #     return True
+    # else:
+    #     return False
+    ## new taxonomy
+    if spec.lower().startswith('mycobact') or spec.lower().startswith('mycolicibac'):
+        return True
+    else:
+        return False
 
 # define main function to process data
 def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix_myco, myco_dir_path, prev_species_json_path, urls, tax_ids, sample_id):
@@ -205,21 +196,22 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         taxid = key['taxon_id']
         reads = key['reads']
         if taxid == 9606: no_of_human_reads += reads
-        species = species.replace("Mycobacteriodes", "Mycobacterium") # Kraken sometimes uses "Mycobacteriodes" (e.g. Mycobacteriodes abscessus) whereas Mykrobe uses "Mycobacterium" for the same. We need to standardise this to prevent downstream errors
-        if species.startswith("Mycobact"): continue # ignore any Kraken hits to mycobacterial species - they may be spurious. We will use only the mycobacterial classifications made by Mykrobe
+        # species = species.replace("Mycobacteriodes", "Mycobacterium") # Kraken sometimes uses "Mycobacteriodes" (e.g. Mycobacteriodes abscessus) whereas Mykrobe uses "Mycobacterium" for the same. We need to standardise this to prevent downstream errors
+        ## ignore any Kraken hits to mycobacterial species - they may be spurious. We will use only the mycobacterial classifications made by Mykrobe
+        if match_taxonomy(species): continue
         if taxid == 9606: continue # ignore human because we have a dedicated human read removal process elsewhere in the workflow
         if species != top_species: other_species[species] = taxid
-
+    
     # OTHER THAN THE TOP HIT, WHAT NON-HUMAN SPECIES ARE ALSO PRESENT IN THE SAMPLE, ACCORDING TO MYKROBE?
-    for spec in mykrobe[sample_id]['phylogenetics']['species']:
-        spec = spec.replace("_", " ")
+    for species in mykrobe[sample_id]['phylogenetics']['species']:
+        species = species.replace("_", " ")
         ## Mykrobe does not assign a taxon ID to each species, so we will need to look this up. The taxon ID is the basis on which species' genomes are downloaded - we cannot proceed without it.
-        if ((spec not in tax_ids) & (spec != top_species)):
-            warnings.append("warning: unable to find a taxon ID for '%s', which means we will not be able to locate its genome, and thereby remove it as a contaminant. Check the Kraken report to see how this species has been reported" %spec)
-        if spec not in tax_ids: continue
-        taxid = tax_ids[spec]
+        if ((species not in tax_ids) & (species != top_species)):
+            warnings.append("warning: unable to find a taxon ID for '%s', which means we will not be able to locate its genome, and thereby remove it as a contaminant. Check the Kraken report to see how this species has been reported" %species)
+        if species not in tax_ids: continue
+        taxid = tax_ids[species]
         if taxid == 9606: continue # ignore human because we have a dedicated human read removal process elsewhere in the workflow
-        if spec != top_species: other_species[species] = taxid
+        if species != top_species: other_species[species] = taxid
 
     # IDENTIFY GENOMES FOR EACH MEMBER OF THE NON-REDUNDANT LIST OF NON-TOP-HIT & NON-HUMAN SPECIES PRESENT IN THE SAMPLE
     species = []
@@ -303,7 +295,10 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
             if len(re_species[0]) > 1:
                  contaminant_genus = re_species[0][0]
                  contaminant_species = re_species[0][1]
-            if not ((unmix_myco == 'no') & (top_species.startswith('Mycobacterium')) & (spec.startswith('Mycobacterium'))):
+            if ((unmix_myco == 'no') & (match_taxonomy(top_species)) & (match_taxonomy(spec))):
+                if spec not in ignored_mixed_myco: ignored_mixed_myco[spec] = 0
+                ignored_mixed_myco[spec] += 1
+            else:
                 if contaminant_genus not in contaminant_genera: contaminant_genera[contaminant_genus] = {}
                 if contaminant_species not in contaminant_genera[contaminant_genus]: contaminant_genera[contaminant_genus][contaminant_species] = 0
                 contaminant_genera[contaminant_genus][contaminant_species] += 1
@@ -313,9 +308,6 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                 out['contaminants'][spec].append(hash)
 
                 out_urls.append(full_path)
-            if ((unmix_myco == 'no') & (top_species.startswith('Mycobacterium')) & (spec.startswith('Mycobacterium'))):
-                if spec not in ignored_mixed_myco: ignored_mixed_myco[spec] = 0
-                ignored_mixed_myco[spec] += 1
 
         if (len(complete_genomes) == 0):
             warnings.append("warning: no complete genome was found for the contaminant species '%s'. Alignment-based read removal will not necessarily detect all reads from this species" %spec)
@@ -350,9 +342,9 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         out['summary_questions']['were_contaminants_removed'] = 'no'
 
     # IS THE TOP SPECIES HIT ONE OF THE 10 ACCEPTABLE POSSIBILITIES? IF SO, PROVIDE A LINK TO THE REFERENCE GENOME AND TO THE MYKROBE PHYLOGENETIC AND RESISTANCE PREDICTIONS.
-    re_top_species = re.findall("^Mycobacterium (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
+    re_top_species = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
     if len(re_top_species) > 0:
-        identified_species = re_top_species[0]
+        identified_species = re_top_species[0][1]
         if supposed_species == 'null':
             out['summary_questions']['is_the_top_species_appropriate'] = 'yes'
         elif ((supposed_species != 'null') & (supposed_species == identified_species)):
@@ -466,8 +458,8 @@ if __name__ == "__main__":
     description += "By defining [species] you will automatically select this to be the genome against which reads will be aligned using Clockwork\n"
     description += "[unmix myco] is either 'yes' or 'no', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
     description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
-    usage = "perl identify_tophit_and_contaminants.pl [path to Mykrobe JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
-    usage += "E.G.:\tperl identify_tophit_and_contaminants.pl mykrobe_report.json mykrobe_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
+    usage = "python identify_tophit_and_contaminants2.py [path to Mykrobe JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
+    usage += "E.G.:\tpython identify_tophit_and_contaminants2.py mykrobe_report.json mykrobe_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
 
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('mykrobe_json', metavar='mykrobe_json', type=str, help='Path to Mykrobe json report')

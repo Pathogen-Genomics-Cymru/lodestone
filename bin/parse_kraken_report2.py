@@ -218,8 +218,8 @@ if __name__ == "__main__":
     # set command line arguments
     description = 'This script will parse a Kraken output file to report all family/genus/species classifications in the sample, plus species complex classifications if the dominant family is Mycobacteriaceae.\n'
     description += 'We require a min. coverage of x%% of the total reads AND a min. number of reads PER CLASSIFICATION. Set these to 0 to report everything.\n'
-    usage = 'perl parse_kraken_report2.pl [path to Kraken report] [path to output file; must end .json] [min. coverage, as %%] [min. coverage, as no. of reads]\n'
-    usage += 'E.G.:\tperl parse_kraken_report2.pl report.txt out.json 1 10000\n\n\n'
+    usage = 'python parse_kraken_report2.py [path to Kraken report] [path to output file; must end .json] [min. coverage, as %%] [min. coverage, as no. of reads]\n'
+    usage += 'E.G.:\tpython parse_kraken_report2.py report.txt out.json 1 10000\n\n\n'
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('in_file', metavar='in_file', type=str, help='Path to Kraken report')
     parser.add_argument('out_file', metavar='out_file', type=str, help='Path to output file; must end .json')
