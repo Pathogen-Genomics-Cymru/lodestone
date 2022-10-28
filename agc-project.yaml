@@ -10,10 +10,6 @@ data:
     - location: s3://tbpipeline
       readOnly: true
 contexts:
-    defaultCtx:
-        engines:
-            - type: nextflow
-              engine: nextflow
     ondemand:
         engines:
             - type: nextflow
