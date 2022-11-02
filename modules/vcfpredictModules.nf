@@ -77,7 +77,7 @@ process gnomon {
     """
 
     stub:
-    gnomon_json = "${sample_name}.gnomon-out.json"
+    gnomon_json = "${sample_name}.gnomonicus-out.json"
     gnomon_fasta = "${sample_name}-fixed.fasta"
     gnomon_effects = "${sample_name}.effects.csv"
     gnomon_mutations = "${sample_name}.mutations.csv"

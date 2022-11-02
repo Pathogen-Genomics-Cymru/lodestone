@@ -49,9 +49,9 @@ Name of the bowtie index, e.g. hg19_1kgmaj<br />
 * **vcfmix**<br />
 Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
 * **gnomon**<br />
-Run [gnomon](https://github.com/oxfordmmm/gnomon), yes or no<br />
+Run [gnomonicus](https://github.com/oxfordmmm/gnomonicus), yes or no<br />
 * **amr_cat**<br />
-Path to AMR catalogue for gnomon<br />
+Path to AMR catalogue for gnomonicus<br />
 <br />
 
 For more information on the parameters run `nextflow run main.nf --help`
@@ -108,5 +108,5 @@ process clockwork:alignToRef\
 24. (Fail) If, after aligning to the reference genome, the average read mapping quality < 10\
 25. (Fail) If < 50% of the reference genome was covered at 10-fold depth
 
-process minos\
-26. (Warn) If sample is not TB, then it is not passed to gnomon
+process clockwork:minos\
+26. (Warn) If sample is not TB, then it is not passed to gnomonicus
