@@ -359,9 +359,9 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                     contaminating_genus = ''
                     for genus in contaminant_genera: # !??
                         contaminating_genus = genus
-                    if contaminating_genus == 'Mycobacterium':
+                    if match_taxonomy(contaminant_genus):
                         contam_species = []
-                        for contam_spec in contaminant_genera['Mycobacterium']:
+                        for contam_spec in contaminant_genera[contaminating_genus]:
                             contam_species.append(contam_spec)
                         sorted_contam_species = contam_species.copy()
                         sorted_contam_species.sort(reverse=True)
@@ -374,7 +374,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                     contam_genus = []
                     contam_with_myco = 0
                     for genus in contaminant_genera:
-                        if genus == 'Mycobacterium':
+                        if match_taxonomy(genus):
                             contam_with_myco += 1
                             continue
                         contam_genus.append(genus)
