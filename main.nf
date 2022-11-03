@@ -53,6 +53,7 @@ Mandatory and conditional parameters:
 --gnomon              Run gnomon "yes" or "no"
 --amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
                       in the vcfpredict container)
+--report_dir          Output directory for execution reports
 
 Optional parameters:
 ------------------------------------------------------------------------
@@ -111,6 +112,9 @@ if ( ( params.unmix_myco != "yes" ) && ( params.unmix_myco != "no" ) ) {
 if ( ( params.species != "null" ) && ( params.species != "abscessus" ) && ( params.species != "africanum" ) && ( params.species != "avium" ) && ( params.species != "bovis" ) && ( params.species != "chelonae" ) && ( params.species != "chimaera" ) && ( params.species != "fortuitum" ) && ( params.species != "intracellulare" ) && ( params.species != "kansasii" ) && ( params.species != "tuberculosis" ) ) {
     exit 1, "error: --species is optional, but if used should be one of either abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis"
 }
+if ( params.report_dir == "" ) {
+    exit 1, "error: --report_dir is mandatory (run with --help to see parameters)"
+}
 
 log.info """
 ========================================================================
@@ -130,6 +134,7 @@ Parameters used:
 --vcfmix		${params.vcfmix}
 --gnomon		${params.gnomon}
 --amr_cat		${params.amr_cat}
+--report_dir		${params.report_dir}
 
 Runtime data:
 ------------------------------------------------------------------------

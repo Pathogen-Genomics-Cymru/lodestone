@@ -10,5 +10,6 @@
   "bowtie_index_name": "hg19_1kgmaj",
   "output_dir": "s3://agc-711700981500-eu-west-2/project/tbpipeline/output/",
   "vcfmix": "yes",
-  "gnomon": "yes"
+  "gnomon": "yes",
+  "report_dir": "s3://agc-711700981500-eu-west-2/project/tbpipeline/reports/"
 }
