@@ -277,9 +277,9 @@ process kraken2 {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    python3 /nextflow-bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
 
-    /nextflow-bin/extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
+    extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
     gzip -f ${nonBac_depleted_reads_1}
     gzip -f ${nonBac_depleted_reads_2}
@@ -426,7 +426,7 @@ process identifyBacterialContaminants {
     error_log = "${sample_name}.err"
 
     """
-    python3 /nextflow-bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${resources_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${resources_dir} null
+    identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${resources_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${resources_dir} null
     
     cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
 
@@ -581,7 +581,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    python3 /nextflow-bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -653,7 +653,7 @@ process summarise {
     error_log = "${sample_name}.err"
 	
     """
-    python3 /nextflow-bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${resources_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${resources_dir} ${prev_species_json}
+    identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${resources_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${resources_dir} ${prev_species_json}
 	
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)

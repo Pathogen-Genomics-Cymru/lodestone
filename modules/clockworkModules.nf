@@ -46,8 +46,8 @@ process alignToRef {
     samtools index ${bam} ${bai}
     samtools stats ${bam} > ${stats}
 
-    python3 /nextflow-bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
-    python3 /nextflow-bin/create_final_json.py ${stats_json} ${json}
+    parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
+    create_final_json.py ${stats_json} ${json}
 
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
     if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo "error: insufficient number and/or quality of read alignments to the reference genome" >> ${error_log}; fi

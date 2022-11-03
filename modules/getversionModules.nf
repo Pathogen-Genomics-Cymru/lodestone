@@ -16,7 +16,7 @@ process getversion {
     script:
 
     """
-    python3 /nextflow-bin/software-json.py ${sing_dir}
+    software-json.py ${sing_dir}
     """
 
     stub:
