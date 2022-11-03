@@ -1,7 +1,0 @@
-{
-  "mainWorkflowURL": "main.nf",
-  "inputFileURLs": [
-    "inputs.scenario1.json"
-  ],
-  "engineOptions": "-stub -config ./project/testing.config -profile agc"
-}
