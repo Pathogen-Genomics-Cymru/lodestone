@@ -12,6 +12,8 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument('-o', '--output_dir', dest='output_dir', help='parent output directory for test runs', required=True)
 parser.add_argument('-r', '--resources_dir', dest='resources_dir', help='path to TB pipeline resources', required=True)
+parser.add_argument('-k', '--kraken_db', dest='kraken_db', help='path to KrakenDB files', required=True)
+parser.add_argument('-b', '--bowtie2_index', dest='bowtie2_index', help='path to Bowtie2 index files', required=True)
 parser.add_argument('-c', '--context', dest='agc_context', help='AGC context to run the workflow in', default='ondemand', required=False)
 
 scenarios = [
@@ -30,7 +32,7 @@ scenarios = [
 file_name_inputs_json = "inputs.json"
 file_name_manifest_json = "MANIFEST.json"
 
-def main(output_dir, resources_dir, context):
+def main(output_dir, resources_dir, kraken_db, bowtie2_index, context):
 
     print("submitting test workflow runs via Amazon Genomics CLI...")
     print("AGC context          : {}".format(context))
@@ -53,6 +55,9 @@ def main(output_dir, resources_dir, context):
         scenario.append(output_dir_scenario)
         scenario.append(resources_dir)
         scenario.append(report_dir_scenario)
+        scenario.append(kraken_db)
+        scenario.append(bowtie2_index)
+
         
         # write scenario inputs.json
         write_inputs_json(scenario, file_name_inputs_json)
@@ -146,4 +151,4 @@ def submit_workflow_run(context):
 if __name__ == '__main__':
     
     args = parser.parse_args()
-    main(args.output_dir, args.resources_dir, args.agc_context)
+    main(args.output_dir, args.resources_dir, args.kraken_db, args.bowtie2_index, args.agc_context)
