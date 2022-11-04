@@ -7,9 +7,9 @@ process vcfmix {
     label 'normal_cpu'
     label 'low_memory'
 
-    publishDir "${params.output_dir}/${workflow.sessionId}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.json', overwrite: 'true'
-    publishDir "${params.output_dir}/${workflow.sessionId}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
-    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.json', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/output_vcfs", mode: 'copy', pattern: '*.csv', overwrite: 'true'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     tuple val(sample_name), path(vcf)
@@ -49,10 +49,10 @@ process gnomon {
 
     errorStrategy 'ignore'
 
-    publishDir "${params.output_dir}/${workflow.sessionId}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.json', overwrite: 'true'
-    publishDir "${params.output_dir}/${workflow.sessionId}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
-    publishDir "${params.output_dir}/${workflow.sessionId}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
-    publishDir "${params.output_dir}/${workflow.sessionId}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.json', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
 
     input:
     tuple val(sample_name), path(vcf), val(isSampleTB)
