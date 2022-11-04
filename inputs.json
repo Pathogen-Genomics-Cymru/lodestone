@@ -11,5 +11,6 @@
   "output_dir": "s3://agc-711700981500-eu-west-2/project/tbpipeline/output/",
   "vcfmix": "yes",
   "gnomon": "yes",
-  "report_dir": "s3://agc-711700981500-eu-west-2/project/tbpipeline/reports/"
+  "report_dir": "s3://agc-711700981500-eu-west-2/project/tbpipeline/reports/",
+  "container_registry": "711700981500.dkr.ecr.eu-west-2.amazonaws.com/tb-pipeline"  
 }
