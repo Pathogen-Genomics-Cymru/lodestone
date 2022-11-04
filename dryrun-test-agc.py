@@ -16,15 +16,15 @@ parser.add_argument('-c', '--context', dest='agc_context', help='AGC context to 
 
 scenarios = [
     ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'yes', 'yes'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'null', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'fail', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'null', 'null', 'null', 'no', 'no'],
-    # ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'null', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'fail', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'null', 'null', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'NOW_VARCALL_dryRun', 'CREATE_ANTIBIOGRAM_dryRun', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'fail', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'null', 'null', 'null', 'no', 'no'],
+    ['fastq', "*_R{1,2}.fastq.gz", 'OK', 'null', 'dryRun', 'dryRun', 'dryRun', 'NOW_DECONTAMINATE_dryRun', 'dryRun', 'NOW_ALIGN_TO_REF_dryRun', 'null', 'null', 'no', 'no']
 ]
 
 file_name_inputs_json = "inputs.json"
