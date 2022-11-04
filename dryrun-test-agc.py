@@ -136,7 +136,7 @@ def write_manifest_json(file_name_inputs_json, file_name):
 
 def submit_workflow_run(context):
     output = subprocess.check_output(
-        "agc workflow run -c {} -n tbpipeline".format(context),
+        "agc workflow run tbpipeline -c {}".format(context),
         stderr=subprocess.STDOUT,
         shell=True
     )
