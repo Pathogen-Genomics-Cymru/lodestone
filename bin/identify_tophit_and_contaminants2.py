@@ -120,6 +120,7 @@ def read_assembly_summary(assembly_file_path):
             species_taxid_regex_res = re.findall(r"\d+", species_taxid)
             if ((version_status != 'latest') | (len(species_taxid_regex_res) == 0) | (ftp_path == 'na')): continue
 
+            species_taxid = int(species_taxid)
             tax_ids[species_name] = species_taxid
             if species_taxid not in urls: urls[species_taxid] = []
             urls[species_taxid].append([species_name, infraspecific_name, ftp_path, assembly_level, genome_rep, refseq_category])
@@ -219,7 +220,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         species.append(spec)
     sorted_species = species.copy()
     sorted_species.sort(reverse=True)
-
+    
     ignored_mixed_myco = {}
     contaminant_genera = {}
     # list for printing urls into test_urllist.txt
@@ -227,7 +228,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
 
     for spec in sorted_species:
         taxid = other_species[spec]
-        if taxid == 9606: continue
+        if taxid == 9606: continue # ignore human reads once again
         if (taxid not in urls):
             warnings.append("warning: unable to find the latest RefSeq genome for taxon ID %s, and thereby remove it as a contaminant (the Kraken report assigns this taxon ID to species '%s')" %(taxid, spec))
         if (taxid not in urls): continue
@@ -287,7 +288,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                 'assembly_level': assembly_level,
                 'genome_representation': genome_rep,
                 'refseq_category': refseq_category,
-                'taxid': int(taxid)
+                'taxid': taxid
             }
             contaminant_genus = ''
             contaminant_species = ''

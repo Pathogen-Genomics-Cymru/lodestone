@@ -38,7 +38,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
             pc_frags = float(pc_frags.strip())
             num_frags_rooted = int(num_frags_rooted.strip())
             num_frags_direct = int(num_frags_direct.strip())
-            ncbi_taxon_id = ncbi_taxon_id.strip()
+            ncbi_taxon_id = int(ncbi_taxon_id.strip())
             rank_code = rank_code.strip()
             name = name.strip()
 
@@ -49,7 +49,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
             if (num_frags_rooted < num_threshold) & (name != 'Homo sapiens'):
                 continue
 
-            if (isinstance(pc_frags, float)) & (isinstance(num_frags_rooted, int)) & (isinstance(num_frags_direct, int)) & (isinstance(rank_code, str)) & (isinstance(ncbi_taxon_id, str)) & (isinstance(name, str)):
+            if (isinstance(pc_frags, float)) & (isinstance(num_frags_rooted, int)) & (isinstance(num_frags_direct, int)) & (isinstance(rank_code, str)) & (isinstance(ncbi_taxon_id, int)) & (isinstance(name, str)):
                 if rank_code == 'S':
                     S.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
                     if name != 'Homo sapiens': non_human_species_detected += 1
