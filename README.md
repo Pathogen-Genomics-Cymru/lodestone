@@ -58,6 +58,127 @@ For more information on the parameters run `nextflow run main.nf --help`
 
 The path to the singularity images can also be changed in the singularity profile in `nextflow.config`. Default value is `${baseDir}/singularity`
 
+
+## Amazon Genomics CLI ##
+The workflow can be executed on Amazon Web Services infrastructure using [Amazon Genomics CLI](https://aws.github.io/amazon-genomics-cli/) (ACG). See [prerequisites](https://aws.github.io/amazon-genomics-cli/docs/getting-started/prerequisites/).
+
+### Prepare workflow execution through AGC ###
+
+1. Download and install AGC following the [instructions](https://aws.github.io/amazon-genomics-cli/docs/getting-started/installation)
+
+2. Activate the AWS account for use with AGC. This will deploy the AGC core infrastructure in your AWS account.
+
+```
+agc account activate
+```
+
+3. Define a username
+
+```
+agc configure email you@youremail.com
+```
+
+4. Configure additional S3 buckets (optional)
+
+AGC creates an S3 bucket to store logs and outputs and for input caching. If you want to use a separate bucket for resources and inputs this needs to be configured in the `agc-project.yaml`:
+
+```
+data:
+    - location: s3://<your-bucket-name>
+      readOnly: true
+```
+
+Please note that AGC can write to the bucket provisioned on account activation. Access to any other buckets is read only. If you are not using additional S3 buckets delete the data section from `agc-project.yaml`.
+
+5. Provision resources. Run `provision_resources.sh` to upload KrakenDB files, Bowtie index files and TB pipeline resource files to S3, e.g.:
+
+```
+./provision_resources.sh s3://<agc-bucket-name>/project/tbpipeline/resources/
+```
+
+Note that the `resources` folder in the project directory will be moved out of the directory to `../tb-pipeline-resources`. This is to avoid the `resources` being packaged up with the project directory and uploaded to AGC every time an AGC run is submitted.
+
+6. Deploy the AGC context. This will deploy the compute environment to execute workflows in your AWS account. Two contexts are defined in `agc-project.yaml`: `ondemand` for execution on on-demand EC2 instances and `spot` for execution on spot instances.
+
+To Deploy the `ondemand` context:
+
+```
+agc context deploy --context ondemand 
+```
+
+7. Edit the `inputs.json` file as required. The `inputs.json` file defines the workflow parameters used by Nextflow to run the workflow, eg:
+
+```
+{
+  "input_dir": "s3://<agc-bucket-name>/input/sequencing/mtuberculosis",
+  "filetype": "fastq",
+  "pattern": "*_{1,2}.fastq.gz",
+  "species": "tuberculosis",
+  "unmix_myco": "yes",
+  "resources_dir": "s3://<agc-bucket-name>/project/tbpipeline/resources/tbpipeline",
+  "kraken_db": "s3://<agc-bucket-name>/project/tbpipeline/resources/kraken_db/k2_pluspf_16gb_20220607",
+  "bowtie2_index": "s3:///project/tbpipeline/resources/bowtie2_index/hg19_1kgmaj",
+  "bowtie_index_name": "hg19_1kgmaj",
+  "output_dir": "s3://<agc-bucket-name>/project/tbpipeline/output",
+  "vcfmix": "yes",
+  "gnomon": "yes",
+  "report_dir": "s3://<agc-bucket-name>/project/tbpipeline/reports",
+  "container_registry": "<ecr-container-registry>/tb-pipeline"
+}
+```
+
+The `container_registry` and `report_dir` parameters are optional. If not provided the `container_registry` parameter defaults to `quay.io/pathogen-genomics-cymru`. 
+
+
+## Execute and track workflows through AGC##
+
+1. Submit a workflow run
+
+```
+agc workflow status -c ondemand -n tbpipeline
+```
+
+2. Check workflow status
+
+```
+agc workflow status -c ondemand -r <workflow-instance-id>
+```
+
+3. Check Nextflow engine logs
+
+```
+agc logs engine -c ondemand -r <workflow-instance-id>
+```
+
+4. Check workflow logs
+
+```
+agc logs workflow tbpipeline -r <workflow-instance-id>
+```
+
+5. Stop a workflow run 
+
+```
+agc workflow stop <workflow-instance-id>
+```
+
+See the [AGC command reference](https://aws.github.io/amazon-genomics-cli/docs/reference/) for all agc commands.
+
+### Clean up ### 
+
+1. Destroy the context. This will remove the resources associated with the named context from your account but will keep any S3 outputs and CloudWatch logs.
+
+```
+agc context destroy ondemand
+```
+
+2. Deactivate the account. If you want stop using Amazon Genomics CLI in your AWS account entirely and remove all resources created by AGC you need to deactivate it.
+
+```
+agc account deactivate
+```
+
+
 ## Stub-run ##
 To test the stub run:
 ```

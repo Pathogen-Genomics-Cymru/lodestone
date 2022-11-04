@@ -25,6 +25,7 @@ workflow preprocessing {
       input_files
       krakenDB
       bowtie_dir
+      resources_dir
 
     main:
 
@@ -54,7 +55,7 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
-      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(mykrobe.out.mykrobe_report, by: 0).join(kraken2.out.kraken2_report, by: 0))
+      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(mykrobe.out.mykrobe_report, by: 0).join(kraken2.out.kraken2_report, by: 0), resources_dir)
 
       downloadContamGenomes(identifyBacterialContaminants.out.contam_list)
 
@@ -64,7 +65,7 @@ workflow preprocessing {
 
       reMykrobe(mapToContamFa.out.reClassification_fqs)
 
-      summarise(reMykrobe.out.reMykrobe_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0))
+      summarise(reMykrobe.out.reMykrobe_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0), resources_dir)
 
     emit:
 

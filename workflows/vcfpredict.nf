@@ -12,6 +12,7 @@ workflow vcfpredict {
 
       clockwork_bcftools
       clockwork_minos
+      resources_dir
 
     main:
 
@@ -23,7 +24,7 @@ workflow vcfpredict {
 
       if ( params.gnomon == "yes" ) {
 
-          gnomon(clockwork_minos)
+          gnomon(clockwork_minos, resources_dir)
 
       }
 

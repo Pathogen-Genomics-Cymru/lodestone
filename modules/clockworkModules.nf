@@ -15,6 +15,7 @@ process alignToRef {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
+    path resources_dir
 
     when:
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -45,8 +46,8 @@ process alignToRef {
     samtools index ${bam} ${bai}
     samtools stats ${bam} > ${stats}
 
-    python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
-    python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${json}
+    parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
+    create_final_json.py ${stats_json} ${json}
 
     continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
     if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo "error: insufficient number and/or quality of read alignments to the reference genome" >> ${error_log}; fi
@@ -122,6 +123,7 @@ process callVarsCortex {
     
     input:
     tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
+    path resources_dir
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/

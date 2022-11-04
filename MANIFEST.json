@@ -1,0 +1,7 @@
+{
+  "mainWorkflowURL": "main.nf",
+  "inputFileURLs": [
+    "inputs.json"
+  ],
+  "engineOptions": "-profile agc"
+}

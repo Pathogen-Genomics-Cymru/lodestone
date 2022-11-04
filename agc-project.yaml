@@ -1,0 +1,18 @@
+name: tbpipeline
+schemaVersion: 1
+workflows:
+    tbpipeline:
+        type:
+            language: nextflow
+            version: dsl2
+        sourceURL: ./
+contexts:
+    ondemand:
+        engines:
+            - type: nextflow
+              engine: nextflow
+    spot:
+        requestSpotInstances: true
+        engines:
+            - type: nextflow
+              engine: nextflow

@@ -67,12 +67,15 @@ Optional parameters:
                    
 	           if you DO use this parameter, pipeline will expect this to be the principal species. It will fail 
 		   the sample if reads from this species are not actually the majority
-
+--resources_dir       Path to TB pipeline resources directory
+--report_dir          Output directory for execution reports
+--container_registry  Container registry to pull TB pipeline containers from
                    
 Profiles:
 ------------------------------------------------------------------------
 singularity        to run with singularity
-docker		   to run with docker
+docker             to run with docker
+agc                to run with Amazon Genomics CLI
 
 			   
 Examples:
@@ -129,12 +132,16 @@ Parameters used:
 --vcfmix		${params.vcfmix}
 --gnomon		${params.gnomon}
 --amr_cat		${params.amr_cat}
+--resources_dir	${params.resources_dir}
+--report_dir		${params.report_dir}
+--container_registry	${params.container_registry}
 
 Runtime data:
 ------------------------------------------------------------------------
 Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
 Running as user       ${ANSI_GREEN}${workflow.userName}${ANSI_RESET}
 Launch directory      ${ANSI_GREEN}${workflow.launchDir}${ANSI_RESET}
+Workflow session ID   ${ANSI_GREEN}${workflow.sessionId}${ANSI_RESET}
 """
 .stripIndent()
 
@@ -165,19 +172,24 @@ workflow {
 	       .set{ input_files }
     }
 
+    // create channel for singularity directory
+    sing_dir_ch = Channel.fromPath( "${params.sing_dir}" )
+
     // create channels for kraken2 database and bowtie2 index
     krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
     bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
 
+    // create channel for resources
+    resources_dir_ch = Channel.fromPath( "${params.resources_dir}" )
 
     // main workflow
     main:
 
       // GETVERSION SUB-WORKFLOW
-      getversion()
+      getversion(sing_dir_ch)
 
       // PREPROCESSING SUB-WORKFLOW
-      preprocessing(input_files, krakenDB, bowtie_dir)
+      preprocessing(input_files, krakenDB, bowtie_dir, resources_dir_ch)
 
 
       // CLOCKWORK SUB-WORKFLOW
@@ -188,7 +200,7 @@ workflow {
 
           nomix_seqs_json = preprocessing.out.nocontam_seqs_json
 
-          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json), resources_dir_ch)
 
       }
 
@@ -204,7 +216,7 @@ workflow {
       minos_vcf = clockwork.out.minos_vcf
 
       // VCFPREDICT SUB-WORKFLOW
-      vcfpredict(mpileup_vcf, minos_vcf)
+      vcfpredict(mpileup_vcf, minos_vcf, resources_dir_ch)
 
 }
 

@@ -1,4 +1,5 @@
 // modules for the getversion workflow
+params.output_dir = "${params.output_dir}"
 
 process getversion {
 
@@ -6,13 +7,16 @@ process getversion {
 
     publishDir "${params.output_dir}", mode: 'copy', pattern: '*.json', overwrite: 'true'
 
+    input:
+    path sing_dir
+
     output:
     path("version.json", emit: getversion_json)
 
     script:
 
     """
-    python3 ${baseDir}/bin/software-json.py ${params.sing_dir}
+    software-json.py ${sing_dir}
     """
 
     stub:
