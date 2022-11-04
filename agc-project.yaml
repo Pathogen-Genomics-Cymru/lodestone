@@ -6,9 +6,6 @@ workflows:
             language: nextflow
             version: dsl2
         sourceURL: ./
-data:
-    - location: s3://tbpipeline
-      readOnly: true
 contexts:
     ondemand:
         engines:
