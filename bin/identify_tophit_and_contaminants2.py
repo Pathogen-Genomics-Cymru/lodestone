@@ -128,15 +128,8 @@ def read_assembly_summary(assembly_file_path):
     return urls, tax_ids
 
 ## Function to match species according to the NCBI taxonomy for Mycobacteriaceae. Check is case-independent.
-# Old taxonomy: "Mycobacterium"
-# New taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
+# Taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
 def match_taxonomy(spec):
-    ## old taxonomy
-    # if spec.lower().startswith('mycobact'):
-    #     return True
-    # else:
-    #     return False
-    ## new taxonomy
     if spec.lower().startswith('mycobact') or spec.lower().startswith('mycolicibac'):
         return True
     else:
