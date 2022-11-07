@@ -3,6 +3,14 @@ import os
 import sys
 import argparse
 
+## Function to match species according to the NCBI taxonomy for Mycobacteriaceae. Check is case-independent.
+# Taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
+def match_taxonomy(spec):
+    if spec.lower().startswith('mycobact') or spec.lower().startswith('mycolicibac'):
+        return True
+    else:
+        return False
+
 # function to read kraken report
 def read_kraken_report(input, pct_threshold, num_threshold):
     # input - full path to kraken report
@@ -38,7 +46,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
             pc_frags = float(pc_frags.strip())
             num_frags_rooted = int(num_frags_rooted.strip())
             num_frags_direct = int(num_frags_direct.strip())
-            ncbi_taxon_id = ncbi_taxon_id.strip()
+            ncbi_taxon_id = int(ncbi_taxon_id.strip())
             rank_code = rank_code.strip()
             name = name.strip()
 
@@ -49,7 +57,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
             if (num_frags_rooted < num_threshold) & (name != 'Homo sapiens'):
                 continue
 
-            if (isinstance(pc_frags, float)) & (isinstance(num_frags_rooted, int)) & (isinstance(num_frags_direct, int)) & (isinstance(rank_code, str)) & (isinstance(ncbi_taxon_id, str)) & (isinstance(name, str)):
+            if (isinstance(pc_frags, float)) & (isinstance(num_frags_rooted, int)) & (isinstance(num_frags_direct, int)) & (isinstance(rank_code, str)) & (isinstance(ncbi_taxon_id, int)) & (isinstance(name, str)):
                 if rank_code == 'S':
                     S.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
                     if name != 'Homo sapiens': non_human_species_detected += 1
@@ -59,7 +67,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
                     F.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
 
                 # Kraken does not resolve classifications among the Mycobacteriaceae as well as Mykrobe. At best, it can detect species complexes. We shall retain these classifications to look at later, as they may indicate whether this is a mixed-mycobacterial sample.
-                if (name.startswith('Mycobact')) & (rank_code == 'G1'):
+                if (match_taxonomy(name)) & (rank_code == 'G1'):
                     G1.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
             else:
                 sys.exit('ERROR: malformatted Kraken report, at line %d' %(lineCount))
@@ -69,7 +77,6 @@ def read_kraken_report(input, pct_threshold, num_threshold):
 # define output function
 def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, num_threshold):
     # arguments are the output from read_kraken_report function
-
     # define warnings lists
     warnings = []
 
@@ -130,9 +137,9 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
             }
             if clade not in out: out[clade] = []
             out[clade].append(hash)
-            if (x == 2) & (y > 0) & (sorted_arr[y][2] != 'Homo sapiens'):
+            if ((x == 2) & (y > 0) & (sorted_arr[y][2] != 'Homo sapiens')):
                 contaminant_species_found += 1 # raise a warning if a non-human species is detected that is NOT the top hit, as this indicates the sample is mixed or contaminated
-                if (sorted_arr[y][2].startswith('Mycobact')):
+                if(match_taxonomy(sorted_arr[y][2])):
                     contaminant_mycobacterium_found += 1
     
     if contaminant_species_found > 0:
@@ -140,7 +147,7 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
             warnings.append("warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to Mykrobe report for superior mycobacterial classification")
         else:
             warnings.append("warning: sample is mixed or contaminated (contains reads from multiple non-human species)")
-    if (top_family.startswith("Mycobact")) & ((top_genus.startswith("Mycobact") == False) | (top_species.startswith("Mycobact") == False)):
+    if((match_taxonomy(top_family)) & (not match_taxonomy(top_genus)) & (not match_taxonomy(top_species))):
         warnings.append("warning: top family classification is mycobacterial, but this is not consistent with top genus and species classifications")
 
     # IF THE TOP FAMILY IS MYCOBACTERIACEAE (WHICH CAN ONLY BE THE CASE IF MINIMUM COVERAGE THRESHOLDS ARE MET), WE WILL ALSO REPORT THE KRAKEN 'G1' CLASSIFICATIONS. THESE MAY INDICATE WHETHER THIS IS A MIXED MYCOBACTERIAL SAMPLE.

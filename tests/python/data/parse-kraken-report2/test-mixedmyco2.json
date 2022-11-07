@@ -8,7 +8,7 @@
             "reads": 114967,
             "percentage": 99.84,
             "name": "Mycobacteriaceae",
-            "taxon_id": "1762"
+            "taxon_id": 1762
         }
     ],
     "Genus": [
@@ -16,7 +16,7 @@
             "reads": 114967,
             "percentage": 99.84,
             "name": "Mycobacterium",
-            "taxon_id": "1763"
+            "taxon_id": 1763
         }
     ],
     "Species": [
@@ -24,37 +24,37 @@
             "reads": 21302,
             "percentage": 18.5,
             "name": "Mycobacterium chimaera",
-            "taxon_id": "222805"
+            "taxon_id": 222805
         },
         {
             "reads": 9316,
             "percentage": 8.09,
             "name": "Mycobacterium tuberculosis",
-            "taxon_id": "1773"
+            "taxon_id": 1773
         },
         {
             "reads": 2713,
             "percentage": 2.36,
             "name": "Mycobacterium bovis",
-            "taxon_id": "1765"
+            "taxon_id": 1765
         },
         {
             "reads": 1165,
             "percentage": 1.01,
             "name": "Mycobacterium leprae",
-            "taxon_id": "1769"
+            "taxon_id": 1769
         },
         {
             "reads": 1097,
             "percentage": 0.95,
             "name": "Mycobacterium nonchromogenicum",
-            "taxon_id": "1782"
+            "taxon_id": 1782
         },
         {
             "reads": 1097,
             "percentage": 0.95,
             "name": "Mycobacterium kumamotonense",
-            "taxon_id": "354243"
+            "taxon_id": 354243
         }
     ],
     "Mykrobe": "true",
@@ -63,25 +63,25 @@
             "reads": 43595,
             "percentage": 37.86,
             "name": "Mycobacterium avium complex (MAC)",
-            "taxon_id": "120793"
+            "taxon_id": 120793
         },
         {
             "reads": 13385,
             "percentage": 11.62,
             "name": "Mycobacterium tuberculosis complex",
-            "taxon_id": "77643"
+            "taxon_id": 77643
         },
         {
             "reads": 2317,
             "percentage": 2.01,
             "name": "Mycobacterium terrae complex",
-            "taxon_id": "1073531"
+            "taxon_id": 1073531
         },
         {
             "reads": 1080,
             "percentage": 0.94,
             "name": "Mycobacterium chelonae group",
-            "taxon_id": "670516"
+            "taxon_id": 670516
         }
     ],
     "Warnings": [

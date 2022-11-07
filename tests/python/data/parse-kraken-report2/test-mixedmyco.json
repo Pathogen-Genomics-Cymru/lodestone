@@ -8,7 +8,7 @@
             "reads": 345582,
             "percentage": 99.99,
             "name": "Mycobacteriaceae",
-            "taxon_id": "1762"
+            "taxon_id": 1762
         }
     ],
     "Genus": [
@@ -16,7 +16,7 @@
             "reads": 345582,
             "percentage": 99.99,
             "name": "Mycobacterium",
-            "taxon_id": "1763"
+            "taxon_id": 1763
         }
     ],
     "Species": [
@@ -24,13 +24,13 @@
             "reads": 319481,
             "percentage": 92.44,
             "name": "Mycobacterium abscessus",
-            "taxon_id": "36809"
+            "taxon_id": 36809
         },
         {
             "reads": 5097,
             "percentage": 1.47,
             "name": "Mycobacterium tuberculosis",
-            "taxon_id": "1773"
+            "taxon_id": 1773
         }
     ],
     "Mykrobe": "true",
@@ -39,19 +39,19 @@
             "reads": 322723,
             "percentage": 93.38,
             "name": "Mycobacterium chelonae group",
-            "taxon_id": "670516"
+            "taxon_id": 670516
         },
         {
             "reads": 7442,
             "percentage": 2.15,
             "name": "Mycobacterium tuberculosis complex",
-            "taxon_id": "77643"
+            "taxon_id": 77643
         },
         {
             "reads": 5542,
             "percentage": 1.6,
             "name": "Mycobacterium avium complex (MAC)",
-            "taxon_id": "120793"
+            "taxon_id": 120793
         }
     ],
     "Warnings": [
