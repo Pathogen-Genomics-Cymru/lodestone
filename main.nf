@@ -174,37 +174,29 @@ workflow {
     main:
 
       // GETVERSION SUB-WORKFLOW
+
       getversion()
 
       // PREPROCESSING SUB-WORKFLOW
+
       input_files_vjson = input_files.combine(getversion.out.getversion_json)
 
       preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db)
 
       // CLOCKWORK SUB-WORKFLOW
-      if ( params.unmix_myco == "yes" ) {
 
-          clockwork_seqs = preprocessing.out.decontam_seqs
-          clockwork_json = preprocessing.out.decontam_json
+      clockwork_seqs = preprocessing.out.decontam_seqs
+      clockwork_json = preprocessing.out.decontam_json
 
-          nomix_seqs_json = preprocessing.out.nocontam_seqs_json
+      nomix_seqs_json = preprocessing.out.nocontam_seqs_json
 
-          clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+      clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
 
-      }
-
-      if ( params.unmix_myco == "no" ) {
-
-          clockwork_seqs = preprocessing.out.contam_seqs
-          clockwork_json = preprocessing.out.contam_json
-
-          clockwork(clockwork_seqs.join(clockwork_json, by: 0))
-      }
+      // VCFPREDICT SUB-WORKFLOW
 
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
 
-      // VCFPREDICT SUB-WORKFLOW
       vcfpredict(mpileup_vcf, minos_vcf)
 
 }

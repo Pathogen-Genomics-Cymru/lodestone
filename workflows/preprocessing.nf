@@ -81,9 +81,7 @@ workflow preprocessing {
 
     emit:
 
-      contam_seqs = bowtie2.out.bowtie2_fqs
       decontam_seqs = mapToContamFa.out.reClassification_fqs
-      contam_json = identifyBacterialContaminants.out.sample_json
       decontam_json = summarise.out.summary_json
       nocontam_seqs_json = identifyBacterialContaminants.out.nocontam_fqs
 }
