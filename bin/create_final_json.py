@@ -93,9 +93,9 @@ def read_and_parse_input_files(stats_file, report_file):
     if ((no_warning_message == 1) & (num_warnings == 1) & (num_errors > 0)):
         warnings = []
         if num_errors == 1:
-            warnings.append = "there was %d error but no warnings" %num_errors
+            warnings.append("there was %d error but no warnings" %num_errors)
         elif num_errors > 1:
-            warnings.append = "there was %d errors but no warnings" %num_errors
+            warnings.append("there was %d errors but no warnings" %num_errors)
         report['warnings'] = warnings
     
     out = copy.deepcopy(report)
