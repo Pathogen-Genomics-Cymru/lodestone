@@ -121,6 +121,7 @@ def read_assembly_summary(assembly_file_path):
             species_taxid_regex_res = re.findall(r"\d+", species_taxid)
             if ((version_status != 'latest') | (len(species_taxid_regex_res) == 0) | (ftp_path == 'na')): continue
 
+            species_taxid = int(species_taxid)
             tax_ids[species_name] = species_taxid
             if species_taxid not in urls: urls[species_taxid] = []
             urls[species_taxid].append([species_name, infraspecific_name, ftp_path, assembly_level, genome_rep, refseq_category])
@@ -128,15 +129,8 @@ def read_assembly_summary(assembly_file_path):
     return urls, tax_ids
 
 ## Function to match species according to the NCBI taxonomy for Mycobacteriaceae. Check is case-independent.
-# Old taxonomy: "Mycobacterium"
-# New taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
+# Taxonomy: "Mycobacterium, Mycobacteroides, Mycolicibacter, Mycolicibacterium, and Mycolicibacillus"
 def match_taxonomy(spec):
-    ## old taxonomy
-    # if spec.lower().startswith('mycobact'):
-    #     return True
-    # else:
-    #     return False
-    ## new taxonomy
     if spec.lower().startswith('mycobact') or spec.lower().startswith('mycolicibac'):
         return True
     else:
@@ -228,7 +222,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
 
     for spec in sorted_species:
         taxid = other_species[spec]
-        if taxid == 9606: continue
+        if taxid == 9606: continue # ignore human reads once again
         if (taxid not in urls):
             warnings.append("warning: unable to find the latest RefSeq genome for taxon ID %s, and thereby remove it as a contaminant (the Kraken report assigns this taxon ID to species '%s')" %(taxid, spec))
         if (taxid not in urls): continue
@@ -288,7 +282,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                 'assembly_level': assembly_level,
                 'genome_representation': genome_rep,
                 'refseq_category': refseq_category,
-                'taxid': int(taxid)
+                'taxid': taxid
             }
             contaminant_genus = ''
             contaminant_species = ''
@@ -360,9 +354,9 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                     contaminating_genus = ''
                     for genus in contaminant_genera: # !??
                         contaminating_genus = genus
-                    if contaminating_genus == 'Mycobacterium':
+                    if match_taxonomy(contaminant_genus):
                         contam_species = []
-                        for contam_spec in contaminant_genera['Mycobacterium']:
+                        for contam_spec in contaminant_genera[contaminating_genus]:
                             contam_species.append(contam_spec)
                         sorted_contam_species = contam_species.copy()
                         sorted_contam_species.sort(reverse=True)
@@ -375,7 +369,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
                     contam_genus = []
                     contam_with_myco = 0
                     for genus in contaminant_genera:
-                        if genus == 'Mycobacterium':
+                        if match_taxonomy(genus):
                             contam_with_myco += 1
                             continue
                         contam_genus.append(genus)
