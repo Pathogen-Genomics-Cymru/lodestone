@@ -110,7 +110,8 @@ def read_assembly_summary(assembly_file_path):
             line = line.strip().split("\t")
             refseq_category = line[4]
             species_taxid = line[6]
-            species_name = line[7]
+            ## strips out . characters from the species name
+            species_name = line[7].replace(".", "")
             infraspecific_name = line[8]
             version_status = line[10]
             assembly_level = line[11]
@@ -195,7 +196,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         if match_taxonomy(species): continue
         if taxid == 9606: continue # ignore human because we have a dedicated human read removal process elsewhere in the workflow
         if species != top_species: other_species[species] = taxid
-    
+
     # OTHER THAN THE TOP HIT, WHAT NON-HUMAN SPECIES ARE ALSO PRESENT IN THE SAMPLE, ACCORDING TO MYKROBE?
     for species in mykrobe[sample_id]['phylogenetics']['species']:
         species = species.replace("_", " ")
@@ -213,7 +214,7 @@ def process_reports(mykrobe_json_path, kraken_json_path, supposed_species, unmix
         species.append(spec)
     sorted_species = species.copy()
     sorted_species.sort(reverse=True)
-    
+
     ignored_mixed_myco = {}
     contaminant_genera = {}
     # list for printing urls into test_urllist.txt
