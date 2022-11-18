@@ -165,7 +165,7 @@ process minos {
     label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report_json}'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(bcftools_vcf)
