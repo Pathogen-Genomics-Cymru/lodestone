@@ -96,7 +96,6 @@ RUN git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex
 && mv mccortex /usr/local/bin \
 && curl -fsSL mykrobe-${mykrobe_version}.tar.gz https://github.com/Mykrobe-tools/mykrobe/archive/v${mykrobe_version}.tar.gz | tar -xz \
 && cd mykrobe-${mykrobe_version} \
-&& pip3 install -r requirements.txt \
 && pip3 install . \
 && ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.8/dist-packages/mykrobe/cortex/mccortex31 \
 && mykrobe panels update_metadata \
