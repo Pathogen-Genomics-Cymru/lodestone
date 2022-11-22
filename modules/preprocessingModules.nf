@@ -253,7 +253,7 @@ process fastQC {
 
 process kraken2 {
     /**
-    * @QCcheckpoint only pass to Mykrobe if Kraken's top family classification is Mycobacteriaceae
+    * @QCcheckpoint only pass to Afanc if Kraken's top family classification is Mycobacteriaceae
     */
 
     tag { sample_name }
@@ -299,9 +299,9 @@ process kraken2 {
 
     rm -rf ${sample_name}_read_classifications.txt
 
-    run_mykrobe=\$(jq '.Mykrobe' ${kraken2_json})
+    run_afanc=\$(jq '.afanc' ${kraken2_json})
 
-    if [ \$run_mykrobe == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
+    if [ \$run_afanc == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -463,7 +463,7 @@ process identifyBacterialContaminants {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(mykrobe_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+    tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(afanc_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -481,7 +481,7 @@ process identifyBacterialContaminants {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
@@ -737,7 +737,7 @@ process summarise {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(mykrobe_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam), path(software_json)
+    tuple val(sample_name), path(afanc_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam), path(software_json)
 
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
@@ -749,7 +749,7 @@ process summarise {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${mykrobe_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
+    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)

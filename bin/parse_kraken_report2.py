@@ -66,7 +66,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
                 elif rank_code == 'F':
                     F.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
 
-                # Kraken does not resolve classifications among the Mycobacteriaceae as well as Mykrobe. At best, it can detect species complexes. We shall retain these classifications to look at later, as they may indicate whether this is a mixed-mycobacterial sample.
+                # Kraken does not resolve classifications among the Mycobacteriaceae as well as afanc. At best, it can detect species complexes. We shall retain these classifications to look at later, as they may indicate whether this is a mixed-mycobacterial sample.
                 if (match_taxonomy(name)) & (rank_code == 'G1'):
                     G1.append([num_frags_rooted, pc_frags, name, ncbi_taxon_id])
             else:
@@ -144,7 +144,7 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
     
     if contaminant_species_found > 0:
         if contaminant_mycobacterium_found > 0:
-            warnings.append("warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to Mykrobe report for superior mycobacterial classification")
+            warnings.append("warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to afanc report for superior mycobacterial classification")
         else:
             warnings.append("warning: sample is mixed or contaminated (contains reads from multiple non-human species)")
     if((match_taxonomy(top_family)) & (not match_taxonomy(top_genus)) & (not match_taxonomy(top_species))):
@@ -155,9 +155,9 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
         if no_of_reads_assigned_to_top_family < 100000:
             if "Errors" not in out: out['Errors'] = []
             out['Errors'].append("error: there are < 100k reads classified as Mycobacteriaceae")
-            out['Mykrobe'] = 'false'
+            out['afanc'] = 'false'
         else:
-            out['Mykrobe'] = 'true' # as the sample is predominantly Mycobacteriaceae, we recommend the user invoke Mykrobe for higher-resolution classification. Later in the workflow, we will be using this value in a text comparison. It MUST be lower-case here otherwise it will be mistaken for a Boolean (TRUE/FALSE) instead.
+            out['afanc'] = 'true' # as the sample is predominantly Mycobacteriaceae, we recommend the user invoke afanc for higher-resolution classification. Later in the workflow, we will be using this value in a text comparison. It MUST be lower-case here otherwise it will be mistaken for a Boolean (TRUE/FALSE) instead.
 
         if (len(G1) == 0):
             warnings.append("warning: top family is Mycobacteriaceae but no G1 (species complex) classifications meet thresholds of > %d reads and > %s %% of total reads (this is not necessarily a concern as not all mycobacteria have this taxonomy)" %(num_threshold, pct_threshold))
@@ -175,11 +175,11 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
                 out['Species complex'].append(hash)
             
             if len(sorted_G1) > 1:
-                warnings.append("warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to Mykrobe report)")
+                warnings.append("warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to afanc report)")
     else:
         if "Errors" not in out: out['Errors'] = []
         out['Errors'].append("error: top family is not Mycobacteriaceae")
-        out['Mykrobe'] = 'false'
+        out['afanc'] = 'false'
 
     if len(warnings) == 0:
         warnings.append('')
