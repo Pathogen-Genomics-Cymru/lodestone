@@ -198,7 +198,7 @@ process fastp {
 
     rm -rf ${fastp_html}
 
-    num_reads=\$(fqtools count $fq1 $fq2)
+    num_reads=\$(fqtools count ${clean_fq1} ${clean_fq2})
 
     if (( \$num_reads > 100000 )); then printf "${sample_name}"; else echo '{"error":"after fastp, sample did not have > 100k pairs of reads (it only contained \$num_reads)"}' | jq '.' > ${error_log} && printf "fail" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
