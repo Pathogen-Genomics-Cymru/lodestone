@@ -70,7 +70,7 @@ process gnomonicus {
 
     output:
     tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}_report.json"), emit: gnomon_json
-    tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_json_csv
+    tuple val(sample_name), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_csv optional true
     tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
     path("${sample_name}_err.json", emit: gnomon_log)
     path ("${sample_name}_report.json", emit: gnomon_report)
