@@ -53,6 +53,7 @@ Mandatory and conditional parameters:
 --gnomonicus          Run gnomon "yes" or "no"
 --amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
                       in the vcfpredict container)
+--afanc_myco_db	      Path to the Afanc database used for speciation. Obtain from https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_3.0.tar.gz
 
 Optional parameters:
 ------------------------------------------------------------------------
@@ -129,6 +130,7 @@ Parameters used:
 --vcfmix		${params.vcfmix}
 --gnomonicus		${params.gnomonicus}
 --amr_cat		${params.amr_cat}
+--afanc_myco_db         ${params.afanc_myco_db}
 
 Runtime data:
 ------------------------------------------------------------------------
