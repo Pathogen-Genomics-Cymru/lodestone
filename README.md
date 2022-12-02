@@ -5,7 +5,11 @@
   
 This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
-Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Mykrobe, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, F2 and F47 statistics, an antibiogram and summary reports.
+Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Afanc, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, F2 and F47 statistics, an antibiogram and summary reports.
+
+Note that while Mykrobe is included within this pipeline, it runs as an independent process and is not used for any downstream reporting.
+
+**WARNING**: There are currently known errors with vcfmix and gnomonicus, as such `errorStrategy 'ignore'` has been added to the processes vcfpredict:vcfmix and vcfpredict:gnomonicus to stop the pipeline from crashing. Please check the stdout from nextflow to see whether these processes have ran successfully.
 
 ## Quick Start ## 
 Requires `NXF_VER>=20.11.0-edge`
@@ -41,7 +45,7 @@ Principal species in each sample, assuming genus Mycobacterium. Default 'null'. 
   * If you DO NOT use this parameter (default option), pipeline will determine principal species from the reads and consider any other species a contaminant
   * If you DO use this parameter, pipeline will expect this to be the principal species. It will fail the sample if reads from this species are not actually the majority
 * **kraken_db**<br />
-Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb_20200919 recommended, obtain from https://benlangmead.github.io/aws-indexes/k2)
+Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb recommended, obtain from https://benlangmead.github.io/aws-indexes/k2)
 * **bowtie2_index**<br />
 Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip). The specified path should NOT include the index name
 * **bowtie_index_name**<br />
@@ -52,6 +56,8 @@ Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synt
 Run [gnomonicus](https://github.com/oxfordmmm/gnomonicus), yes or no<br />
 * **amr_cat**<br />
 Path to AMR catalogue for gnomonicus<br />
+* **afanc_myco_db**<br />
+Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_3.0.tar.gz
 <br />
 
 For more information on the parameters run `nextflow run main.nf --help`
@@ -87,10 +93,10 @@ process preprocessing:kraken2\
 11. (Warn) If no genus classification meets the 5000/0.5% thresholds
  
 process preprocessing:identifyBacterialContaminants\
-12. (Fail) If regardless of what Kraken reports, Mykrobe does not make a species-level mycobacterial classification (note that we do not use Kraken mycobacterial classifications other than to determine whether 100k reads are family Mycobacteriaceae; for higher-resolution classification, we defer to Mykrobe)\
+12. (Fail) If regardless of what Kraken reports, Afanc does not make a species-level mycobacterial classification (note that we do not use Kraken mycobacterial classifications other than to determine whether 100k reads are family Mycobacteriaceae; for higher-resolution classification, we defer to Afanc)\
 13. (Fail) If the sample is not contaminated and the top species hit is not one of the 10 supported Mycobacteria: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis\
 14. (Fail) If the sample is not contaminated and the top species hit is contrary to the species expected (e.g. "avium" rather than "tuberculosis" - only tested if you provide that expectation)\
-15. (Warn) If the top Mykrobe species hit, on the basis of highest % coverage, does not also have the highest median depth\
+15. (Warn) If the top Afanc species hit, on the basis of highest % coverage, does not also have the highest median depth\
 16. (Warn) If we are unable to associate an NCBI taxon ID to any given contaminant species, which means we will not be able to locate its genome, and thereby remove it as a contaminant\
 17. (Warn) If we are unable to determine a URL for the latest RefSeq genome associated with a contaminant species' taxon ID\
 18. (Warn) If no complete genome could be found for a contaminant species. The workflow will proceed with alignment-based contaminant removal, but you're warned that there's reduced confidence in detecting reads from this species
