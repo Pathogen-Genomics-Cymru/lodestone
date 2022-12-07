@@ -332,6 +332,7 @@ process afanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
+    label 'retryAfanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
 
@@ -663,6 +664,7 @@ process reAfanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
+    label 'retryAfanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
 
