@@ -57,7 +57,7 @@
             "taxon_id": 354243
         }
     ],
-    "Mykrobe": "true",
+    "afanc": "true",
     "Species complex": [
         {
             "reads": 43595,
@@ -85,7 +85,7 @@
         }
     ],
     "Warnings": [
-        "warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to Mykrobe report for superior mycobacterial classification",
-        "warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to Mykrobe report)"
+        "warning: sample is mixed or contaminated (contains reads from multiple non-human species). Contaminants (i.e. minority species) include one or more mycobacteria. Defer to afanc report for superior mycobacterial classification",
+        "warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to afanc report)"
     ]
 }

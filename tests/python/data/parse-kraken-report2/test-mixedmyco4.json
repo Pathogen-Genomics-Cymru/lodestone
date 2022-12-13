@@ -22,7 +22,7 @@
     "Errors": [
         "error: there are < 100k reads classified as Mycobacteriaceae"
     ],
-    "Mykrobe": "false",
+    "afanc": "false",
     "Species complex": [
         {
             "reads": 4514,
