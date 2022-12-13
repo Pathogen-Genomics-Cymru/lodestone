@@ -116,3 +116,8 @@ process clockwork:alignToRef\
 
 process clockwork:minos\
 26. (Warn) If sample is not TB, then it is not passed to gnomonicus
+
+## Acknowledgements ##
+For a list of direct authors of this pipeline, please see the contributors list. All of the software dependencies of this pipeline are recorded in the version.json
+
+The preprocessing sub-workflow is based on the preprocesing nextflow DSL1 pipeline written by Stephen Bush, University of Oxford. The clockwork sub-workflow uses aspects of the variant calling workflow from https://github.com/iqbal-lab-org/clockwork, lead author Martin Hunt, Iqbal Lab at EMBL-EBI
