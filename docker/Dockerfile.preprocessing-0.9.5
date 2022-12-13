@@ -11,7 +11,7 @@ fastp_version=0.20.1 \
 fastqc_version=0.11.9 \
 fqtools_version=2.3 \
 kraken2_version=2.1.1 \
-afanc_version=0.9.0-alpha \
+afanc_version=0.9.0 \
 mykrobe_version=0.12.1 \
 bwa_version=0.7.17
 
@@ -82,8 +82,8 @@ RUN curl -fsSL https://github.com/DerrickWood/kraken2/archive/v${kraken2_version
 && ./install_kraken2.sh /usr/local/bin \
 && cd ..
 
-RUN curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}.tar.gz | tar -xz \
-&& cd Afanc-${afanc_version} \
+RUN curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}-alpha.tar.gz | tar -xz \
+&& cd Afanc-${afanc_version}-alpha \
 && pip3 install ./ \
 && cd ..
 
