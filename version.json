@@ -1,0 +1,39 @@
+{
+  "lodestone-0.9.5" : {
+    "preprocessing-0.9.5" : {
+      "samtools_version" : "1.12",
+      "htslib_version" : "1.12",
+      "bedtools_version" : "2.29.2",
+      "bowtie2_version" : "2.4.2",
+      "fastp_version" : "0.20.1",
+      "fastqc_version" : "0.11.9",
+      "fqtools_version" : "2.3",
+      "kraken2_version" : "2.1.1",
+      "afanc_version" : "0.9",
+      "mykrobe_version" : "0.12.1",
+      "bwa_version" : "0.7.17"
+    },
+    "clockwork-0.9.5" : {
+      "samtools_version" : "1.12",
+      "htslib_version" : "1.12",
+      "bcftools_version" : "1.12",
+      "minimap2_version" : "2.17",
+      "picard_version" : "2.18.16",
+      "gramtools_version" : "8af53f6c8c0d72ef95223e89ab82119b717044f2",
+      "vt_version" : "2187ff6347086e38f71bd9f8ca622cd7dcfbb40c",
+      "minos_version" : "0.11.0",
+      "cortex_version" : "3a235272e4e0121be64527f01e73f9e066d378d3",
+      "vcftools_version" : "0.1.15",
+      "mccortex_version" : "97aba198d632ee98ac1aa496db33d1a7a8cb7e51",
+      "stampy_version" : "1.0.32r3761",
+      "python_version" : "3.6.5",
+      "clockwork_version" : "2364dec4cbf25c844575e19e8fe0a319d10721b5"
+    },
+    "vcfpredict-0.9.5" : {
+      "vcfmix_version" : "d50267b5448b12072a788e54f9886022c5296e46",
+      "gumpy_version" : "1.0.15",
+      "piezo_version" : "0.3",
+      "gnomonicus_version" : "1.1.2",
+      "tuberculosis_amr_catalogues" : "01f6fd4fee9ad22289ca536697612e91d9db4f1"
+    }
+  }
