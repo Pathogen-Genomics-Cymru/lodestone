@@ -2,7 +2,7 @@ name: build-push-quay
 on:
   push:
     branches:
-      - cardiff-testing
+      - main
     paths:
       - '**/Dockerfile*'
 

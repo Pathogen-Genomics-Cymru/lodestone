@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - 'bin/*.py'
+      - 'tests/python/*.py'
 
   workflow_dispatch:
   
