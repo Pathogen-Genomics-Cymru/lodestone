@@ -1,7 +1,7 @@
-# TB Pipeline #
-![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/build-push-quay/badge.svg)
-![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/pytest/badge.svg)
-![Build Status](https://github.com/Pathogen-Genomics-Cymru/tb-pipeline/workflows/stub-run/badge.svg)
+# Lodestone #
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/build-push-quay/badge.svg)
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/pytest/badge.svg)
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/stub-run/badge.svg)
   
 This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
