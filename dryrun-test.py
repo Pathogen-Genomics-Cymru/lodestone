@@ -30,7 +30,7 @@ def go():
         + ' --checkFqValidity_isok ' + scenario[2] + ' --checkBamValidity_isok ' + scenario[3] + ' --countReads_runfastp ' + scenario[4] \
         + ' --fastp_enoughreads ' + scenario[5] + ' --kraken2_runmykrobe ' + scenario[6] + ' --identifyBacContam_rundecontam ' + scenario[7] \
         + ' --downloadContamGenomes_fapass ' + scenario[8] + ' --summary_doWeAlign ' + scenario[9] + ' --alignToRef_doWeVarCall ' + scenario[10] \
-        + ' --minos_isSampleTB ' + scenario[11] + ' --vcfmix ' + scenario[12] + ' --gnomon ' + scenario[13] \
+        + ' --minos_isSampleTB ' + scenario[11] + ' --vcfmix ' + scenario[12] + ' --gnomonicus ' + scenario[13] \
         + ' > scenario' + str(count) + '.txt' 
         result = subprocess.run([toRun], shell=True)
         count+=1
@@ -39,7 +39,7 @@ def go():
         filename = 'scenario' + str(num) + '.txt'
         with open(filename) as in_file:
             data = in_file.readlines()
-            tail = data[-24:]
+            tail = data[-28:]
         with open(filename, 'w') as out_file:
             out_file.write(''.join(tail))
         filesize = os.stat(filename).st_size

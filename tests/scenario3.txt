@@ -1,16 +1,20 @@
-[60/b54009] process > getversion                                  [100%] 1 of 1 ✔
-[15/edfbed] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
-[43/220f71] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
+
+executor >  local (3)
+[17/f96d7e] process > getversion                                  [100%] 1 of 1 ✔
+[7f/c23052] process > preprocessing:checkFqValidity (dryRun)      [100%] 1 of 1 ✔
+[fe/c3898e] process > preprocessing:countReads (dryRun)           [100%] 1 of 1 ✔
 [-        ] process > preprocessing:fastp                         -
 [-        ] process > preprocessing:fastQC                        -
 [-        ] process > preprocessing:kraken2                       -
 [-        ] process > preprocessing:mykrobe                       -
+[-        ] process > preprocessing:afanc                         -
 [-        ] process > preprocessing:bowtie2                       -
 [-        ] process > preprocessing:identifyBacterialContaminants -
 [-        ] process > preprocessing:downloadContamGenomes         -
 [-        ] process > preprocessing:mapToContamFa                 -
 [-        ] process > preprocessing:reKraken                      -
 [-        ] process > preprocessing:reMykrobe                     -
+[-        ] process > preprocessing:reAfanc                       -
 [-        ] process > preprocessing:summarise                     -
 [-        ] process > clockwork:alignToRef                        -
 [-        ] process > clockwork:callVarsMpileup                   -

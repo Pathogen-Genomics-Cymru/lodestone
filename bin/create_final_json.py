@@ -93,9 +93,9 @@ def read_and_parse_input_files(stats_file, report_file):
     if ((no_warning_message == 1) & (num_warnings == 1) & (num_errors > 0)):
         warnings = []
         if num_errors == 1:
-            warnings.append = "there was %d error but no warnings" %num_errors
+            warnings.append("there was %d error but no warnings" %num_errors)
         elif num_errors > 1:
-            warnings.append = "there was %d errors but no warnings" %num_errors
+            warnings.append("there was %d errors but no warnings" %num_errors)
         report['warnings'] = warnings
     
     out = copy.deepcopy(report)
@@ -111,8 +111,8 @@ def read_and_parse_input_files(stats_file, report_file):
 if __name__ == "__main__":
     # set command line arguments
     description = 'This script will produce the test_report.json\n'
-    usage = 'perl create_final_json.pl [path to stats json] [path to report json]'
-    usage += 'E.G.:\tperl create_final_json.pl stats.json report.json\n\n\n'
+    usage = 'python create_final_json.py [path to stats json] [path to report json]'
+    usage += 'E.G.:\tpython create_final_json.py stats.json report.json\n\n\n'
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('stats_json', metavar='stats_json', type=str, help='Path to stats json')
     parser.add_argument('report_json', metavar='report_json', type=str, help='Path to report json')

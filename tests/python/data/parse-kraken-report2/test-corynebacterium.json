@@ -1,27 +1,27 @@
 {
    "Family" : [
       {
-         "taxon_id" : "1653",
+         "taxon_id" : 1653,
          "name" : "Corynebacteriaceae",
          "percentage" : 8.9,
          "reads" : 4275
       },
       {
-         "taxon_id" : "1762",
+         "taxon_id" : 1762,
          "name" : "Mycobacteriaceae",
          "reads" : 83,
          "percentage" : 0.17
       },
       {
          "name" : "Retroviridae",
-         "taxon_id" : "11632",
+         "taxon_id" : 11632,
          "percentage" : 0.1,
          "reads" : 48
       }
    ],
    "Genus" : [
       {
-         "taxon_id" : "1716",
+         "taxon_id" : 1716,
          "name" : "Corynebacterium",
          "reads" : 4275,
          "percentage" : 8.9
@@ -29,25 +29,25 @@
       {
          "reads" : 83,
          "percentage" : 0.17,
-         "taxon_id" : "1763",
+         "taxon_id" : 1763,
          "name" : "Mycobacterium"
       },
       {
          "reads" : 48,
          "percentage" : 0.1,
          "name" : "Lentivirus",
-         "taxon_id" : "11646"
+         "taxon_id" : 11646
       }
    ],
    "Species" : [
       {
          "name" : "Human immunodeficiency virus 1",
-         "taxon_id" : "11676",
+         "taxon_id" : 11676,
          "reads" : 48,
          "percentage" : 0.1
       }
    ],
-   "Mykrobe" : "false",
+   "afanc" : "false",
    "Warnings" : [
       ""
    ],

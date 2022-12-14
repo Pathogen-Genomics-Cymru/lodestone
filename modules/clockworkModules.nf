@@ -11,10 +11,10 @@ process alignToRef {
     label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_bam", mode: 'copy', overwrite: 'true', pattern: '*{.bam,.bam.bai,_alignmentStats.json}'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{.err,_report.json}'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(json), val(doWeAlign)
+    tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(species_json), val(doWeAlign)
 
     when:
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -23,18 +23,19 @@ process alignToRef {
     tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
-    path("${sample_name}.err", emit: alignToRef_err)
+    path "${sample_name}_err.json", emit: alignToRef_log optional true
+    tuple val(sample_name), path("${sample_name}_report.json"), emit: alignToRef_report
 
     script:
     bam = "${sample_name}.bam"
     bai = "${sample_name}.bam.bai"
     stats = "${sample_name}.stats"
     stats_json = "${sample_name}_alignmentStats.json"
-    out_json = "${sample_name}_report.json"
-    error_log = "${sample_name}.err"
+    report_json = "${sample_name}_report.json"
+    error_log = "${sample_name}_err.json"
 
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${json})
+    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${species_json})
 
     cp \${ref_fa} ${sample_name}.fa
 
@@ -46,10 +47,15 @@ process alignToRef {
     samtools stats ${bam} > ${stats}
 
     python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
-    python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${json}
+    python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${species_json}
 
-    continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${out_json})
-    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}" && printf "" >> ${error_log}; elif [ \$continue == 'no' ]; then echo "error: insufficient number and/or quality of read alignments to the reference genome" >> ${error_log}; fi
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    jq -s ".[0] * .[1]" ${software_json} ${sample_name}_report_previous.json > ${report_json}
+
+    continue=\$(jq -r '.summary_questions.continue_to_clockwork' ${report_json})
+
+    if [ \$continue == 'yes' ]; then printf "NOW_VARCALL_${sample_name}"; elif [ \$continue == 'no' ]; then echo '{"error":"insufficient number and/or quality of read alignments to the reference genome"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -58,7 +64,7 @@ process alignToRef {
     stats = "${sample_name}.stats"
     stats_json = "${sample_name}_alignmentStats.json"
     out_json = "${sample_name}_report.json"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${sample_name}.fa
@@ -85,7 +91,7 @@ process callVarsMpileup {
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
 
     input:
-    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
+    tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall)
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -121,7 +127,7 @@ process callVarsCortex {
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
     
     input:
-    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall)
+    tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall)
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -133,7 +139,7 @@ process callVarsCortex {
     cortex_vcf = "${sample_name}.cortex.vcf"
 
     """
-    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${json})
+    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${report_json})
 
     cp -r \${ref_dir}/* .
 
@@ -151,7 +157,7 @@ process callVarsCortex {
 
 process minos {
     /**
-    * @QCcheckpoint check if top species if TB, is yes pass vcf to gnomon
+    * @QCcheckpoint check if top species is TB, if yes pass vcf to gnomonicus
     */
 
     tag { sample_name }
@@ -159,18 +165,20 @@ process minos {
     label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(bcftools_vcf)
+    tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall), path(cortex_vcf), path(bcftools_vcf)
 
     output:
+    tuple val(sample_name), path(report_json), path(bam), path(ref), emit: minos_bam
     tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
-    path "${sample_name}.err", emit: minos_log optional true
+    tuple val(sample_name), path("${sample_name}_report.json"), emit: minos_report
+    path "${sample_name}_err.json", emit: minos_log optional true
 
     script:
     minos_vcf = "${sample_name}.minos.vcf"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     awk '{print \$1}' ${ref} > ref.fa
@@ -179,14 +187,16 @@ process minos {
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
 
-    top_hit=\$(jq -r '.top_hit.name' ${json})
+    top_hit=\$(jq -r '.top_hit.name' ${report_json})
 
-    if [[ \$top_hit == "Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo "warning: sample is not TB so can't produce antibiogram using gnomon" >> ${error_log} && printf "no"; fi
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"gnomonicus-warning":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
     minos_vcf = "${sample_name}.minos.vcf"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${minos_vcf}
@@ -207,20 +217,21 @@ process gvcf {
 
     publishDir "${params.output_dir}/$sample_name/output_fasta", mode: 'copy', pattern: '*.fa'
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf.gz'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*.err'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(json), path(bam), path(ref), val(doWeVarCall), path(minos_vcf), val(isSampleTB)
+    tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeValCall), path(minos_vcf), val(isSampleTB)
 
     output:
     path("${sample_name}.gvcf.vcf.gz", emit: gvcf)
     path("${sample_name}.fa", emit: gvcf_fa)
-    path "${sample_name}.err", emit: gvcf_log optional true
+    path "${sample_name}_err.json", emit: gvcf_log optional true
+    path "${sample_name}_report.json", emit: gvcf_report optional true
 
     script:
     gvcf = "${sample_name}.gvcf.vcf"
     gvcf_fa = "${sample_name}.fa"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     awk '{print \$1}' ${ref} > ref.fa
@@ -233,13 +244,15 @@ process gvcf {
     rm samtools_all_pos.vcf
     gzip ${gvcf}
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomon} == "no" ]; then printf "workflow complete without error" >> ${error_log}; fi
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
     gvcf = "${sample_name}.gvcf.vcf.gz"
     gvcf_fa = "${sample_name}.fa"
-    error_log = "${sample_name}.err"
+    error_log = "${sample_name}_err.json"
 
     """
     touch ${gvcf}
