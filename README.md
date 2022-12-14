@@ -52,7 +52,7 @@ Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/b
 Name of the bowtie index, e.g. hg19_1kgmaj<br />
 * **vcfmix**<br />
 Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
-* **gnomon**<br />
+* **gnomonicus**<br />
 Run [gnomonicus](https://github.com/oxfordmmm/gnomonicus), yes or no<br />
 * **amr_cat**<br />
 Path to AMR catalogue for gnomonicus<br />
@@ -120,4 +120,4 @@ process clockwork:minos\
 ## Acknowledgements ##
 For a list of direct authors of this pipeline, please see the contributors list. All of the software dependencies of this pipeline are recorded in the version.json
 
-The preprocessing sub-workflow is based on the preprocesing nextflow DSL1 pipeline written by Stephen Bush, University of Oxford. The clockwork sub-workflow uses aspects of the variant calling workflow from https://github.com/iqbal-lab-org/clockwork, lead author Martin Hunt, Iqbal Lab at EMBL-EBI
+The preprocessing sub-workflow is based on the preprocessing nextflow DSL1 pipeline written by Stephen Bush, University of Oxford. The clockwork sub-workflow uses aspects of the variant calling workflow from https://github.com/iqbal-lab-org/clockwork, lead author Martin Hunt, Iqbal Lab at EMBL-EBI
