@@ -115,7 +115,7 @@ def test_unmatched_ids():
         identify_tophit_and_contaminants2.process_requirements(args)
 
     assert pytest_wrapped_e.type == SystemExit
-    assert str(pytest_wrapped_e.value) == "ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and Mykrobe reports (%s)" %(args[7], 'test')
+    assert str(pytest_wrapped_e.value) == "ERROR: sample ID of the previous species JSON (%s) does not match the sample ID we have from the Kraken and afanc reports (%s)" %(args[7], 'test')
 
 def test_read_assembly_summary():
     # test reading assembly data
