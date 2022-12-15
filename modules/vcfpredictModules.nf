@@ -4,7 +4,6 @@ process vcfmix {
 
     tag {sample_name}
     label 'vcfpredict'
-    label 'normal_cpu'
     label 'low_memory'
 
     errorStrategy 'ignore'
@@ -52,7 +51,6 @@ process gnomonicus {
 
     tag {sample_name}
     label 'vcfpredict'
-    label 'normal_cpu'
     label 'low_memory'
 
     errorStrategy 'ignore'
@@ -109,7 +107,6 @@ process finalJson {
 
     tag {sample_name}
     label 'vcfpredict'
-    label 'normal_cpu'
     label 'low_memory'
 
     errorStrategy 'ignore'
