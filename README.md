@@ -12,9 +12,13 @@ Note that while Mykrobe is included within this pipeline, it runs as an independ
 **WARNING**: There are currently known errors with vcfmix and gnomonicus, as such `errorStrategy 'ignore'` has been added to the processes vcfpredict:vcfmix and vcfpredict:gnomonicus to stop the pipeline from crashing. Please check the stdout from nextflow to see whether these processes have ran successfully.
 
 ## Quick Start ## 
-Requires `NXF_VER>=20.11.0-edge`
+This is a Nextflow DSL2 pipeline, it requires a version of Nextflow that supports DSL2 and the stub-run feature. It is recommended to run the pipeline with  `NXF_VER=20.11.0-edge`, as the pipeline has been tested using this version. E.g. to download
+```
+export NXF_VER="20.11.0-edge"
+curl -fsSL https://get.nextflow.io | bash
+```
 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay and a singularity cache directory is set in the `nextflow.config`. 
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. 
 
 E.g. to run the workflow:
 ```
@@ -24,6 +28,13 @@ NXF_VER=20.11.0-edge nextflow run main.nf -profile singularity --filetype fastq 
 NXF_VER=20.11.0-edge nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 ```
+
+### Executors ###
+
+By default, the pipeline will just run on the local machine. To run on a cluster, modifications will have to be made to the `nextflow.config` to add in the executor. E.g. for a SLURM cluster add `process.executor = 'slurm'`. For more information on executor options see the Nextflow docs: https://www.nextflow.io/docs/latest/executor.html
+
+### System Requirements ###
+Minimum recommended requirements: 32GB RAM, 8CPU
 
 ## Params ##
 The following parameters should be set in `nextflow.config` or specified on the command line:
