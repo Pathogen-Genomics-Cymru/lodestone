@@ -7,7 +7,7 @@ about.summary="container for the vcf predict workflow"
 ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq" \
 PYTHON="python3 python3-pip python3-dev"
 
-ENV vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46 \
+ENV vcfmix_version=d4693344bf612780723e39ce27c8ae3868f954176 \
 gumpy_version=1.0.15 \
 piezo_version=0.3 \
 gnomonicus_version=1.1.2 \
@@ -17,7 +17,7 @@ RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
 && apt-get install -y $PACKAGES $PYTHON \
 && apt-get install -y python3-packaging \
-&& git clone https://github.com/AlexOrlek/VCFMIX.git \
+&& git clone https://github.com/JeremyWesthead/VCFMIX.git \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
 && pip3 install recursive_diff \
