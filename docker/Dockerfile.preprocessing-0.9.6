@@ -71,7 +71,7 @@ RUN curl -fsSL https://github.com/OpenGene/fastp/archive/v${fastp_version}.tar.g
 && cd .. \
 && rm -r fastp-${fastp_version}
 
-RUN curl -fsSL "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip" -o fastqc_v${fastqc_version}.zip \
+RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip \
 && unzip fastqc_v${fastqc_version}.zip \
 && chmod +x FastQC/fastqc \
 && mv FastQC/* /usr/local/bin \
