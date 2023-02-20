@@ -26,7 +26,7 @@ process vcfmix {
     error_log = "${sample_name}_err.json"
 
     """
-    python3 ${baseDir}/bin/vcfmix.py ${bcftools_vcf}
+    python3 ${baseDir}/bin/run-vcfmix.py ${bcftools_vcf}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
