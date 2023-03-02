@@ -15,8 +15,11 @@ def go(singpath, configpath):
     database_dict={}
     all_software_dict={}
     stop =  ['export', '\n']
+    
+    paths = list(set(glob.glob(os.path.join(singpath, "Singularity.*"))) - \
+                    set(glob.glob(os.path.join(singpath, "*.img"))))
 
-    for filename in glob.glob(os.path.join(singpath, "Singularity.*")):
+    for filename in paths:
         extension = filename.split('.', 1)[1]
         version = filename.split('-')[-1]
         with open(os.path.join(singpath, filename), 'r') as infile:
