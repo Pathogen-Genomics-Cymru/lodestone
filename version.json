@@ -1,6 +1,6 @@
 {
-  "lodestone-0.9.5" : {
-    "preprocessing-0.9.5" : {
+  "lodestone-0.9.6" : {
+    "preprocessing-0.9.6" : {
       "samtools_version" : "1.12",
       "htslib_version" : "1.12",
       "bedtools_version" : "2.29.2",
@@ -9,11 +9,19 @@
       "fastqc_version" : "0.11.9",
       "fqtools_version" : "2.3",
       "kraken2_version" : "2.1.1",
-      "afanc_version" : "0.9",
+      "afanc_version" : "0.9.2",
       "mykrobe_version" : "0.12.1",
-      "bwa_version" : "0.7.17"
+      "bwa_version" : "0.7.17",
+      "mash_version" : "2.3"
     },
-    "clockwork-0.9.5" : {
+    "vcfpredict-0.9.6" : {
+      "vcfmix_version" : "d4693344bf612780723e39ce27c8ae3868f95417",
+      "gumpy_version" : "1.0.15",
+      "piezo_version" : "0.3",
+      "gnomonicus_version" : "1.1.2",
+      "tuberculosis_amr_catalogues" : "12d38733ad2e238729a3de9f725081e1d4872968"
+    },
+    "clockwork-0.9.6" : {
       "samtools_version" : "1.12",
       "htslib_version" : "1.12",
       "bcftools_version" : "1.12",
@@ -29,11 +37,12 @@
       "python_version" : "3.6.5",
       "clockwork_version" : "2364dec4cbf25c844575e19e8fe0a319d10721b5"
     },
-    "vcfpredict-0.9.5" : {
-      "vcfmix_version" : "d50267b5448b12072a788e54f9886022c5296e46",
-      "gumpy_version" : "1.0.15",
-      "piezo_version" : "0.3",
-      "gnomonicus_version" : "1.1.2",
-      "tuberculosis_amr_catalogues" : "01f6fd4fee9ad22289ca536697612e91d9db4f1"
+    "databases" : {
+      "kraken_db" : "kraken2",
+      "bowtie2_index" : "bowtie2",
+      "bowtie_index_name" : "hg19_1kgmaj",
+      "amr_cat" : "/tuberculosis_amr_catalogues/catalogues/NC_000962.3/NC_000962.3_WHO-UCN-GTB-PCI-2021.7_v1.0_GARC1_RUS.csv",
+      "afanc_myco_db" : "${baseDir}/afanc/Mycobacteriaciae_DB_6.0/"
     }
   }
+}
