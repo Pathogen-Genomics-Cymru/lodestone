@@ -12,7 +12,7 @@ process getversion {
     script:
 
     """
-    python3 ${baseDir}/bin/software-json.py ${params.sing_dir}
+    python3 ${baseDir}/bin/software-json.py ${params.sing_dir} ${params.config_dir}
     """
 
     stub:

@@ -12,7 +12,7 @@ about.summary="container for the vcf predict workflow"
 PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 PYTHON="python3 python3-pip python3-dev"
 
-vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
+vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417
 gumpy_version=1.0.15
 piezo_version=0.3
 gnomonicus_version=1.1.2
@@ -22,11 +22,12 @@ apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
 && apt-get install -y $PACKAGES $PYTHON \
 && apt-get install -y python3-packaging \
-&& git clone https://github.com/AlexOrlek/VCFMIX.git \
+&& git clone https://github.com/JeremyWesthead/VCFMIX.git \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
 && pip3 install recursive_diff \
-&& pip3 install -r requirements.txt \
+&& pip3 install . \
+&& cp -r data /usr/local/lib/python3.8/dist-packages \
 && cd ..
 
 curl -fsSL https://github.com/oxfordmmm/gumpy/archive/refs/tags/v${gumpy_version}.tar.gz | tar -xz \
@@ -52,7 +53,7 @@ git clone https://github.com/oxfordmmm/tuberculosis_amr_catalogues.git \
 %environment
 export PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 export PYTHON="python3 python3-pip python3-dev"
-export vcfmix_version=d50267b5448b12072a788e54f9886022c5296e46
+export vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417
 export gumpy_version=1.0.15
 export piezo_version=0.3
 export gnomonicus_version=1.1.2

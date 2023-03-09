@@ -68,7 +68,7 @@ Run [gnomonicus](https://github.com/oxfordmmm/gnomonicus), yes or no<br />
 * **amr_cat**<br />
 Path to AMR catalogue for gnomonicus<br />
 * **afanc_myco_db**<br />
-Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_4.2.tar.gz
+Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_6.0.tar.gz
 <br />
 
 For more information on the parameters run `nextflow run main.nf --help`
