@@ -16,10 +16,11 @@ fastp_version=0.20.1
 fastqc_version=0.11.9
 fqtools_version=2.3
 kraken2_version=2.1.1
-afanc_version=0.9.2
+afanc_version=0.10.0
 mykrobe_version=0.12.1
 bwa_version=0.7.17
 mash_version=2.3
+fastani_version=1.33
 
 PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
 PYTHON="python3 python3-pip python3-dev"
@@ -94,7 +95,13 @@ curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}
 && cd .. \
 && curl -fsSL "https://github.com/marbl/Mash/releases/download/v${mash_version}/mash-Linux64-v${mash_version}.tar" | tar -x \
 && mv mash-Linux64-v${mash_version}/mash /usr/local/bin \
-&& rm -r mash-Linux*
+&& rm -r mash-Linux* \
+&& curl -fsSL "https://github.com/ParBLiSS/FastANI/archive/refs/tags/v${fastani_version}.tar.gz" | tar -xz \
+&& cd FastANI-${fastani_version} \
+&& ./bootstrap.sh \
+&& ./configure --prefix=/usr/local \
+&& cd ..
+
 
 sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)" \
 && mkdir -p /opt/edirect \
@@ -131,10 +138,11 @@ export fastp_version=0.20.1
 export fastqc_version=0.11.9
 export fqtools_version=2.3
 export kraken2_version=2.1.1
-export afanc_version=0.9.2
+export afanc_version=0.10.0
 export mykrobe_version=0.12.1
 export bwa_version=0.7.17
 export mash_version=2.3
+export fastani_version=1.33
 export PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
 export PYTHON="python3 python3-pip python3-dev"
 export PYTHON_PACKAGES="biopython"
