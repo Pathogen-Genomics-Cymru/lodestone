@@ -55,7 +55,7 @@ workflow preprocessing {
 
       mykrobe(kraken2.out.kraken2_fqs)
 
-      afanc(kraken2.out.kraken2_fqs, afanc_myco_db)
+      afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db)
 
       // set speciation report
       speciation_report = afanc.out.afanc_report
