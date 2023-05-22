@@ -96,6 +96,7 @@ RUN curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_vers
 && cd FastANI-${fastani_version} \
 && ./bootstrap.sh \
 && ./configure --prefix=/usr/local \
+&& make \
 && cd ..
 
 RUN sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)" \
