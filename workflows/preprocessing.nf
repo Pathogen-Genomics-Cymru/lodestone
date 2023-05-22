@@ -58,7 +58,7 @@ workflow preprocessing {
       afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db)
 
       // set speciation report
-      speciation_report = afanc.out.afanc_report
+      speciation_report = afanc.out.afanc_json
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 

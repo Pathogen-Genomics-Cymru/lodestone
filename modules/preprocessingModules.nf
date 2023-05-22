@@ -344,7 +344,7 @@ process afanc {
     path(afanc_myco_db)
 
     output:
-    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_report
+    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
     path "${sample_name}_err.json", emit: afanc_log optional true
     path "${sample_name}_report.json", emit: afanc_report optional true
     // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
