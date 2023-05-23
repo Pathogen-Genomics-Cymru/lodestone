@@ -96,12 +96,9 @@ curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}
 && curl -fsSL "https://github.com/marbl/Mash/releases/download/v${mash_version}/mash-Linux64-v${mash_version}.tar" | tar -x \
 && mv mash-Linux64-v${mash_version}/mash /usr/local/bin \
 && rm -r mash-Linux* \
-&& curl -fsSL "https://github.com/ParBLiSS/FastANI/archive/refs/tags/v${fastani_version}.tar.gz" | tar -xz \
-&& cd FastANI-${fastani_version} \
-&& ./bootstrap.sh \
-&& ./configure --prefix=/usr/local \
-&& make \
-&& cd ..
+&& wget https://github.com/ParBLiSS/FastANI/releases/download/v${fastani_version}/fastANI-Linux64-v${fastani_version}.zip \
+&& unzip fastANI-Linux64-v${fastani_version}.zip  \
+&& mv FastANI /usr/local/bin
 
 
 sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)" \
