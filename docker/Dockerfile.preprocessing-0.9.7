@@ -5,6 +5,7 @@ LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the preprocessing workflow"
 
 ENV samtools_version=1.12 \
+bcftools_version=1.12 \
 htslib_version=1.12 \
 bedtools_version=2.29.2 \
 bowtie2_version=2.4.2 \
@@ -37,7 +38,11 @@ RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
 && make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} \
 && make -C samtools-${samtools_version} -j HTSDIR=../htslib-${htslib_version} prefix=/usr/local install \
-&& rm -r samtools-${samtools_version}
+&& rm -r samtools-${samtools_version} \
+&& curl -fsSL https://github.com/samtools/bcftools/archive/refs/tags/${bcftools_version}.tar.gz | tar -xz \
+&& make -C bcftools-${bcftools_version} -j HTSDIR=../htslib-${htslib_version} \
+&& make -C bcftools-${bcftools_version} -j HTSDIR=../htslib-${htslib_version} prefix=/usr/local install \
+&& rm -r bcftools-${bcftools_version}
 
 RUN curl -fsSL https://github.com/alastair-droop/fqtools/archive/v${fqtools_version}.tar.gz | tar -xz \
 && mv htslib-${htslib_version} fqtools-${fqtools_version} \
