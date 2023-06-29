@@ -334,8 +334,6 @@ process afanc {
     label 'medium_memory'
     label 'retryAfanc'
 
-    errorStrategy 'ignore'
-
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
@@ -357,16 +355,17 @@ process afanc {
     """
     if [[ ${run_afanc} =~ /${sample_name}/ ]]
     then
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
 	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
 	printf ${sample_name}
     else
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus}
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
 	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
 	python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
 
 	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+
     fi
 
     """
@@ -695,7 +694,7 @@ process reAfanc {
     afanc_report = "${sample_name}_afanc_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
     python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
     printf ${sample_name}
     """
