@@ -2,8 +2,8 @@ name: build-push-quay
 on:
   push:
     branches:
-      - main
       - v0.9.6
+      - 0.9.7-dev
     paths:
       - '**/Dockerfile*'
 

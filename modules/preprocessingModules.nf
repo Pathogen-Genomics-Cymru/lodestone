@@ -253,7 +253,7 @@ process fastQC {
 
 process kraken2 {
     /**
-    * @QCcheckpoint only pass to Afanc if Kraken's top family classification is Mycobacteriaceae
+    * @QCcheckpoint if Kraken's top family classification is NOT Mycobacteriaceae, sample will not proceed further than afanc
     */
 
     tag { sample_name }
@@ -301,7 +301,7 @@ process kraken2 {
 
     run_afanc=\$(jq '.afanc' ${kraken2_json})
 
-    if [ \$run_afanc == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
+    if [ \$run_afanc == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
     """
 
     stub:
@@ -334,26 +334,40 @@ process afanc {
     label 'medium_memory'
     label 'retryAfanc'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json)
+    tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json), path(kraken_report), path(kraken_json)
     path(afanc_myco_db)
 
-    when:
-    run_afanc =~ /${sample_name}/
-
     output:
-    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_report
+    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
+    path "${sample_name}_err.json", emit: afanc_log optional true
+    path "${sample_name}_report.json", emit: afanc_report optional true
     // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
     script:
     afanc_report = "${sample_name}_afanc_report.json"
+    error_log = "${sample_name}_err.json"
+    report_json = "${sample_name}_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
-    python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
-    printf ${sample_name}
+    if [[ ${run_afanc} =~ /${sample_name}/ ]]
+    then
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	printf ${sample_name}
+    else
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+
+	python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+
+	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+
+    fi
+
     """
 
     stub:
@@ -490,7 +504,7 @@ process identifyBacterialContaminants {
 
     if [ \$contam_to_remove == 'yes' ]; then cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json; fi
 
-    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " is not one of the 10 accepted mycobacteria")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "NOW_DECONTAMINATE_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
 
     stub:
@@ -680,7 +694,7 @@ process reAfanc {
     afanc_report = "${sample_name}_afanc_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus}
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
     python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
     printf ${sample_name}
     """
@@ -759,7 +773,7 @@ process summarise {
 
     if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
 
-    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " is not one of the 10 accepted mycobacteria")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
+    if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
 
     stub:
