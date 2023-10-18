@@ -127,6 +127,9 @@ process clockwork:alignToRef\
 process clockwork:minos\
 26. (Warn) If sample is not TB, then it is not passed to gnomonicus
 
+## Running on CLIMB Jupyter Hub
+There is a pre-configured climb profile to run Lodestone on a CLIMB Jupyter Notebook Server. Add ```profile climb,docker``` your command invocation. The input directory can point to an S3 bucket natively (e.g. ```--input_dir s3://my-team/bucket```).
+
 ## Acknowledgements ##
 For a list of direct authors of this pipeline, please see the contributors list. All of the software dependencies of this pipeline are recorded in the version.json
 
