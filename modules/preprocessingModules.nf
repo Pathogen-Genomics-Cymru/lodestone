@@ -8,7 +8,8 @@ process checkBamValidity {
     tag { bam_file.getBaseName() }
     label 'preprocessing'
     label 'low_memory'
-
+    label 'low_cpu'
+    
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
@@ -46,6 +47,7 @@ process checkFqValidity {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -87,6 +89,7 @@ process bam2fastq {
     tag { bam_file.getBaseName() }
     label 'preprocessing'
     label 'low_memory'
+    label 'normal_cpu'
 
     input:
     tuple path(bam_file), val(is_ok), path(software_json)
@@ -127,6 +130,7 @@ process countReads {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
@@ -168,6 +172,7 @@ process fastp {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*_fastp.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
@@ -228,6 +233,7 @@ process fastQC {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
 
@@ -289,8 +295,8 @@ process kraken2 {
 
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
-
-    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    
+    python3  ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
 
     ${baseDir}/bin/extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
@@ -473,6 +479,8 @@ process identifyBacterialContaminants {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_species_in_samp*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -526,6 +534,8 @@ process downloadContamGenomes {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'low_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
@@ -748,6 +758,8 @@ process summarise {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'low_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_species_in_sample.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'

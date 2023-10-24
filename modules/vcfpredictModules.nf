@@ -5,6 +5,7 @@ process vcfmix {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -52,6 +53,7 @@ process gnomonicus {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -108,7 +110,8 @@ process finalJson {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
-
+    label 'low_cpu'
+    
     errorStrategy 'ignore'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_report.json'

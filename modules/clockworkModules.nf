@@ -163,6 +163,7 @@ process minos {
     tag { sample_name }
     label 'clockwork'
     label 'medium_memory'
+    label 'normal_cpu'
 
     publishDir "${params.output_dir}/$sample_name/output_vcfs", mode: 'copy', pattern: '*.vcf'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
