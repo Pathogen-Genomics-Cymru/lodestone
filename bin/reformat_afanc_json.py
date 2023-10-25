@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """ Reformats the Afanc report json for consumption by identify_tophit_and_contaminants
 """
 
