@@ -4,6 +4,7 @@ on:
     branches:
       - v0.9.6
       - 0.9.7-dev
+      - climb
     paths:
       - '**/Dockerfile*'
 
