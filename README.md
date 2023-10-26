@@ -128,7 +128,7 @@ process clockwork:minos\
 26. (Warn) If sample is not TB, then it is not passed to gnomonicus
 
 ## Running on CLIMB Jupyter Hub
-There is a pre-configured climb profile to run Lodestone on a CLIMB Jupyter Notebook Server. Add ```profile climb,docker``` your command invocation. The input directory can point to an S3 bucket natively (e.g. ```--input_dir s3://my-team/bucket```).
+There is a pre-configured climb profile to run Lodestone on a CLIMB Jupyter Notebook Server. Add ```profile climb,docker``` to your command invocation. The input directory can point to an S3 bucket natively (e.g. ```--input_dir s3://my-team/bucket```). By default this will run the workflow in Docker containers and take advantage of kubernetes pods. The Kraken2, Bowtie2 and Afanc databases will by default point to the ```pluspf16```, ```hg19_1kgmaj_bt2``` and ```Mycobacteriaciae_DB_7.0``` respectively. These are mounted on a public shared volume.
 
 ## Acknowledgements ##
 For a list of direct authors of this pipeline, please see the contributors list. All of the software dependencies of this pipeline are recorded in the version.json
