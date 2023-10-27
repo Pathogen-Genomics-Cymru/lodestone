@@ -7,6 +7,7 @@ on:
       - climb
     paths:
       - '**/Dockerfile*'
+      - 'bin/'
 
   workflow_dispatch:
 
@@ -56,12 +57,12 @@ jobs:
           TAGS=$(echo ${{ matrix.dockerfile }} | awk -F '[-]' '{print $2}')
           TAGS+=('latest')
           ( IFS=$','; echo "${TAGS[*]}" )
-
-      - name: Copy bin directory to cwd
-      with:
-        path: docker
+      - name: Copy bin folder to docker
+        with:
+          path: docker
         run: |
           cp ../bin .
+          
       - name: Build and publish image to Quay
         uses: docker/build-push-action@v1
         with:
