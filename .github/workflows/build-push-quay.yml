@@ -7,7 +7,6 @@ on:
       - climb
     paths:
       - '**/Dockerfile*'
-      - 'bin/'
 
   workflow_dispatch:
 
@@ -58,6 +57,11 @@ jobs:
           TAGS+=('latest')
           ( IFS=$','; echo "${TAGS[*]}" )
 
+      - name: Copy bin directory to cwd
+      with:
+        path: docker
+        run: |
+          cp ../bin .
       - name: Build and publish image to Quay
         uses: docker/build-push-action@v1
         with:
