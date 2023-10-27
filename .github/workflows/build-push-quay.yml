@@ -7,7 +7,7 @@ on:
       - climb
     paths:
       - '**/Dockerfile*'
-      - 'bin/**'
+      - 'bin/'
 
   workflow_dispatch:
 
