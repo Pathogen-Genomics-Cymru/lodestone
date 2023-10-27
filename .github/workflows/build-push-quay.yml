@@ -42,10 +42,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Copy bin to docker directory
-        run: |
-          cp bin/ docker/bin
-      
       - name: Get image name
         id: image_name
         run: |
