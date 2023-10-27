@@ -44,7 +44,7 @@ jobs:
 
       - name: Copy bin folder to docker
         run: |
-          cp ../bin .
+          cp bin/ docker/bin
       
       - name: Get image name
         id: image_name
