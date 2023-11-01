@@ -13,7 +13,7 @@ gnomonicus_version=1.1.2 \
 tuberculosis_amr_catalogues=12d38733ad2e238729a3de9f725081e1d4872968
 
 COPY bin/ /opt/bin/
-COPY resources/ ~/
+COPY resources/ /resources
 
 ENV PATH=/opt/bin:$PATH
 

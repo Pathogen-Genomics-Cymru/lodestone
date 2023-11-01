@@ -28,7 +28,7 @@ LD_LIBRARY_PATH=/usr/local/lib
 RUN export DEBIAN_FRONTEND="noninteractive"
 
 COPY bin/ /opt/bin/
-COPY resources/ ~/
+COPY resources/ /resources
 
 ENV PATH=/opt/bin:$PATH
 
