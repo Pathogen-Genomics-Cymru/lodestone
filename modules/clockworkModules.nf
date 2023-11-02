@@ -46,8 +46,8 @@ process alignToRef {
     samtools index ${bam} ${bai}
     samtools stats ${bam} > ${stats}
 
-    python3 ${baseDir}/bin/parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
-    python3 ${baseDir}/bin/create_final_json.py ${stats_json} ${species_json}
+    parse_samtools_stats.py ${bam} ${stats} > ${stats_json}
+    create_final_json.py ${stats_json} ${species_json}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 

@@ -31,6 +31,7 @@ COPY bin/ /opt/bin/
 COPY resources/ /resources
 
 ENV PATH=/opt/bin:$PATH
+ENV PATH=/resources:$PATH
 
 RUN apt-get update \
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y $PACKAGES $PYTHON \

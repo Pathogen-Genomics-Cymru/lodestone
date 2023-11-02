@@ -16,6 +16,7 @@ COPY bin/ /opt/bin/
 COPY resources/ /resources
 
 ENV PATH=/opt/bin:$PATH
+ENV PATH=/resources:$PATH
 
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \

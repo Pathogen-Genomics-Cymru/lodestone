@@ -296,9 +296,9 @@ process kraken2 {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
     
-    python3  ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
 
-    ${baseDir}/bin/extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
+    extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
     gzip -f ${nonBac_depleted_reads_1}
     gzip -f ${nonBac_depleted_reads_2}
@@ -362,13 +362,13 @@ process afanc {
     if [[ ${run_afanc} =~ /${sample_name}/ ]]
     then
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 	printf ${sample_name}
     else
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
-	python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${params.resource_dir} null
+	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${params.resource_dir} null
 
 	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
 
@@ -504,7 +504,7 @@ process identifyBacterialContaminants {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${params.resource_dir} null
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${params.resource_dir} null
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
@@ -663,7 +663,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -705,7 +705,7 @@ process reAfanc {
 
     """
     afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-    python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+    reformat_afanc_json.py ${sample_name}/${sample_name}.json
     printf ${sample_name}
     """
 
@@ -777,7 +777,7 @@ process summarise {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.resource_dir}/resources ${prev_species_json}
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.resource_dir}/resources ${prev_species_json}
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
