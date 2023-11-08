@@ -28,6 +28,9 @@ workflow preprocessing {
       krakenDB
       bowtie_dir
       afanc_myco_db
+      resource_dir
+      refseq_path
+
 
     main:
 
@@ -55,7 +58,7 @@ workflow preprocessing {
 
       mykrobe(kraken2.out.kraken2_fqs)
 
-      afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db)
+      afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db, resource_dir, refseq_path)
 
       // set speciation report
       speciation_report = afanc.out.afanc_json
