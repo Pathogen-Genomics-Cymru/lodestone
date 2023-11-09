@@ -346,7 +346,7 @@ process afanc {
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json), path(kraken_report), path(kraken_json)
     path(afanc_myco_db)
-    path(resource_dir)
+    val(resource_dir)
     path(refseq_path)
 
     output:
@@ -489,6 +489,8 @@ process identifyBacterialContaminants {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(afanc_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+    val(resources)
+    path(refseq)
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -506,7 +508,7 @@ process identifyBacterialContaminants {
     report_json = "${sample_name}_report.json"
 
     """
-    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${params.resource_dir} null
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} null
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
@@ -768,6 +770,8 @@ process summarise {
 
     input:
     tuple val(sample_name), path(afanc_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam), path(software_json)
+    val(resources)
+    path(refseq)
 
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
@@ -779,7 +783,7 @@ process summarise {
     report_json = "${sample_name}_report.json"
 
     """
-    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${params.resource_dir}/assembly_summary_refseq.txt ${params.species} ${params.resource_dir}/resources ${prev_species_json}
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${resources} ${prev_species_json}
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)

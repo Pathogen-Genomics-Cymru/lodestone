@@ -65,7 +65,7 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
-      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(speciation_report, by: 0).join(kraken2.out.kraken2_json, by: 0))
+      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(speciation_report, by: 0).join(kraken2.out.kraken2_json, by: 0), resource_dir, refseq_path)
 
       downloadContamGenomes(identifyBacterialContaminants.out.contam_list)
 
@@ -80,7 +80,7 @@ workflow preprocessing {
       // set speciation report
       speciation_report = reAfanc.out.reAfanc_report
 
-      summarise(speciation_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0))
+      summarise(speciation_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0), resource_dir, refseq_path)
 
     emit:
 

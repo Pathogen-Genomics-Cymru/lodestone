@@ -6,6 +6,10 @@ import sys
 import argparse
 import re
 import copy
+import boto3
+
+from aws import bucket_exists
+    
 
 # define process requirements function
 def process_requirements(args):
@@ -34,7 +38,7 @@ def process_requirements(args):
     if os.stat(assembly_file).st_size == 0:
         sys.exit('ERROR: %s is empty' %(assembly_file))
 
-    if not os.path.exists(myco_dir):
+    if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
         sys.exit('ERROR: cannot find %s' %(myco_dir))
 
     if (prev_species_json != 'null'):
@@ -392,15 +396,32 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
                 else:
                     sys.exit("ERROR: sample is considered contaminated but the number of contaminant genera is %d" %no_of_contaminant_genera)
 
-            ref_fa = os.path.join(myco_dir_path, identified_species + ".fasta")
-            ref_dir = os.path.join(myco_dir_path, identified_species)
-            ref_mmi = os.path.join(myco_dir_path, identified_species + ".mmi")
-            if not os.path.exists(ref_fa):
-                sys.exit('ERROR: cannot find %s' %(ref_fa))
-            if not os.path.exists(ref_dir):
-                sys.exit('ERROR: cannot find %s' %(ref_dir))
-            if not os.path.exists(ref_mmi):
-                sys.exit('ERROR: cannot find %s' %(ref_mmi))
+            if ref_fa.startswith("S3://"):
+                if ref_fa.endswith("/"):
+                    ref_fa = ref_fa[:-1] 
+                ref_fa = ref_fa + identified_species + ".fasta"
+                if not os.path.exists(ref_fa):
+                    sys.exit('ERROR: cannot find %s' %(ref_fa))
+            else:
+                ref_fa = os.path.join(myco_dir_path, identified_species + ".fasta")
+            
+            if ref_dir.startswith("S3://"):
+                if ref_dir.endswith("/"):
+                    ref_dir = ref_dir[:-1] 
+                ref_dir = ref_dir + identified_species
+                if not os.path.exists(ref_dir):
+                    sys.exit('ERROR: cannot find %s' %(ref_dir))
+            else:
+                ref_dir = os.path.join(myco_dir_path, identified_species)
+            
+            if ref_mmi.startswith("S3://"):
+                if ref_mmi.endswith("/"):
+                    ref_mmi = ref_mmi[:-1]
+                ref_mmi = ref_mmi + identified_species
+                if not os.path.exists(ref_mmi):
+                    sys.exit('ERROR: cannot find %s' %(ref_mmi))
+            else:
+                ref_mmi = os.path.join(myco_dir_path, identified_species + ".mmi")
 
             if 'file_paths' not in out['top_hit']: out['top_hit']['file_paths'] = {}
             out['top_hit']['file_paths']['ref_fa'] = ref_fa
