@@ -62,7 +62,7 @@ def go(singpath, configpath):
                     database.append(line)
 
     database = [item.replace('=', ':') for item in database]
-    database_dict = dict(item.split(':') for item in database)
+    database_dict = dict(item.split(':', 1) for item in database)
     database_dict = {"databases" : database_dict}
 
     all_software_dict.update(database_dict)
