@@ -36,7 +36,7 @@ RUN apt-get update \
 && ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
-&& pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools \
+&& pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
 && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
 && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
 && apt-get update && apt-get install -y adoptopenjdk-8-hotspot

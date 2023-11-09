@@ -24,6 +24,7 @@ RUN apt-get update \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
 && pip3 install recursive_diff \
+&& pip3 install awscli \
 && pip3 install . \
 && cp -r data /usr/local/lib/python3.8/dist-packages \
 && cd ..
