@@ -12,6 +12,9 @@ piezo_version=0.3 \
 gnomonicus_version=1.1.2 \
 tuberculosis_amr_catalogues=12d38733ad2e238729a3de9f725081e1d4872968
 
+COPY bin/ /opt/bin/
+ENV PATH=/opt/bin:$PATH
+
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
 && apt-get install -y $PACKAGES $PYTHON \

@@ -27,6 +27,9 @@ LD_LIBRARY_PATH=/usr/local/lib
 
 RUN export DEBIAN_FRONTEND="noninteractive"
 
+COPY bin/ /opt/bin/
+ENV PATH=/opt/bin:$PATH
+
 RUN apt-get update \
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y $PACKAGES $PYTHON \
 && pip3 install --upgrade pip \
