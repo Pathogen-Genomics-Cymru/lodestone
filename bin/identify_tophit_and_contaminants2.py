@@ -38,8 +38,8 @@ def process_requirements(args):
     if os.stat(assembly_file).st_size == 0:
         sys.exit('ERROR: %s is empty' %(assembly_file))
 
-    if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
-        sys.exit('ERROR: cannot find %s' %(myco_dir))
+    #if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
+    #    sys.exit('ERROR: cannot find %s' %(myco_dir))
 
     if (prev_species_json != 'null'):
         if not os.path.exists(prev_species_json):
