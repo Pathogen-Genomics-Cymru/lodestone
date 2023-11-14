@@ -5,11 +5,7 @@ import os
 import sys
 import argparse
 import re
-import copy
-import boto3
-
-from aws import bucket_exists
-    
+import copy 
 
 # define process requirements function
 def process_requirements(args):
