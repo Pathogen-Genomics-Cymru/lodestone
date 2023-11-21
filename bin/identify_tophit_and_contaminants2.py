@@ -5,7 +5,9 @@ import os
 import sys
 import argparse
 import re
-import copy 
+import copy
+
+from lib.s3 import is_file_in_s3
 
 # define process requirements function
 def process_requirements(args):
@@ -47,10 +49,29 @@ def process_requirements(args):
     for spec in species:
         spec_fasta_path = os.path.join(myco_dir, spec + '.fasta')
         spec_mmi_path = os.path.join(myco_dir, spec + '.mmi')
-        if not os.path.exists(spec_fasta_path):
-            sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
-        if not os.path.exists(spec_mmi_path):
-            sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
+
+
+        if myco_dir.startswith("s3://"):
+            s3_myco_dir = myco_dir.replace("s3://", "")
+            spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
+            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
+
+            if not is_file_in_s3(s3_myco_dir, spec_fasta):
+                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
+        else:
+            if not os.path.exists(spec_fasta_path):
+                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
+
+        if myco_dir.startswith("s3://"):
+            s3_myco_dir = myco_dir.replace("s3://", "")
+            spec_mmi = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".mmi"
+            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
+
+            if not is_file_in_s3(s3_myco_dir, spec_mmi):
+                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
+        else:
+            if not os.path.exists(spec_fasta_path):
+                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
 
     if ((supposed_species != 'null') & (supposed_species not in species)):
         sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
@@ -392,32 +413,9 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
                 else:
                     sys.exit("ERROR: sample is considered contaminated but the number of contaminant genera is %d" %no_of_contaminant_genera)
 
-            if ref_fa.startswith("S3://"):
-                if ref_fa.endswith("/"):
-                    ref_fa = ref_fa[:-1] 
-                ref_fa = ref_fa + identified_species + ".fasta"
-                if not os.path.exists(ref_fa):
-                    sys.exit('ERROR: cannot find %s' %(ref_fa))
-            else:
-                ref_fa = os.path.join(myco_dir_path, identified_species + ".fasta")
-            
-            if ref_dir.startswith("S3://"):
-                if ref_dir.endswith("/"):
-                    ref_dir = ref_dir[:-1] 
-                ref_dir = ref_dir + identified_species
-                if not os.path.exists(ref_dir):
-                    sys.exit('ERROR: cannot find %s' %(ref_dir))
-            else:
-                ref_dir = os.path.join(myco_dir_path, identified_species)
-            
-            if ref_mmi.startswith("S3://"):
-                if ref_mmi.endswith("/"):
-                    ref_mmi = ref_mmi[:-1]
-                ref_mmi = ref_mmi + identified_species
-                if not os.path.exists(ref_mmi):
-                    sys.exit('ERROR: cannot find %s' %(ref_mmi))
-            else:
-                ref_mmi = os.path.join(myco_dir_path, identified_species + ".mmi")
+            ref_fa = os.path.join(myco_dir_path, identified_species + ".fasta")
+            ref_dir = os.path.join(myco_dir_path, identified_species)
+            ref_mmi = os.path.join(myco_dir_path, identified_species + ".mmi")
 
             if 'file_paths' not in out['top_hit']: out['top_hit']['file_paths'] = {}
             out['top_hit']['file_paths']['ref_fa'] = ref_fa
