@@ -14,15 +14,17 @@ import pathlib
 from botocore.exceptions import ClientError
 from collections import namedtuple
 
-def get_credentials(profile, credential_file):
+def get_credentials(profile, cred_path):
     __s3_creds = namedtuple(
         "s3_credentials",
         ["access_key", "secret_key", "endpoint", "region", "profile_name"],)
 
     credential_file = configparser.ConfigParser()
     
-    if credential_file is not "null":
-        credential_file.read_file(open(os.path.expanduser(credential_file), "rt"))
+    if cred_path != "null":
+        credential_file.read_file(open(cred_path, "rt"))
+    else:
+        credential_file.read_file(open(os.path.expanduser("~/.aws/config"), "rt"))
 
     profile = "climb" if not profile else profile
 
@@ -557,7 +559,7 @@ if __name__ == "__main__":
     parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'yes\' or \'no\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'no\', any contaminating mycobacteria will be recorded but NOT acted upon')
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
-     parser.add_argument('credential_file', metavar='credential_file', type=str, help='Path to AWS config file. Can be set to \'null\'')
+    parser.add_argument('credential_file', metavar='credential_file', type=str, help='Path to AWS config file. Can be set to \'null\'')
     args = parser.parse_args()
 
     # REQUIREMENTS
