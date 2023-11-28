@@ -22,7 +22,7 @@ def get_credentials(profile, cred_path):
     credential_file = configparser.ConfigParser()
     
     if os.path.isfile(cred_path) :
-        credential_file.read_file(open(cred_path, "rt"))
+        credential_file.read_file(open(os.path.expanduser(cred_path), "rt"))
     else:
         credential_file = False
 
@@ -76,7 +76,7 @@ def _is_file_in_s3(client, folder, file):
         return False
 
 
-def is_file_in_s3(bucket, file, config, profile="climb"):
+def is_file_in_s3(bucket, file, config="~/.aws/credentials", profile="climb"):
     creds = get_credentials(profile, config)
     client = create_client(creds)
 
@@ -134,7 +134,7 @@ def process_requirements(args):
             spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
             s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
 
-            if not is_file_in_s3(s3_myco_dir, spec_fasta, credential_file):
+            if not is_file_in_s3(s3_myco_dir, spec_fasta):
                 sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
         else:
             if not os.path.exists(spec_fasta_path):
@@ -145,7 +145,7 @@ def process_requirements(args):
             spec_mmi = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".mmi"
             s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
 
-            if not is_file_in_s3(s3_myco_dir, spec_mmi, credential_file):
+            if not is_file_in_s3(s3_myco_dir, spec_mmi):
                 sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
         else:
             if not os.path.exists(spec_fasta_path):

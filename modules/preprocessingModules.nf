@@ -338,7 +338,7 @@ process afanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
-    label 'retryAfanc'
+    label 'retry_afanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -348,13 +348,11 @@ process afanc {
     path(afanc_myco_db)
     val(resource_dir)
     path(refseq_path)
-    path(aws_config)
 
     output:
     tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
     path "${sample_name}_err.json", emit: afanc_log optional true
     path "${sample_name}_report.json", emit: afanc_report optional true
-    // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
     script:
     afanc_report = "${sample_name}_afanc_report.json"
@@ -371,7 +369,7 @@ process afanc {
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
 	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
-	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null $aws_config
+	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
 
 	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
 
@@ -387,6 +385,95 @@ process afanc {
     printf ${sample_name}
     """
 }
+
+process afanc_screen {
+    /**
+    * @QCcheckpoint none
+    */
+
+    tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
+    label 'retry_afanc'
+
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json), path(kraken_report), path(kraken_json)
+    path(afanc_myco_db)
+
+    output:
+    tuple val(sample_name), path("${sample_name}/${sample_name}.json"), stdout, emit: afanc_json
+
+    script:
+    afanc_report = "${sample_name}_afanc_report.json"
+    error_log = "${sample_name}_err.json"
+    report_json = "${sample_name}_report.json"
+
+    """
+    if [[ ${run_afanc} =~ /${sample_name}/ ]]
+    then
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+    else
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+    fi
+    """
+}
+
+process afanc_parse {
+    /**
+    * @QCcheckpoint none
+    */
+
+    tag { sample_name }
+    label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
+    label 'retry_afanc'
+    label 'afanc_parse'
+
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json), path(kraken_report), path(kraken_json)
+    path(unchanged_afanc_report)
+    path(afanc_myco_db)
+    val(resource_dir)
+    path(refseq_path)
+
+    output:
+    tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
+    path "${sample_name}_err.json", emit: afanc_log optional true
+    path "${sample_name}_report.json", emit: afanc_report optional true
+
+    script:
+    afanc_report = "${sample_name}_afanc_report.json"
+    error_log = "${sample_name}_err.json"
+    report_json = "${sample_name}_report.json"
+
+    """
+    if [[ ${run_afanc} =~ /${sample_name}/ ]]
+    then
+	reformat_afanc_json.py ${unchanged_afanc_report}
+	printf ${sample_name}
+    else
+	reformat_afanc_json.py ${unchanged_afanc_report}
+	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
+	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+    fi
+
+    """
+
+    stub:
+    afanc_report = "${sample_name}_afanc_report.json"
+
+    """
+    touch ${afanc_report}
+    printf ${sample_name}
+    """
+}
+
+
 
 process mykrobe {
     /**
@@ -693,7 +780,7 @@ process reAfanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
-    label 'retryAfanc'
+    label 'retry_afanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
 

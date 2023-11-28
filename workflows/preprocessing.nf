@@ -30,7 +30,6 @@ workflow preprocessing {
       afanc_myco_db
       resource_dir
       refseq_path
-      aws_config
 
 
     main:
@@ -59,10 +58,13 @@ workflow preprocessing {
 
       mykrobe(kraken2.out.kraken2_fqs)
 
-      afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db, resource_dir, refseq_path, aws_config)
-
+      afanc_screen(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db)
+      
+      first_afanc_json = afanc_screen.out.afanc_json
+      afanc_parse(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), first_afanc_json, afanc_myco_db, resource_dir, refseq_path)
+      
       // set speciation report
-      speciation_report = afanc.out.afanc_json
+      speciation_report = afanc_parse.out.afanc_json
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
