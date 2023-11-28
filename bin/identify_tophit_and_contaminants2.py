@@ -14,14 +14,15 @@ import pathlib
 from botocore.exceptions import ClientError
 from collections import namedtuple
 
-def get_credentials(profile):
+def get_credentials(profile, credential_file):
     __s3_creds = namedtuple(
         "s3_credentials",
         ["access_key", "secret_key", "endpoint", "region", "profile_name"],)
 
     credential_file = configparser.ConfigParser()
-
-    credential_file.read_file(open(os.path.expanduser("~/.aws/credentials"), "rt"))
+    
+    if credential_file is not "null":
+        credential_file.read_file(open(os.path.expanduser(credential_file), "rt"))
 
     profile = "climb" if not profile else profile
 
@@ -73,8 +74,8 @@ def _is_file_in_s3(client, folder, file):
         return False
 
 
-def is_file_in_s3(bucket, file, profile="climb"):
-    creds = get_credentials(profile)
+def is_file_in_s3(bucket, file, config, profile="climb"):
+    creds = get_credentials(profile, config)
     client = create_client(creds)
 
     return _is_file_in_s3(client, bucket, file)
@@ -90,6 +91,10 @@ def process_requirements(args):
     unmix_myco = args[5]
     myco_dir = args[6]
     prev_species_json = args[7]
+    credential_file = args[8]
+    
+    if credential_file == "null":
+        credential_file = "~/.aws/config"
 
     # check if input files exist and not empty
     if not os.path.exists(afanc_json):
@@ -127,7 +132,7 @@ def process_requirements(args):
             spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
             s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
 
-            if not is_file_in_s3(s3_myco_dir, spec_fasta):
+            if not is_file_in_s3(s3_myco_dir, spec_fasta, credential_file):
                 sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
         else:
             if not os.path.exists(spec_fasta_path):
@@ -138,7 +143,7 @@ def process_requirements(args):
             spec_mmi = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".mmi"
             s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
 
-            if not is_file_in_s3(s3_myco_dir, spec_mmi):
+            if not is_file_in_s3(s3_myco_dir, spec_mmi, credential_file):
                 sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
         else:
             if not os.path.exists(spec_fasta_path):
@@ -541,7 +546,7 @@ if __name__ == "__main__":
     description += "By defining [species] you will automatically select this to be the genome against which reads will be aligned using Clockwork\n"
     description += "[unmix myco] is either 'yes' or 'no', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
     description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
-    usage = "python identify_tophit_and_contaminants2.py [path to afanc JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
+    usage = "python identify_tophit_and_contaminants2.py [path to afanc JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes] [aws_config]\n"
     usage += "E.G.:\tpython identify_tophit_and_contaminants2.py afanc_report.json afanc_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
 
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)
@@ -552,6 +557,7 @@ if __name__ == "__main__":
     parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'yes\' or \'no\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'no\', any contaminating mycobacteria will be recorded but NOT acted upon')
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
+     parser.add_argument('credential_file', metavar='credential_file', type=str, help='Path to AWS config file. Can be set to \'null\'')
     args = parser.parse_args()
 
     # REQUIREMENTS
@@ -563,6 +569,7 @@ if __name__ == "__main__":
     unmix_myco = sys.argv[5]
     myco_dir = sys.argv[6]
     prev_species_json = sys.argv[7]
+    credential_file = sys.argv[8]
 
     # read assembly summary
     urls, tax_ids = read_assembly_summary(assembly_file)
