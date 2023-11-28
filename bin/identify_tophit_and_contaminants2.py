@@ -21,10 +21,10 @@ def get_credentials(profile, cred_path):
 
     credential_file = configparser.ConfigParser()
     
-    if cred_path != "null":
+    if os.path.isfile(cred_path) :
         credential_file.read_file(open(cred_path, "rt"))
     else:
-        credential_file.read_file(open(os.path.expanduser("~/.aws/config"), "rt"))
+        credential_file = False
 
     profile = "climb" if not profile else profile
 
