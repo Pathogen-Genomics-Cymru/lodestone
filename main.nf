@@ -183,7 +183,7 @@ workflow {
 
       input_files_vjson = input_files.combine(getversion.out.getversion_json)
 
-      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq, params.aws_config)
+      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq)
 
       // CLOCKWORK SUB-WORKFLOW
 

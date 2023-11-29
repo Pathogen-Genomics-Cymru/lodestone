@@ -11,78 +11,6 @@ import sys
 import configparser
 import pathlib
 
-from botocore.exceptions import ClientError
-from collections import namedtuple
-
-def get_credentials(profile, cred_path):
-    __s3_creds = namedtuple(
-        "s3_credentials",
-        ["access_key", "secret_key", "endpoint", "region", "profile_name"],)
-
-    credential_file = configparser.ConfigParser()
-    
-    if os.path.isfile(cred_path) :
-        credential_file.read_file(open(os.path.expanduser(cred_path), "rt"))
-    else:
-        credential_file = False
-
-    profile = "climb" if not profile else profile
-
-    endpoint = "https://s3.climb.ac.uk"
-
-    region = "s3"
-
-    if credential_file:
-        access_key = credential_file[profile]["aws_access_key_id"]
-        secret_key = credential_file[profile]["aws_secret_access_key"]
-
-    if os.getenv("AWS_ACCESS_KEY_ID"):
-        access_key = os.getenv("AWS_ACCESS_KEY_ID")
-
-    if os.getenv("AWS_SECRET_ACCESS_KEY"):
-        secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
-
-    if not access_key or not secret_key:
-        error = """CLIMB S3 credentials could not be found, please provide valid credentials in one of the following ways:
-            - In a correctly formatted config file (~/.aws/credentials)
-            - As environmental variables 'AWS_ACCESS_KEY_ID' and 'AWS_SECRET_ACCESS_KEY'
-            - As a command line argument, see --help for more details
-        """
-        print(error, file=sys.stderr)
-        sys.exit(1)
-
-    s3_credentials = __s3_creds(
-        access_key=access_key,
-        secret_key=secret_key,
-        endpoint=endpoint,
-        region=region,
-        profile_name=profile,
-    )
-
-    return s3_credentials
-
-def create_client(creds):
-    s3_client = boto3.client("s3", endpoint_url=creds.endpoint,
-    aws_access_key_id=creds.access_key,
-    aws_secret_access_key=creds.secret_key)
-
-    return s3_client
-
-def _is_file_in_s3(client, folder, file):
-    try:
-        client.get_object(Bucket=folder, Key=file)
-        return True
-    except ClientError:
-        return False
-
-
-def is_file_in_s3(bucket, file, config="~/.aws/credentials", profile="climb"):
-    creds = get_credentials(profile, config)
-    client = create_client(creds)
-
-    return _is_file_in_s3(client, bucket, file)
-
-
 # define process requirements function
 def process_requirements(args):
     # REQUIREMENTS
@@ -93,11 +21,10 @@ def process_requirements(args):
     unmix_myco = args[5]
     myco_dir = args[6]
     prev_species_json = args[7]
-    credential_file = args[8]
     
-    if credential_file == "null":
-        credential_file = "~/.aws/config"
-
+    credential_file = "~/.aws/config"
+    
+    """
     # check if input files exist and not empty
     if not os.path.exists(afanc_json):
         sys.exit('ERROR: cannot find %s' %(afanc_json))
@@ -114,21 +41,22 @@ def process_requirements(args):
     if os.stat(assembly_file).st_size == 0:
         sys.exit('ERROR: %s is empty' %(assembly_file))
 
-    #if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
-    #    sys.exit('ERROR: cannot find %s' %(myco_dir))
+    if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
+        sys.exit('ERROR: cannot find %s' %(myco_dir))
 
     if (prev_species_json != 'null'):
         if not os.path.exists(prev_species_json):
             sys.exit('ERROR: cannot find %s' %(prev_species_json))
         if os.stat(prev_species_json).st_size == 0:
             sys.exit('ERROR: %s is empty' %(prev_species_json))
-
+     """
+    
     species = ['abscessus', 'africanum', 'avium', 'bovis', 'chelonae', 'chimaera', 'fortuitum', 'intracellulare', 'kansasii', 'tuberculosis']
     for spec in species:
         spec_fasta_path = os.path.join(myco_dir, spec + '.fasta')
         spec_mmi_path = os.path.join(myco_dir, spec + '.mmi')
 
-
+        """
         if myco_dir.startswith("s3://"):
             s3_myco_dir = myco_dir.replace("s3://", "")
             spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
@@ -150,7 +78,8 @@ def process_requirements(args):
         else:
             if not os.path.exists(spec_fasta_path):
                 sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
-
+        """
+        
     if ((supposed_species != 'null') & (supposed_species not in species)):
         sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
 
@@ -559,7 +488,6 @@ if __name__ == "__main__":
     parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'yes\' or \'no\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'no\', any contaminating mycobacteria will be recorded but NOT acted upon')
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
-    parser.add_argument('credential_file', metavar='credential_file', type=str, help='Path to AWS config file. Can be set to \'null\'')
     args = parser.parse_args()
 
     # REQUIREMENTS
@@ -571,7 +499,6 @@ if __name__ == "__main__":
     unmix_myco = sys.argv[5]
     myco_dir = sys.argv[6]
     prev_species_json = sys.argv[7]
-    credential_file = sys.argv[8]
 
     # read assembly summary
     urls, tax_ids = read_assembly_summary(assembly_file)

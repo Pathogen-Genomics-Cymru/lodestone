@@ -402,12 +402,7 @@ process afanc_screen {
     path(afanc_myco_db)
 
     output:
-    tuple val(sample_name), path("${sample_name}/${sample_name}.json"), stdout, emit: afanc_json
-
-    script:
-    afanc_report = "${sample_name}_afanc_report.json"
-    error_log = "${sample_name}_err.json"
-    report_json = "${sample_name}_report.json"
+    path "${sample_name}/${sample_name}.json", emit: afanc_json
 
     """
     if [[ ${run_afanc} =~ /${sample_name}/ ]]
@@ -425,10 +420,8 @@ process afanc_parse {
     */
 
     tag { sample_name }
-    label 'preprocessing'
-    label 'normal_cpu'
-    label 'medium_memory'
-    label 'retry_afanc'
+    label 'low_cpu'
+    label 'low_memory'
     label 'afanc_parse'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
@@ -458,7 +451,8 @@ process afanc_parse {
 	printf ${sample_name}
     else
 	reformat_afanc_json.py ${unchanged_afanc_report}
-	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
+	echo "Afanc JSON reformatted"
+    identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
 	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
     fi
 
