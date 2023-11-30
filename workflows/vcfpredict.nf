@@ -13,6 +13,7 @@ workflow vcfpredict {
 
       clockwork_bcftools
       clockwork_minos
+      genbank
 
     main:
 
@@ -24,7 +25,7 @@ workflow vcfpredict {
 
       if ( params.gnomonicus == "yes" ) {
 
-          gnomonicus(clockwork_minos)
+          gnomonicus(clockwork_minos, genbank)
 
       }
 

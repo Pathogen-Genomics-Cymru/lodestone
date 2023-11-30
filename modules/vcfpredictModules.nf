@@ -64,7 +64,7 @@ process gnomonicus {
 
     input:
     tuple val(sample_name), path(vcf), val(isSampleTB), path(report_json)
-
+    path(genbank)
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
 
@@ -80,7 +80,7 @@ process gnomonicus {
     error_log = "${sample_name}_err.json"
 
     """
-    gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomonicus --genome_object ${genbank} --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 

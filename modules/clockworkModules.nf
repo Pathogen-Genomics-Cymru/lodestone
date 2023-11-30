@@ -1,5 +1,31 @@
 // modules for the clockwork workflow
 
+process getRefFromJSON {
+    tag { sample_name }
+    label 'clockwork'
+    label 'low_memory'
+    label 'low_cpu'
+    
+    input:
+    path(species_json)
+    val(do_we_align)
+    val(sample_name)
+    
+    when:
+    do_we_align =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
+    
+    output:
+    stdout
+    
+    script:
+    """
+    ref_string=\$(jq -r '.top_hit.file_paths.ref_fa' ${species_json})
+    echo "\$ref_string"
+    """
+    
+    
+}
+
 process alignToRef {
     /**
     * @QCcheckpoint fail if insufficient number and/or quality of read alignments to the reference genome
@@ -15,6 +41,7 @@ process alignToRef {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(species_json), val(doWeAlign)
+    path(reference_path)
 
     when:
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
@@ -35,9 +62,8 @@ process alignToRef {
     error_log = "${sample_name}_err.json"
 
     """
-    ref_fa=\$(jq -r '.top_hit.file_paths.ref_fa' ${species_json})
-
-    cp \${ref_fa} ${sample_name}.fa
+    echo $reference_path
+    cp ${reference_path} ${sample_name}.fa
 
     minimap2 -ax sr ${sample_name}.fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference ${sample_name}.fa - minimap.bam
 
@@ -114,6 +140,30 @@ process callVarsMpileup {
     """
 }
 
+process getRefCortex {
+    tag { sample_name }
+    label 'clockwork'
+    label 'low_memory'
+    label 'low_cpu'
+    
+    input:
+    tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall)
+
+    when:
+    doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
+    
+    output:
+    stdout
+    
+    script:
+    """
+    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${report_json})
+    echo "\$ref_dir"
+    """
+    
+    
+}
+
 process callVarsCortex {
     /**
     * @QCcheckpoint none
@@ -128,6 +178,7 @@ process callVarsCortex {
     
     input:
     tuple val(sample_name), path(report_json), path(bam), path(ref), val(doWeVarCall)
+    path(ref_dir)
 
     when:
     doWeVarCall =~ /NOW\_VARCALL\_${sample_name}/
@@ -139,9 +190,7 @@ process callVarsCortex {
     cortex_vcf = "${sample_name}.cortex.vcf"
 
     """
-    ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${report_json})
-
-    cp -r \${ref_dir}/* .
+    cp -r ${ref_dir}/* .
 
     clockwork cortex . ${bam} cortex ${sample_name}
     cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}

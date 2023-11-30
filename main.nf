@@ -198,8 +198,9 @@ workflow {
 
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
+      genbank = channel.fromPath(params.gnomonicus_genbank)
 
-      vcfpredict(mpileup_vcf, minos_vcf)
+      vcfpredict(mpileup_vcf, minos_vcf, genbank)
 
 }
 
