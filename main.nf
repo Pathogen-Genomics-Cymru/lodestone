@@ -49,8 +49,8 @@ Mandatory and conditional parameters:
 --bowtie2_index       Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip
                       This is the Langmead lab pre-built major-allele-SNP reference; see https://github.com/BenLangmead/bowtie-majref)
 --bowtie_index_name   Name of the bowtie index, e.g. hg19_1kgmaj
---vcfmix	      Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
---gnomonicus          Run gnomon "yes" or "no"
+--vcfmix	          Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
+--resistance_profiler Tool to profile resistance with. At the moment options are "tb-profiler" or "none"
 --amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
                       in the vcfpredict container)
 --afanc_myco_db	      Path to the Afanc database used for speciation. Obtain from https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_3.0.tar.gz
@@ -84,6 +84,13 @@ nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_
 """
 .stripIndent()
 }
+
+
+resistance_profilers = ["tb-profiler", "none"]
+
+ if(!resistance_profilers.contains(params.resistance_profiler)){
+    exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler" or "none" to skip.'
+    }
 
 
 // confirm that mandatory parameters have been set and that the conditional parameter, --pattern, has been used appropriately
