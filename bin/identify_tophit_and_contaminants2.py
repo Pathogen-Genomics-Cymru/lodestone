@@ -6,10 +6,6 @@ import sys
 import argparse
 import re
 import copy
-import boto3
-import sys
-import configparser
-import pathlib
 
 # define process requirements function
 def process_requirements(args):
@@ -21,8 +17,6 @@ def process_requirements(args):
     unmix_myco = args[5]
     myco_dir = args[6]
     prev_species_json = args[7]
-    
-    credential_file = "~/.aws/config"
     
     """
     # check if input files exist and not empty
