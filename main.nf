@@ -183,7 +183,7 @@ workflow {
 
       input_files_vjson = input_files.combine(getversion.out.getversion_json)
 
-      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db)
+      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq)
 
       // CLOCKWORK SUB-WORKFLOW
 
@@ -198,8 +198,9 @@ workflow {
 
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
+      genbank = channel.fromPath(params.gnomonicus_genbank)
 
-      vcfpredict(mpileup_vcf, minos_vcf)
+      vcfpredict(mpileup_vcf, minos_vcf, genbank)
 
 }
 

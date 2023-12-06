@@ -1,6 +1,5 @@
 FROM debian:buster
 
-
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the clockwork workflow"
 
@@ -22,6 +21,10 @@ clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5
 ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix libvcflib-tools libssl-dev software-properties-common perl locales locales-all" \
 PYTHON="python2.7 python-dev"
 
+COPY bin/ /opt/bin/
+ENV PATH=/opt/bin:$PATH
+
+
 RUN apt-get update \
 && apt-get install -y $PACKAGES $PYTHON \
 && curl -fsSL https://www.python.org/ftp/python/${python_version}/Python-${python_version}.tgz | tar -xz \
@@ -32,7 +35,7 @@ RUN apt-get update \
 && ln -s /usr/local/bin/python3.6 /usr/local/bin/python3 \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
-&& pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools \
+&& pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
 && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
 && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
 && apt-get update && apt-get install -y adoptopenjdk-8-hotspot

@@ -1,9 +1,15 @@
+#!/usr/bin/env python3
+
 import json
 import os
 import sys
 import argparse
 import re
 import copy
+import boto3
+import sys
+import configparser
+import pathlib
 
 # define process requirements function
 def process_requirements(args):
@@ -15,7 +21,10 @@ def process_requirements(args):
     unmix_myco = args[5]
     myco_dir = args[6]
     prev_species_json = args[7]
-
+    
+    credential_file = "~/.aws/config"
+    
+    """
     # check if input files exist and not empty
     if not os.path.exists(afanc_json):
         sys.exit('ERROR: cannot find %s' %(afanc_json))
@@ -32,7 +41,7 @@ def process_requirements(args):
     if os.stat(assembly_file).st_size == 0:
         sys.exit('ERROR: %s is empty' %(assembly_file))
 
-    if not os.path.exists(myco_dir):
+    if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
         sys.exit('ERROR: cannot find %s' %(myco_dir))
 
     if (prev_species_json != 'null'):
@@ -40,16 +49,37 @@ def process_requirements(args):
             sys.exit('ERROR: cannot find %s' %(prev_species_json))
         if os.stat(prev_species_json).st_size == 0:
             sys.exit('ERROR: %s is empty' %(prev_species_json))
-
+     """
+    
     species = ['abscessus', 'africanum', 'avium', 'bovis', 'chelonae', 'chimaera', 'fortuitum', 'intracellulare', 'kansasii', 'tuberculosis']
     for spec in species:
         spec_fasta_path = os.path.join(myco_dir, spec + '.fasta')
         spec_mmi_path = os.path.join(myco_dir, spec + '.mmi')
-        if not os.path.exists(spec_fasta_path):
-            sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
-        if not os.path.exists(spec_mmi_path):
-            sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
 
+        """
+        if myco_dir.startswith("s3://"):
+            s3_myco_dir = myco_dir.replace("s3://", "")
+            spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
+            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
+
+            if not is_file_in_s3(s3_myco_dir, spec_fasta):
+                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
+        else:
+            if not os.path.exists(spec_fasta_path):
+                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
+
+        if myco_dir.startswith("s3://"):
+            s3_myco_dir = myco_dir.replace("s3://", "")
+            spec_mmi = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".mmi"
+            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
+
+            if not is_file_in_s3(s3_myco_dir, spec_mmi):
+                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
+        else:
+            if not os.path.exists(spec_fasta_path):
+                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
+        """
+        
     if ((supposed_species != 'null') & (supposed_species not in species)):
         sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
 
@@ -393,12 +423,6 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
             ref_fa = os.path.join(myco_dir_path, identified_species + ".fasta")
             ref_dir = os.path.join(myco_dir_path, identified_species)
             ref_mmi = os.path.join(myco_dir_path, identified_species + ".mmi")
-            if not os.path.exists(ref_fa):
-                sys.exit('ERROR: cannot find %s' %(ref_fa))
-            if not os.path.exists(ref_dir):
-                sys.exit('ERROR: cannot find %s' %(ref_dir))
-            if not os.path.exists(ref_mmi):
-                sys.exit('ERROR: cannot find %s' %(ref_mmi))
 
             if 'file_paths' not in out['top_hit']: out['top_hit']['file_paths'] = {}
             out['top_hit']['file_paths']['ref_fa'] = ref_fa
@@ -453,7 +477,7 @@ if __name__ == "__main__":
     description += "By defining [species] you will automatically select this to be the genome against which reads will be aligned using Clockwork\n"
     description += "[unmix myco] is either 'yes' or 'no', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
     description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
-    usage = "python identify_tophit_and_contaminants2.py [path to afanc JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes]\n"
+    usage = "python identify_tophit_and_contaminants2.py [path to afanc JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes] [aws_config]\n"
     usage += "E.G.:\tpython identify_tophit_and_contaminants2.py afanc_report.json afanc_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
 
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)

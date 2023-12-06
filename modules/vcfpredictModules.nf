@@ -5,6 +5,7 @@ process vcfmix {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -26,7 +27,7 @@ process vcfmix {
     error_log = "${sample_name}_err.json"
 
     """
-    python3 ${baseDir}/bin/run-vcfmix.py ${bcftools_vcf}
+    run-vcfmix.py ${bcftools_vcf}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
@@ -52,6 +53,7 @@ process gnomonicus {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -62,7 +64,7 @@ process gnomonicus {
 
     input:
     tuple val(sample_name), path(vcf), val(isSampleTB), path(report_json)
-
+    path(genbank)
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
 
@@ -78,7 +80,7 @@ process gnomonicus {
     error_log = "${sample_name}_err.json"
 
     """
-    gnomonicus --genome_object ${baseDir}/resources/H37rV_v3.gbk --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
+    gnomonicus --genome_object ${genbank} --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
@@ -108,7 +110,8 @@ process finalJson {
     tag {sample_name}
     label 'vcfpredict'
     label 'low_memory'
-
+    label 'low_cpu'
+    
     errorStrategy 'ignore'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_report.json'

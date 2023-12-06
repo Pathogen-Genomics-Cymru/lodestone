@@ -8,7 +8,8 @@ process checkBamValidity {
     tag { bam_file.getBaseName() }
     label 'preprocessing'
     label 'low_memory'
-
+    label 'low_cpu'
+    
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
@@ -46,6 +47,7 @@ process checkFqValidity {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     errorStrategy 'ignore'
 
@@ -87,6 +89,7 @@ process bam2fastq {
     tag { bam_file.getBaseName() }
     label 'preprocessing'
     label 'low_memory'
+    label 'normal_cpu'
 
     input:
     tuple path(bam_file), val(is_ok), path(software_json)
@@ -127,6 +130,7 @@ process countReads {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
@@ -168,6 +172,7 @@ process fastp {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy', pattern: '*_fastp.json'
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz' // may be overwritten if unmixing needed
@@ -228,6 +233,7 @@ process fastQC {
     tag { sample_name }
     label 'preprocessing'
     label 'low_memory'
+    label 'low_cpu'
 
     publishDir "${params.output_dir}/$sample_name/raw_read_QC_reports", mode: 'copy'
 
@@ -289,10 +295,10 @@ process kraken2 {
 
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
+    
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
 
-    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
-
-    ${baseDir}/bin/extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
+    extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
     gzip -f ${nonBac_depleted_reads_1}
     gzip -f ${nonBac_depleted_reads_2}
@@ -332,7 +338,7 @@ process afanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
-    label 'retryAfanc'
+    label 'retry_afanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -340,12 +346,13 @@ process afanc {
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_afanc), path(software_json), path(kraken_report), path(kraken_json)
     path(afanc_myco_db)
+    val(resource_dir)
+    path(refseq_path)
 
     output:
     tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
     path "${sample_name}_err.json", emit: afanc_log optional true
     path "${sample_name}_report.json", emit: afanc_report optional true
-    // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
     script:
     afanc_report = "${sample_name}_afanc_report.json"
@@ -356,13 +363,13 @@ process afanc {
     if [[ ${run_afanc} =~ /${sample_name}/ ]]
     then
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 	printf ${sample_name}
     else
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-	python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
-	python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
 
 	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
 
@@ -378,6 +385,7 @@ process afanc {
     printf ${sample_name}
     """
 }
+
 
 process mykrobe {
     /**
@@ -473,12 +481,16 @@ process identifyBacterialContaminants {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'normal_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_species_in_samp*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(afanc_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
+    val(resources)
+    path(refseq)
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -496,7 +508,7 @@ process identifyBacterialContaminants {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources null
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} null
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
@@ -526,6 +538,8 @@ process downloadContamGenomes {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'low_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
@@ -653,7 +667,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    python3 ${baseDir}/bin/parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -678,7 +692,7 @@ process reAfanc {
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
-    label 'retryAfanc'
+    label 'retry_afanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
 
@@ -695,7 +709,7 @@ process reAfanc {
 
     """
     afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
-    python3 ${baseDir}/bin/reformat_afanc_json.py ${sample_name}/${sample_name}.json
+    reformat_afanc_json.py ${sample_name}/${sample_name}.json
     printf ${sample_name}
     """
 
@@ -748,12 +762,16 @@ process summarise {
 
     tag { sample_name }
     label 'preprocessing'
+    label 'low_cpu'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_species_in_sample.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     tuple val(sample_name), path(afanc_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam), path(software_json)
+    val(resources)
+    path(refseq)
 
     output:
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
@@ -765,7 +783,8 @@ process summarise {
     report_json = "${sample_name}_report.json"
 
     """
-    python3 ${baseDir}/bin/identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${baseDir}/resources/assembly_summary_refseq.txt ${params.species} ${params.unmix_myco} ${baseDir}/resources ${prev_species_json}
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} ${prev_species_json}
+    
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
