@@ -18,61 +18,42 @@ def process_requirements(args):
     myco_dir = args[6]
     prev_species_json = args[7]
     
-    """
+    
     # check if input files exist and not empty
-    if not os.path.exists(afanc_json):
+    if not os.path.exists(afanc_json) and afanc_json.lower().startswith("s3://") == False:
         sys.exit('ERROR: cannot find %s' %(afanc_json))
     if os.stat(afanc_json).st_size == 0:
         sys.exit('ERROR: %s is empty' %(afanc_json))
 
-    if not os.path.exists(kraken_json):
+    if not os.path.exists(kraken_json) and kraken_json.lower().startswith("s3://") == False:
         sys.exit('ERROR: cannot find %s' %(kraken_json))
     if os.stat(kraken_json).st_size == 0:
         sys.exit('ERROR: %s is empty' %(kraken_json))
 
-    if not os.path.exists(assembly_file):
+    if not os.path.exists(assembly_file) and assembly_file.lower().startswith("s3://") == False:
         sys.exit('ERROR: cannot find %s' %(assembly_file)) # from ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt
     if os.stat(assembly_file).st_size == 0:
         sys.exit('ERROR: %s is empty' %(assembly_file))
 
-    if not os.path.exists(myco_dir) and not bucket_exists(myco_dir):
+    if not os.path.exists(myco_dir) and myco_dir.lower().startswith("s3://") == False:
         sys.exit('ERROR: cannot find %s' %(myco_dir))
 
     if (prev_species_json != 'null'):
-        if not os.path.exists(prev_species_json):
+        if not os.path.exists(prev_species_json) and prev_species_json.lower().startswith("s3://") == False:
             sys.exit('ERROR: cannot find %s' %(prev_species_json))
-        if os.stat(prev_species_json).st_size == 0:
+        if os.stat(prev_species_json).st_size == 0 and prev_species_json.lower().startswith("s3://") == False:
             sys.exit('ERROR: %s is empty' %(prev_species_json))
-     """
+    
     
     species = ['abscessus', 'africanum', 'avium', 'bovis', 'chelonae', 'chimaera', 'fortuitum', 'intracellulare', 'kansasii', 'tuberculosis']
     for spec in species:
         spec_fasta_path = os.path.join(myco_dir, spec + '.fasta')
         spec_mmi_path = os.path.join(myco_dir, spec + '.mmi')
 
-        """
-        if myco_dir.startswith("s3://"):
-            s3_myco_dir = myco_dir.replace("s3://", "")
-            spec_fasta = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".fasta"
-            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
-
-            if not is_file_in_s3(s3_myco_dir, spec_fasta):
-                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
-        else:
-            if not os.path.exists(spec_fasta_path):
-                sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
-
-        if myco_dir.startswith("s3://"):
-            s3_myco_dir = myco_dir.replace("s3://", "")
-            spec_mmi = s3_myco_dir.split("/", 1)[-1] + "/" + spec + ".mmi"
-            s3_myco_dir =  s3_myco_dir.split("/", 1)[0]
-
-            if not is_file_in_s3(s3_myco_dir, spec_mmi):
-                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
-        else:
-            if not os.path.exists(spec_fasta_path):
-                sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
-        """
+        if not os.path.exists(spec_fasta_path) and spec_fasta_path.lower().startswith("s3://") == False:
+            sys.exit('ERROR: cannot find %s' %(spec_fasta_path))
+        if not os.path.exists(spec_mmi_path) and spec_mmi_path.lower().startswith("s3://") == False:
+            sys.exit('ERROR: cannot find %s' %(spec_mmi_path))
         
     if ((supposed_species != 'null') & (supposed_species not in species)):
         sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
