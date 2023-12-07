@@ -4,7 +4,7 @@ LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the vcf predict workflow"
 
 COPY bin/ /opt/bin/
-COPY resources/tuberculosis.fa ~/tuberculosis.fa
+COPY resources/tuberculosis.fasta ~/tuberculosis.fasta
 
 ENV PATH=/opt/bin:$PATH
 
@@ -76,4 +76,4 @@ ENV PATH="/opt/conda/bin:${PATH}"
 RUN tb-profiler update_tbdb --commit ${TBDB_VER}
 
 #pre-add our TB reference
-RUN tb-profiler update_tbdb --match_ref ~/tuberculosis.fa
+RUN tb-profiler update_tbdb --match_ref ~/tuberculosis.fasta
