@@ -1,0 +1,78 @@
+FROM mambaorg/micromamba:jammy
+
+LABEL maintainer="pricea35@cardiff.ac.uk" \
+about.summary="container for the vcf predict workflow"
+
+COPY bin/ /opt/bin/
+COPY resources/tuberculosis.fa ~/tuberculosis.fa
+
+ENV PATH=/opt/bin:$PATH
+
+ARG TBPROFILER_VER="5.0.1"
+
+# this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
+# commits are found on https://github.com/jodyphelan/tbdb/commits/master
+# this was the latest commit as of 2023-10-26
+ARG TBDB_VER="e25540b"
+
+# install tb-profiler via bioconda; install into 'base' conda env
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda  \
+    tb-profiler=${TBPROFILER_VER} && \
+    micromamba clean --all --yes
+
+# hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
+# can also run 'tb-profiler list_db' to find the same version info
+# In 5.0.1 updating_tbdb does not work with tb-profiler update_tbdb --commit ${TBDB_VER}
+RUN tb-profiler update_tbdb --commit ${TBDB_VER}
+
+ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq" \
+PYTHON="python3 python3-pip python3-dev"
+
+ENV vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417
+
+
+RUN apt-get update \
+&& DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
+&& apt-get install -y $PACKAGES $PYTHON \
+&& apt-get install -y python3-packaging \
+&& git clone https://github.com/JeremyWesthead/VCFMIX.git \
+&& cd VCFMIX \
+&& git checkout ${vcfmix_version} \
+&& pip3 install recursive_diff \
+&& pip3 install . \
+&& cp -r data /usr/local/lib/python3.8/dist-packages \
+&& cd ..
+
+#taken and adapted from staphb/tbprofiler
+ARG TBPROFILER_VER="5.0.1"
+
+# this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
+# commits are found on https://github.com/jodyphelan/tbdb/commits/master
+# this was the latest commit as of 2023-10-26
+ARG TBDB_VER="e25540b"
+
+# Install dependencies via apt-get; cleanup apt garbage
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    ca-certificates \
+    procps && \
+    apt-get autoclean && rm -rf /var/lib/apt/lists/*
+
+# install tb-profiler via bioconda; install into 'base' conda env
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda  \
+    tb-profiler=${TBPROFILER_VER} && \
+    micromamba clean --all --yes
+
+# hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
+# can also run 'tb-profiler list_db' to find the same version info
+# In 5.0.1 updating_tbdb does not work with tb-profiler update_tbdb --commit ${TBDB_VER}
+RUN tb-profiler update_tbdb --commit ${TBDB_VER}
+
+#pre-add our TB reference
+RUN tb-profiler update_tbdb --match_ref ~/tuberculosis.fa

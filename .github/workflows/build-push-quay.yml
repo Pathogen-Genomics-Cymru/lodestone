@@ -4,10 +4,11 @@ on:
     branches:
       - v0.9.6
       - 0.9.7-dev
-      - climb
+      - tbprofiler
     paths:
       - '**/Dockerfile*'
       - "bin/"
+      - "resources/"
 
   workflow_dispatch:
 
@@ -46,6 +47,7 @@ jobs:
       - name: Copy folders to docker
         run: |
           cp -r bin docker/bin
+          cp -r resources docker/resources
 
       - name: Get image name
         id: image_name
