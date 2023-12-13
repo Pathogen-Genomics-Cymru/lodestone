@@ -48,6 +48,42 @@ process vcfmix {
     """
 }
 
+process tbprofiler_update_db {
+    label 'low_memory'
+    label 'low_cpu'
+    label 'tbprofiler'
+
+    input:
+    path(reference)
+
+    script:
+    """
+    tb-profiler update_tbdb --match_ref $reference
+    """
+}
+
+process tbprofiler {
+    label 'medium_memory'
+    label 'medium_cpu'
+    label 'tbprofiler'
+
+    input:
+    val(sample_name)
+    path(minos_vcf)
+
+    output:
+    path("results/tbprofiler.results.json")
+
+    when:
+    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
+
+    script:
+    """
+    bgzip ${minos_vcf}
+    tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus}
+    """
+}
+
 process gnomonicus {
 
     tag {sample_name}

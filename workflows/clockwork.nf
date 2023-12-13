@@ -39,5 +39,6 @@ workflow clockwork {
 
       mpileup_vcf = callVarsMpileup.out.mpileup_vcf.join(minos.out.minos_report, by: 0)
       minos_vcf = minos.out.minos_vcf.join(alignToRef.out.alignToRef_report, by: 0)
+      reference = getRefFromJSON.out
 
 }

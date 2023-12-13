@@ -3,36 +3,31 @@ nextflow.enable.dsl = 2
 
 // import modules
 include {vcfmix} from '../modules/vcfpredictModules.nf' params(params)
-include {gnomonicus} from '../modules/vcfpredictModules.nf' params(params)
-include {finalJson} from '../modules/vcfpredictModules.nf' params(params)
+include {tbprofiler} from '../modules/vcfpredictModules.nf' params(params)
+include {tbprofiler_update_db} from '../modules/vcfpredictModules.nf' params(params)
 
 // define workflow component
 workflow vcfpredict {
 
     take:
-
-      clockwork_bcftools
-      clockwork_minos
-      genbank
+      clockwork_bcftools_tuple
+      minos_vcf_tuple
+      reference_fasta
 
     main:
 
       if ( params.vcfmix == "yes" ) {
 
-          vcfmix(clockwork_bcftools)
+          vcfmix(clockwork_bcftools_tuple)
 
       }
 
-      if ( params.gnomonicus == "yes" ) {
+      if ( params.resistance_profiler == "tb-profiler"){
+        //get just the vcf
+        minos_vcf = minos_vcf_tuple.map{it[1]}
+        sample_name = minos_vcf_tuple.map{it[0]}
 
-          gnomonicus(clockwork_minos, genbank)
-
+        tbprofiler_update_db(reference_fasta)
+        tbprofiler(sample_name, minos_vcf)
       }
-
-      if ( (params.vcfmix == "yes") && (params.gnomonicus == "yes") ) {
-
-          finalJson(vcfmix.out.vcfmix_json.join(gnomonicus.out.gnomon_json, by: 0))
-
-      }
-
 }
