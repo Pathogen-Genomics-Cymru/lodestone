@@ -206,7 +206,7 @@ process callVarsCortex {
 
 process minos {
     /**
-    * @QCcheckpoint check if top species is TB, if yes pass vcf to gnomonicus
+    * @QCcheckpoint check if top species is TB, if yes pass vcf to resistance profiling
     */
 
     tag { sample_name }
@@ -241,7 +241,7 @@ process minos {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"gnomonicus-warning":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -296,7 +296,7 @@ process gvcf {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [ ${params.vcfmix} == "no" ] && [ ${params.resistance_profiler} == "none" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
