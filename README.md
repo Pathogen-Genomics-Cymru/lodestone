@@ -9,7 +9,7 @@ Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & A
 
 Note that while Mykrobe is included within this pipeline, it runs as an independent process and is not used for any downstream reporting.
 
-**WARNING**: There are currently known errors with vcfmix and gnomonicus, as such `errorStrategy 'ignore'` has been added to the processes vcfpredict:vcfmix and vcfpredict:gnomonicus to stop the pipeline from crashing. Please check the stdout from nextflow to see whether these processes have ran successfully.
+**WARNING**: There are currently known errors with vcfmix, as such `errorStrategy 'ignore'` has been added to the processes vcfpredict:vcfmix to stop the pipeline from crashing. Please check the stdout from nextflow to see whether these processes have ran successfully.
 
 ## Quick Start ## 
 This is a Nextflow DSL2 pipeline, it requires a version of Nextflow that supports DSL2 and the stub-run feature. It is recommended to run the pipeline with  `NXF_VER=20.11.0-edge`, as the pipeline has been tested using this version. E.g. to download
@@ -28,6 +28,8 @@ NXF_VER=20.11.0-edge nextflow run main.nf -profile singularity --filetype fastq 
 NXF_VER=20.11.0-edge nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 ```
+
+There is also a pre-configured climb profile to run Lodestone on a CLIMB Jupyter Notebook Server. Add ```-profile climb``` to your command invocation. The input directory can point to an S3 bucket natively (e.g. ```--input_dir s3://my-team/bucket```). By default this will run the workflow in Docker containers and take advantage of kubernetes pods. The Kraken2, Bowtie2 and Afanc databases will by default point to the ```pluspf16```, ```hg19_1kgmaj_bt2``` and ```Mycobacteriaciae_DB_7.0``` directories by default. These are mounted on a public S3 bucket hosted on CLIMB.
 
 ### Executors ###
 
@@ -63,10 +65,8 @@ Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/b
 Name of the bowtie index, e.g. hg19_1kgmaj<br />
 * **vcfmix**<br />
 Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
-* **gnomonicus**<br />
-Run [gnomonicus](https://github.com/oxfordmmm/gnomonicus), yes or no<br />
-* **amr_cat**<br />
-Path to AMR catalogue for gnomonicus<br />
+* **resistance_profiler**<br />
+Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"](https://tbdr.lshtm.ac.uk/) or "none".
 * **afanc_myco_db**<br />Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_7.0.tar.gz
 <br />
 
@@ -125,10 +125,7 @@ process clockwork:alignToRef\
 25. (Fail) If < 50% of the reference genome was covered at 10-fold depth
 
 process clockwork:minos\
-26. (Warn) If sample is not TB, then it is not passed to gnomonicus
-
-## Running on CLIMB Jupyter Hub
-There is a pre-configured climb profile to run Lodestone on a CLIMB Jupyter Notebook Server. Add ```profile climb``` to your command invocation. The input directory can point to an S3 bucket natively (e.g. ```--input_dir s3://my-team/bucket```). By default this will run the workflow in Docker containers and take advantage of kubernetes pods. The Kraken2, Bowtie2 and Afanc databases will by default point to the ```pluspf16```, ```hg19_1kgmaj_bt2``` and ```Mycobacteriaciae_DB_7.0``` respectively. These are mounted on a public shared volume.
+26. (Warn) If sample is not TB, then it is not passed to a resistance profiler
 
 ## Acknowledgements ##
 For a list of direct authors of this pipeline, please see the contributors list. All of the software dependencies of this pipeline are recorded in the version.json
