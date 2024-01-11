@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN micromamba install --yes --name base --channel conda-forge --channel bioconda  \
     tb-profiler=${TBPROFILER_VER}
 
-RUN micromamba install -c bioconda -c conda-forge gatk4 
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4 
 RUN micromamba clean --all --yes
 
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
