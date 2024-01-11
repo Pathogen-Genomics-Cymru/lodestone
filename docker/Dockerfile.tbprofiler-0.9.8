@@ -38,6 +38,7 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
     tb-profiler=${TBPROFILER_VER}
 
 RUN micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4 
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda samtools 
 RUN micromamba clean --all --yes
 
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
