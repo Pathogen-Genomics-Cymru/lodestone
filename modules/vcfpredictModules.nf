@@ -70,6 +70,7 @@ process tbprofiler {
     input:
     val(sample_name)
     path(minos_vcf)
+    val(isSampleTB)
 
     output:
     path("results/tbprofiler.results.json")
@@ -82,6 +83,31 @@ process tbprofiler {
     bgzip ${minos_vcf}
     tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus}
     """
+}
+
+process add_allelic_depth {
+    label 'low_memory'
+    label 'low_cpu'
+    label 'tbprofiler'
+    
+    input:
+    val(sample_name)
+    path(minos_vcf)
+    path(reference)
+    val(isSampleTB)
+    
+    output:
+    path("${sample_name}_allelic_depth.minos.vcf")
+
+    when:
+    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
+    
+    script:
+    """
+    samtools faidx $reference
+    gatk VariantAnnotator -R $reference -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf
+    """
+    
 }
 
 process gnomonicus {
