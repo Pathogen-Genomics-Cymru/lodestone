@@ -73,6 +73,7 @@ process tbprofiler {
     input:
     val(sample_name)
     path(minos_vcf)
+    path(report_json)
     val(isSampleTB)
 
     output:
@@ -107,7 +108,6 @@ process add_allelic_depth {
     val(sample_name)
     path(minos_vcf)
     path(reference)
-    path(report_json)
     val(isSampleTB)
     
     output:
