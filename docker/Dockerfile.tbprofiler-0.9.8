@@ -39,6 +39,7 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
 
 RUN micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4 
 RUN micromamba install --yes --name base --channel conda-forge --channel bioconda samtools 
+RUN micromamba install --yes --name base --channel conda-forge jq
 RUN micromamba clean --all --yes
 
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
