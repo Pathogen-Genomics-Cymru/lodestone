@@ -214,7 +214,7 @@ workflow {
       minos_vcf = clockwork.out.minos_vcf
       reference = clockwork.out.reference
 
-      vcfpredict(mpileup_vcf, minos_vcf, reference, resistance_profiler, update_tbprofiler)
+      vcfpredict(mpileup_vcf, minos_vcf, reference)
 
 }
 
