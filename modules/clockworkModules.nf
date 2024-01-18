@@ -47,7 +47,7 @@ process alignToRef {
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
+    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path(reference_path), stdout, emit: alignToRef_bam
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
     path "${sample_name}_err.json", emit: alignToRef_log optional true
@@ -63,9 +63,9 @@ process alignToRef {
 
     """
     echo $reference_path
-    cp ${reference_path} ${sample_name}.fa
+    cp $reference_path ${sample_name}.fa
 
-    minimap2 -ax sr ${sample_name}.fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference ${sample_name}.fa - minimap.bam
+    minimap2 -ax sr $reference_path -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference $reference_path - minimap.bam
 
     java -jar /usr/local/bin/picard.jar AddOrReplaceReadGroups INPUT=minimap.bam OUTPUT=${bam} RGID=${sample_name} RGLB=lib RGPL=Illumina RGPU=unit RGSM=sample
 
