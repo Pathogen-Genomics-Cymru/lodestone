@@ -2,6 +2,8 @@ Bootstrap: docker
 From: ubuntu:focal
 Stage: spython-base
 
+%files
+bin/ /opt/bin/
 %labels
 maintainer="pricea35@cardiff.ac.uk" 
 about.summary="container for the preprocessing workflow"
@@ -25,12 +27,14 @@ fastani_version=1.33
 
 PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libgsl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
 PYTHON="python3 python3-pip python3-dev"
-PYTHON_PACKAGES="biopython"
+PYTHON_PACKAGES="biopython awscli boto3"
 
 PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:/opt/edirect
 LD_LIBRARY_PATH=/usr/local/lib
 
 export DEBIAN_FRONTEND="noninteractive"
+
+PATH=/opt/bin:$PATH
 
 apt-get update \
 && DEBIAN_FRONTEND="noninteractive" apt-get install -y $PACKAGES $PYTHON \
@@ -82,7 +86,7 @@ curl -fsSL https://github.com/OpenGene/fastp/archive/v${fastp_version}.tar.gz | 
 && cd .. \
 && rm -r fastp-${fastp_version}
 
-wget http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip \
+wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip \
 && unzip fastqc_v${fastqc_version}.zip \
 && chmod +x FastQC/fastqc \
 && mv FastQC/* /usr/local/bin \
@@ -102,9 +106,8 @@ curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}
 && mv mash-Linux64-v${mash_version}/mash /usr/local/bin \
 && rm -r mash-Linux* \
 && wget https://github.com/ParBLiSS/FastANI/releases/download/v${fastani_version}/fastANI-Linux64-v${fastani_version}.zip \
-&& unzip fastANI-Linux64-v${fastani_version}.zip  \
+&& unzip fastANI-Linux64-v${fastani_version}.zip \
 && mv fastANI /usr/local/bin
-
 
 sh -c "$(curl -fsSL ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)" \
 && mkdir -p /opt/edirect \
@@ -149,9 +152,10 @@ export mash_version=2.3
 export fastani_version=1.33
 export PACKAGES="procps curl git wget build-essential zlib1g-dev libncurses-dev libz-dev libbz2-dev liblzma-dev libcurl4-openssl-dev libgsl-dev rsync unzip ncbi-blast+ pigz jq libtbb-dev openjdk-11-jre-headless autoconf r-base-core locales locales-all"
 export PYTHON="python3 python3-pip python3-dev"
-export PYTHON_PACKAGES="biopython"
+export PYTHON_PACKAGES="biopython awscli boto3"
 export PATH=${PATH}:/usr/local/bin/mccortex/bin:/usr/local/bin/bwa-${bwa_version}:/opt/edirect
 export LD_LIBRARY_PATH=/usr/local/lib
+export PATH=/opt/bin:$PATH
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
