@@ -12,6 +12,7 @@ include {finalJson} from '../modules/vcfpredictModules.nf' params(params)
 workflow vcfpredict {
 
     take:
+      clockwork_bam
       clockwork_bcftools_tuple
       minos_vcf_tuple
       reference_fasta
@@ -31,13 +32,14 @@ workflow vcfpredict {
         minos_vcf = minos_vcf_tuple.map{it[1]}
         do_we_resistance_profile = minos_vcf_tuple.map{it[2]}
         report_json  = minos_vcf_tuple.map{it[3]}
+        bam = clockwork_bam.map{it[2]}
 
         if (params.update_tbprofiler == "yes"){
         tbprofiler_update_db(reference_fasta)
         }
         
         //add allelic depth back in: was calculated in mpileup but lost in minos
-        add_allelic_depth(sample_name, minos_vcf, reference_fasta, do_we_resistance_profile)
+        add_allelic_depth(sample_name, minos_vcf, bam, reference_fasta, do_we_resistance_profile)
         tbprofiler(sample_name, add_allelic_depth.out, report_json, do_we_resistance_profile)
       }
       

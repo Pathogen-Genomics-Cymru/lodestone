@@ -107,6 +107,7 @@ process add_allelic_depth {
     input:
     val(sample_name)
     path(minos_vcf)
+    path(bam)
     path(reference)
     val(isSampleTB)
     
@@ -120,7 +121,7 @@ process add_allelic_depth {
     """
     samtools faidx $reference
     samtools dict $reference -o ${reference.baseName}.dict
-    gatk VariantAnnotator -R $reference -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf
+    gatk VariantAnnotator -R $reference -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf
     """
     
 }

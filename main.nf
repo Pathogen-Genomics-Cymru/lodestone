@@ -213,8 +213,9 @@ workflow {
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
       reference = clockwork.out.reference
+      bam = clockwork.out.bam
 
-      vcfpredict(mpileup_vcf, minos_vcf, reference)
+      vcfpredict(bam, mpileup_vcf, minos_vcf, reference)
 
 }
 
