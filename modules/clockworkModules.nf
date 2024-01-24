@@ -63,7 +63,6 @@ process alignToRef {
 
     """
     echo $reference_path
-    cp $reference_path ${sample_name}.fa
 
     minimap2 -ax sr $reference_path -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference $reference_path - minimap.bam
 
