@@ -337,7 +337,7 @@ process afanc {
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
-    label 'medium_memory'
+    label 'high_memory'
     label 'retry_afanc'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
