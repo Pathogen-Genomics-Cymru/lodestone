@@ -434,7 +434,7 @@ process bowtie2 {
     tag { sample_name }
     label 'preprocessing'
     label 'normal_cpu'
-    label 'low_memory'
+    label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/output_reads", mode: 'copy', pattern: '*.fq.gz', overwrite: 'true'
 
