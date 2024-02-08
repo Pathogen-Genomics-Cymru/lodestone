@@ -411,7 +411,7 @@ process mykrobe {
     tuple val(sample_name), path(fq1), path(fq2), stdout, emit: mykrobe_fqs
 
     script:
-    mykrobe_report = "${sample_name}_mykrobe_report.json"
+    mykrobe_report = "${sample_name}_mykrobe_report"
 
     """
     mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json_and_csv --output ${mykrobe_report} -1 $fq1 $fq2
@@ -422,7 +422,7 @@ process mykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}
+    touch ${mykrobe_report}.json
     printf ${sample_name}
     """
 }
@@ -743,7 +743,7 @@ process reMykrobe {
     tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), emit: reMykrobe_report
 
     script:
-    mykrobe_report = "${sample_name}_mykrobe_report.json"
+    mykrobe_report = "${sample_name}_mykrobe_report"
 
     """
     mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json_and_csv --output ${mykrobe_report} -1 $fq1 $fq2
@@ -753,7 +753,7 @@ process reMykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}
+    touch ${mykrobe_report}.json
     """
 }
 
