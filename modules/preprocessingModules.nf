@@ -398,6 +398,7 @@ process mykrobe {
     label 'medium_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.csv'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), val(run_mykrobe), path(software_json)
@@ -413,7 +414,7 @@ process mykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json_and_csv --output ${mykrobe_report} -1 $fq1 $fq2
     printf ${sample_name}
     """
 
@@ -733,6 +734,7 @@ process reMykrobe {
     label 'low_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_mykrobe_report.json'
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_mykrobe_report.csv'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
@@ -744,7 +746,7 @@ process reMykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json --output ${mykrobe_report} -1 $fq1 $fq2
+    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json_and_csv --output ${mykrobe_report} -1 $fq1 $fq2
     """
 
     stub:
