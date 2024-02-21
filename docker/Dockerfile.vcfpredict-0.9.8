@@ -3,19 +3,16 @@ FROM ubuntu:20.04
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the vcf predict workflow"
 
+#add run-vcf to container
+COPY bin/ /opt/bin/
+ENV PATH=/opt/bin:$PATH
+
 ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq" \
 PYTHON="python3 python3-pip python3-dev"
 
 ENV vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417 \
-gumpy_version=1.0.15 \
-piezo_version=0.3 \
-gnomonicus_version=1.1.2 \
-tuberculosis_amr_catalogues=12d38733ad2e238729a3de9f725081e1d4872968
 
-COPY bin/ /opt/bin/
-ENV PATH=/opt/bin:$PATH
-
-
+#apt updates
 RUN apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
 && apt-get install -y $PACKAGES $PYTHON \
@@ -28,24 +25,3 @@ RUN apt-get update \
 && pip3 install . \
 && cp -r data /usr/local/lib/python3.8/dist-packages \
 && cd ..
-
-RUN curl -fsSL https://github.com/oxfordmmm/gumpy/archive/refs/tags/v${gumpy_version}.tar.gz | tar -xz \
-&& cd gumpy-${gumpy_version} \
-&& pip3 install . \
-&& cd ..
-
-RUN curl -fsSL https://github.com/oxfordmmm/piezo/archive/refs/tags/v${piezo_version}.tar.gz | tar -xz \
-&& cd piezo-${piezo_version} \
-&& pip3 install . \
-&& cd ..
-
-RUN curl -fsSL https://github.com/oxfordmmm/gnomonicus/archive/refs/tags/v${gnomonicus_version}.tar.gz | tar -xz \
-&& cd gnomonicus-${gnomonicus_version} \
-&& pip3 install . \
-&& cd ..
-
-RUN git clone https://github.com/oxfordmmm/tuberculosis_amr_catalogues.git \
-&& cd tuberculosis_amr_catalogues \
-&& git checkout ${tuberculosis_amr_catalogues} \
-&& cd ..
-

@@ -2,22 +2,22 @@ Bootstrap: docker
 From: ubuntu:20.04
 Stage: spython-base
 
+%files
+bin/ /opt/bin/
 %labels
 maintainer="pricea35@cardiff.ac.uk" 
 about.summary="container for the vcf predict workflow"
 %post
 
 
+#add run-vcf to container
+PATH=/opt/bin:$PATH
 
 PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 PYTHON="python3 python3-pip python3-dev"
 
 vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417
-gumpy_version=1.0.15
-piezo_version=0.3
-gnomonicus_version=1.1.2
-tuberculosis_amr_catalogues=12d38733ad2e238729a3de9f725081e1d4872968
-
+#apt updates
 apt-get update \
 && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata \
 && apt-get install -y $PACKAGES $PYTHON \
@@ -26,38 +26,15 @@ apt-get update \
 && cd VCFMIX \
 && git checkout ${vcfmix_version} \
 && pip3 install recursive_diff \
+&& pip3 install awscli \
 && pip3 install . \
 && cp -r data /usr/local/lib/python3.8/dist-packages \
 && cd ..
-
-curl -fsSL https://github.com/oxfordmmm/gumpy/archive/refs/tags/v${gumpy_version}.tar.gz | tar -xz \
-&& cd gumpy-${gumpy_version} \
-&& pip3 install . \
-&& cd ..
-
-curl -fsSL https://github.com/oxfordmmm/piezo/archive/refs/tags/v${piezo_version}.tar.gz | tar -xz \
-&& cd piezo-${piezo_version} \
-&& pip3 install . \
-&& cd ..
-
-curl -fsSL https://github.com/oxfordmmm/gnomonicus/archive/refs/tags/v${gnomonicus_version}.tar.gz | tar -xz \
-&& cd gnomonicus-${gnomonicus_version} \
-&& pip3 install . \
-&& cd ..
-
-git clone https://github.com/oxfordmmm/tuberculosis_amr_catalogues.git \
-&& cd tuberculosis_amr_catalogues \
-&& git checkout ${tuberculosis_amr_catalogues} \
-&& cd ..
-
 %environment
+export PATH=/opt/bin:$PATH
 export PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq"
 export PYTHON="python3 python3-pip python3-dev"
 export vcfmix_version=d4693344bf612780723e39ce27c8ae3868f95417
-export gumpy_version=1.0.15
-export piezo_version=0.3
-export gnomonicus_version=1.1.2
-export tuberculosis_amr_catalogues=12d38733ad2e238729a3de9f725081e1d4872968
 %runscript
 exec /bin/bash "$@"
 %startscript

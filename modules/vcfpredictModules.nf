@@ -33,7 +33,7 @@ process vcfmix {
 
     jq -s ".[0] * .[1]" ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}
 
-    if [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}; fi
+    if [ ${params.resistance_profiler} == "none" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}; fi
     """
 
     stub:
@@ -46,6 +46,84 @@ process vcfmix {
     touch ${vcfmix_csv}
     touch ${error_log}
     """
+}
+
+process tbprofiler_update_db {
+    label 'low_memory'
+    label 'low_cpu'
+    label 'tbprofiler'
+
+    input:
+    path(reference)
+
+    script:
+    """
+    tb-profiler update_tbdb --match_ref $reference
+    """
+}
+
+process tbprofiler {
+    label 'medium_memory'
+    label 'medium_cpu'
+    label 'tbprofiler'
+    
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbprofiler-out.json', overwrite: 'true'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+
+    input:
+    val(sample_name)
+    path(minos_vcf)
+    path(report_json)
+    val(isSampleTB)
+
+    output:
+    tuple val(sample_name), path("${sample_name}.tbprofiler-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
+
+    when:
+    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
+
+    script:
+    error_log = "${sample_name}_err.json"
+    tbprofiler_json = "${sample_name}.tbprofiler-out.json"
+    
+    """
+    bgzip ${minos_vcf}
+    tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus}
+    mv results/tbprofiler.results.json ${tbprofiler_json}
+    
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
+
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${tbprofiler_json} > ${report_json}
+    """
+}
+
+process add_allelic_depth {
+    label 'low_memory'
+    label 'low_cpu'
+    label 'tbprofiler'
+    
+    input:
+    val(sample_name)
+    path(minos_vcf)
+    path(bam)
+    path(reference)
+    val(isSampleTB)
+    
+    output:
+    path("${sample_name}_allelic_depth.minos.vcf")
+
+    when:
+    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
+    
+    script:
+    """
+    samtools faidx $reference
+    samtools dict $reference -o ${reference.baseName}.dict
+    gatk VariantAnnotator -R $reference -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf
+    """
+    
 }
 
 process gnomonicus {

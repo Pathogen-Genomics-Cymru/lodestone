@@ -47,7 +47,7 @@ process alignToRef {
     doWeAlign =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path("${sample_name}.fa"), stdout, emit: alignToRef_bam
+    tuple val(sample_name), path("${sample_name}_report.json"), path("${sample_name}.bam"), path(reference_path), stdout, emit: alignToRef_bam
     path("${sample_name}.bam.bai", emit: alignToRef_bai)
     path("${sample_name}_alignmentStats.json", emit: alignToRef_json)
     path "${sample_name}_err.json", emit: alignToRef_log optional true
@@ -63,9 +63,8 @@ process alignToRef {
 
     """
     echo $reference_path
-    cp ${reference_path} ${sample_name}.fa
 
-    minimap2 -ax sr ${sample_name}.fa -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference ${sample_name}.fa - minimap.bam
+    minimap2 -ax sr $reference_path -t ${task.cpus} $fq1 $fq2 | samtools fixmate -m - - | samtools sort -T tmp - | samtools markdup --reference $reference_path - minimap.bam
 
     java -jar /usr/local/bin/picard.jar AddOrReplaceReadGroups INPUT=minimap.bam OUTPUT=${bam} RGID=${sample_name} RGLB=lib RGPL=Illumina RGPU=unit RGSM=sample
 
@@ -206,7 +205,7 @@ process callVarsCortex {
 
 process minos {
     /**
-    * @QCcheckpoint check if top species is TB, if yes pass vcf to gnomonicus
+    * @QCcheckpoint check if top species is TB, if yes pass vcf to resistance profiling
     */
 
     tag { sample_name }
@@ -241,7 +240,7 @@ process minos {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"gnomonicus-warning":"sample is not TB so cannot produce antibiogram using gnomonicus"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
@@ -296,7 +295,7 @@ process gvcf {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.gnomonicus} == "no" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [ ${params.vcfmix} == "no" ] && [ ${params.resistance_profiler} == "none" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
     """
 
     stub:
