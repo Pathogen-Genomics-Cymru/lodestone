@@ -340,7 +340,9 @@ process afanc {
     label 'high_memory'
     label 'retry_afanc'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc_report.json'
+    errorStrategy 'ignore'
+
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_afanc*.json'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
@@ -353,6 +355,7 @@ process afanc {
     tuple val(sample_name), path("${sample_name}_afanc_report.json"), stdout, emit: afanc_json
     path "${sample_name}_err.json", emit: afanc_log optional true
     path "${sample_name}_report.json", emit: afanc_report optional true
+    path "${sample_name}_afanc_original.json", emit: afanc_original optional true
 
     script:
     afanc_report = "${sample_name}_afanc_report.json"
@@ -363,10 +366,12 @@ process afanc {
     if [[ ${run_afanc} =~ /${sample_name}/ ]]
     then
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+        cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
 	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 	printf ${sample_name}
     else
 	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+        cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
 	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
 	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null
@@ -652,6 +657,7 @@ process reKraken {
     label 'high_memory'
 
     publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_kraken*'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
@@ -695,7 +701,10 @@ process reAfanc {
     label 'medium_memory'
     label 'retry_afanc'
 
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*.json'
+    errorStrategy 'ignore'
+
+    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP_and_postContamRemoval", mode: 'copy', pattern: '*_afanc*.json'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
@@ -703,6 +712,7 @@ process reAfanc {
 
     output:
     tuple val(sample_name), path("${sample_name}_afanc_report.json"), emit: reAfanc_report
+    path "${sample_name}_afanc_original.json", emit: reAfanc_original
     // tuple val(sample_name), path(fq1), path(fq2), stdout, emit: afanc_fqs
 
     script:
@@ -710,6 +720,8 @@ process reAfanc {
 
     """
     afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+
+    cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
     reformat_afanc_json.py ${sample_name}/${sample_name}.json
     printf ${sample_name}
     """
