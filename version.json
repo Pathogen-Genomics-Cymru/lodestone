@@ -1,6 +1,6 @@
 {
-  "lodestone-0.9.7" : {
-    "preprocessing-0.9.7" : {
+  "lodestone-0.9.8" : {
+    "preprocessing-0.9.8" : {
       "samtools_version" : "1.12",
       "bcftools_version" : "1.12",
       "htslib_version" : "1.12",
@@ -16,14 +16,10 @@
       "mash_version" : "2.3",
       "fastani_version" : "1.33"
     },
-    "vcfpredict-0.9.7" : {
-      "vcfmix_version" : "d4693344bf612780723e39ce27c8ae3868f95417",
-      "gumpy_version" : "1.0.15",
-      "piezo_version" : "0.3",
-      "gnomonicus_version" : "1.1.2",
-      "tuberculosis_amr_catalogues" : "12d38733ad2e238729a3de9f725081e1d4872968"
+    "vcfpredict-0.9.8" : {
+      "vcfmix_version" : "d4693344bf612780723e39ce27c8ae3868f95417"
     },
-    "clockwork-0.9.7" : {
+    "clockwork-0.9.8" : {
       "samtools_version" : "1.12",
       "htslib_version" : "1.12",
       "bcftools_version" : "1.12",
@@ -39,12 +35,12 @@
       "python_version" : "3.6.5",
       "clockwork_version" : "2364dec4cbf25c844575e19e8fe0a319d10721b5"
     },
+    "tbprofiler-0.9.8" : {},
     "databases" : {
-      "kraken_db" : "kraken2",
-      "bowtie2_index" : "bowtie2",
+      "kraken_db" : "s3://microbial-bioin-sp3/kraken_pluspf_16gb/",
+      "bowtie2_index" : "s3://microbial-bioin-sp3/bowtie_hg19",
       "bowtie_index_name" : "hg19_1kgmaj",
-      "amr_cat" : "/tuberculosis_amr_catalogues/catalogues/NC_000962.3/NC_000962.3_WHO-UCN-GTB-PCI-2021.7_v1.0_GARC1_RUS.csv",
-      "afanc_myco_db" : "${baseDir}/afanc/Mycobacteriaciae_DB_7.0/"
+      "afanc_myco_db" : "s3://microbial-bioin-sp3/Mycobacteriaciae_DB_7.0/"
     }
   }
 }
