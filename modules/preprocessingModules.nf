@@ -13,7 +13,7 @@ process checkBamValidity {
     publishDir "${params.output_dir}/${bam_file.getBaseName()}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    path(bam_file), path(software_json)
+    tuple path(bam_file), path(software_json)
 
     output:
     tuple path(bam_file), stdout, path(software_json), emit: checkValidity_bam
