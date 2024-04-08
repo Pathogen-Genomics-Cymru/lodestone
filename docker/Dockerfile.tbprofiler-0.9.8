@@ -6,12 +6,12 @@ COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 USER root
 WORKDIR /
 
-ARG TBPROFILER_VER="5.0.1"
+ARG TBPROFILER_VER="6.2.0"
 
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
 # commits are found on https://github.com/jodyphelan/tbdb/commits/master
-# this was the latest commit as of 2023-10-26
-ARG TBDB_VER="e25540b"
+# this was the latest commit as of 2024-04-08
+ARG TBDB_VER="e6a0040"
 
 # LABEL instructions tag the image with metadata that might be important to the user
 LABEL base.image="micromamba:1.3.0"
