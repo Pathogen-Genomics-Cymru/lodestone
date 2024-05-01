@@ -2,7 +2,7 @@
 
 process getversion {
 
-    label 'getversion'
+    label 'run_local'
 
     publishDir "${params.output_dir}", mode: 'copy', pattern: '*.json', overwrite: 'true'
 
