@@ -92,12 +92,6 @@ if(!resistance_profilers.contains(params.resistance_profiler)){
     exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler" or "none" to skip.'
     }
 
-//tbprofiler container already has the reference genome in the DB, so skip if using docker
-if((params.resistance_profiler == "tb-profiler") && (params.container_enabled == true)) {
-    update_tbprofiler = true
-} else {
-    update_tbprofiler = false
-}
 
 resistance_profiler = params.resistance_profiler
 

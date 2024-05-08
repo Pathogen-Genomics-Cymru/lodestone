@@ -11,7 +11,8 @@ ARG TBPROFILER_VER="6.2.0"
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
 # commits are found on https://github.com/jodyphelan/tbdb/commits/master
 # this was the latest commit as of 2024-05-01
-ARG TBDB_VER="152d603"
+
+ARG TBDB_VER="e6a0040"
 
 # LABEL instructions tag the image with metadata that might be important to the user
 LABEL base.image="micromamba:1.3.0"
@@ -48,7 +49,8 @@ ENV PATH="/opt/conda/bin:${PATH}"
 # Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
 # can also run 'tb-profiler list_db' to find the same version info
 # In 5.0.1 updating_tbdb does not work with tb-profiler update_tbdb --commit ${TBDB_VER}
-RUN tb-profiler update_tbdb --commit ${TBDB_VER}
 
 WORKDIR /data
-RUN tb-profiler update_tbdb --match_ref tuberculosis.fasta
+
+#wants full path to reference
+RUN tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
