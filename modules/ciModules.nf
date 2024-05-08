@@ -9,7 +9,7 @@ process formatInput {
 
     script:
     """
-    touch software.json
+    echo "{\n}" > software.json
     echo /${sample_name}/
     """
 }
