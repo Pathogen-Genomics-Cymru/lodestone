@@ -6,17 +6,16 @@ COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 USER root
 WORKDIR /
 
-ARG TBPROFILER_VER="6.2.0"
+ARG TBPROFILER_VER="6.2.1"
 
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
 # commits are found on https://github.com/jodyphelan/tbdb/commits/master
-# this was the latest commit as of 2024-05-01
-
-ARG TBDB_VER="e6a0040"
+# this was the latest commit as of 2024-05-21
+ARG TBDB_VER="a5e1d48"
 
 # LABEL instructions tag the image with metadata that might be important to the user
 LABEL base.image="micromamba:1.3.0"
-LABEL dockerfile.version="1"
+LABEL dockerfile.version="0.9.8"
 LABEL software="tbprofiler"
 LABEL software.version="${TBPROFILER_VER}"
 LABEL description="The pipeline aligns reads to the H37Rv reference using bowtie2, BWA or minimap2 and then calls variants using bcftools. These variants are then compared to a drug-resistance database."
@@ -26,6 +25,8 @@ LABEL maintainer="John Arnn"
 LABEL maintainer.email="jarnn@utah.gov"
 LABEL maintainer2="Curtis Kapsak"
 LABEL maintainer2.email="kapsakcj@gmail.com"
+LABEL maintainer3="Tom Whalley"
+LABEL maintainer3.email="twhalley93@gmail.com"
 
 # Install dependencies via apt-get; cleanup apt garbage
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -54,3 +55,4 @@ WORKDIR /data
 
 #wants full path to reference
 RUN tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
+
