@@ -5,8 +5,7 @@ COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 
 #USER root
 WORKDIR /
-#set tmpdir to current working directory so we don't write to filesystem
-ENV TMPDIR="."
+ENV TMPDIR="/data"
 ARG TBPROFILER_VER="6.2.1"
 
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
@@ -57,3 +56,5 @@ WORKDIR /data
 #wants full path to reference
 RUN tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
 
+#set tmpdir to current working directory so we don't write to filesystem
+ENV TMPDIR="."
