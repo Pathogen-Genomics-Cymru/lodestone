@@ -18,7 +18,7 @@ export NXF_VER="20.11.0-edge"
 curl -fsSL https://get.nextflow.io | bash
 ```
 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. 
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. *Please note, when running the pipeline with Singularity, either the ```$TMPDIR``` or ```$SINGULARITY_TMPDIR``` must be specified; e.g. ```export TMPDIR="./" to run in the working directory.*
 
 E.g. to run the workflow:
 ```
