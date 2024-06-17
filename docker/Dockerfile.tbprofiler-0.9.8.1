@@ -22,6 +22,9 @@ LABEL description="The pipeline aligns reads to the H37Rv reference using bowtie
 LABEL maintainer3="Tom Whalley"
 LABEL maintainer3.email="twhalley93@gmail.com"
 
+#set env for root prefix
+ENV MAMBA_ROOT_PREFIX="/opt/conda"
+
 RUN apt-get update && apt-get install -y apt-utils wget bzip2 curl
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
     && touch /root/.bashrc \
@@ -41,8 +44,7 @@ RUN micromamba install --yes --name base --channel conda-forge jq
 RUN micromamba clean --all --yes
 
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
-RUN cp -r /root/micromamba/bin /opt/conda/ 
-ENV PATH="/root/micromamba/bin:${PATH}"
+ENV PATH="/opt/conda/bin:${PATH}"
 
 
 # Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
