@@ -1,7 +1,7 @@
 FROM ubuntu:focal
 
 #copy the reference genome to pre-compute our index
-COPY tuberculosis.fasta /data/tuberculosis.fasta
+COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 
 #USER root
 WORKDIR /
