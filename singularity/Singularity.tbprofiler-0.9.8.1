@@ -1,44 +1,45 @@
 Bootstrap: docker
-From: mambaorg/micromamba:1.3.0 
-Stage: app
+From: ubuntu:focal
+Stage: spython-base
 
 %files
 resources/tuberculosis.fasta /data/tuberculosis.fasta
 %labels
-base.image="micromamba:1.3.0"
-dockerfile.version="1"
+base.image="ubuntu:focal"
+dockerfile.version="0.9.8.1"
 software="tbprofiler"
 software.version="${TBPROFILER_VER}"
 description="The pipeline aligns reads to the H37Rv reference using bowtie2, BWA or minimap2 and then calls variants using bcftools. These variants are then compared to a drug-resistance database."
-website="https://github.com/jodyphelan/TBProfiler/"
-license="https://github.com/jodyphelan/TBProfiler/blob/master/LICENSE"
-maintainer="John Arnn"
-maintainer.email="jarnn@utah.gov"
-maintainer2="Curtis Kapsak"
-maintainer2.email="kapsakcj@gmail.com"
+maintainer3="Tom Whalley"
+maintainer3.email="twhalley93@gmail.com"
 %post
 
 #copy the reference genome to pre-compute our index
 
-su -  root # USER root
+#USER root
 mkdir -p /
 cd /
-
+TMPDIR="/data"
 TBPROFILER_VER="6.2.1"
 
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
 # commits are found on https://github.com/jodyphelan/tbdb/commits/master
-# this was the latest commit as of 2023-10-26
+# this was the latest commit as of 2024-05-21
 TBDB_VER="a5e1d48"
 
 # LABEL instructions tag the image with metadata that might be important to the user
 
-# Install dependencies via apt-get; cleanup apt garbage
-apt-get update && apt-get install -y --no-install-recommends \
-wget \
-ca-certificates \
-procps && \
-apt-get autoclean && rm -rf /var/lib/apt/lists/*
+#set env for root prefix
+MAMBA_ROOT_PREFIX="/opt/conda"
+
+apt-get update && apt-get install -y apt-utils wget bzip2 curl
+curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
+&& touch /root/.bashrc \
+&& ./bin/micromamba shell init -s bash -p /opt/conda  \
+&& grep -v '[ -z "\$PS1" ] && return' /root/.bashrc  > /opt/conda/bashrc   # this line has been modified \
+&& apt-get clean autoremove --yes \
+&& rm -rf /var/lib/{apt,dpkg,cache,log}
+
 
 # install tb-profiler via bioconda; install into 'base' conda env
 micromamba install --yes --name base --channel conda-forge --channel bioconda  \
@@ -52,16 +53,24 @@ micromamba clean --all --yes
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
 PATH="/opt/conda/bin:${PATH}"
 
+
 # Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
 # can also run 'tb-profiler list_db' to find the same version info
 # In 5.0.1 updating_tbdb does not work with tb-profiler update_tbdb --commit ${TBDB_VER}
-tb-profiler update_tbdb --commit ${TBDB_VER}
 
 mkdir -p /data
 cd /data
-tb-profiler update_tbdb --match_ref tuberculosis.fasta
+
+#wants full path to reference
+tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
+
+#set tmpdir to current working directory so we don't write to filesystem
+TMPDIR="."
 %environment
+export TMPDIR="/data"
+export MAMBA_ROOT_PREFIX="/opt/conda"
 export PATH="/opt/conda/bin:${PATH}"
+export TMPDIR="."
 %runscript
 cd /data
 exec /bin/bash "$@"
