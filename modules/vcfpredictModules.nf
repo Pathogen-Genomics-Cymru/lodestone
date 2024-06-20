@@ -58,7 +58,8 @@ process tbprofiler_update_db {
 
     script:
     """
-    tb-profiler update_tbdb --match_ref $reference
+    mkdir tmp
+    tb-profiler update_tbdb --match_ref $reference --temp tmp
     """
 }
 
@@ -88,7 +89,10 @@ process tbprofiler {
     
     """
     bgzip ${minos_vcf}
-    tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus}
+    
+    mkdir tmp
+    tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus} --temp tmp
+    
     mv results/tbprofiler.results.json ${tbprofiler_json}
     
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
@@ -121,7 +125,10 @@ process add_allelic_depth {
     """
     samtools faidx $reference
     samtools dict $reference -o ${reference.baseName}.dict
-    gatk VariantAnnotator -R $reference -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf
+    
+    mkdir tmp
+    
+    gatk VariantAnnotator -R $reference -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
     """
     
 }
