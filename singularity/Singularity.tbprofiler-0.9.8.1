@@ -18,7 +18,7 @@ maintainer3.email="twhalley93@gmail.com"
 
 tbdb_version=a5e1d48
 tbprofiler_version=6.2.1
-    TMPDIR="."
+TMPDIR="."
 
 #USER root
 mkdir -p /
@@ -71,6 +71,7 @@ tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER
 %environment
 export tbdb_version=a5e1d48
 export tbprofiler_version=6.2.1
+export TMPDIR="."
 export TMPDIR="/data"
 export MAMBA_ROOT_PREFIX="/opt/conda"
 export PATH="/opt/conda/bin:${PATH}"

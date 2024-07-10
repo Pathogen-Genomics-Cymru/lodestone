@@ -4,7 +4,7 @@ FROM ubuntu:focal
 COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 
 ENV tbdb_version=a5e1d48 \
-    tbprofiler_version=6.2.1
+    tbprofiler_version=6.2.1 \
     TMPDIR="."
 
 #USER root
