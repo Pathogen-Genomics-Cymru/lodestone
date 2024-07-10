@@ -16,6 +16,10 @@ maintainer3.email="twhalley93@gmail.com"
 
 #copy the reference genome to pre-compute our index
 
+tbdb_version="a5e1d48"
+    tbprofiler_version="6.2.1"
+    TMPDIR="."
+
 #USER root
 mkdir -p /
 cd /
@@ -64,13 +68,11 @@ cd /data
 #wants full path to reference
 tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
 
-#set tmpdir to current working directory so we don't write to filesystem
-TMPDIR="."
 %environment
+export tbdb_version="a5e1d48"
 export TMPDIR="/data"
 export MAMBA_ROOT_PREFIX="/opt/conda"
 export PATH="/opt/conda/bin:${PATH}"
-export TMPDIR="."
 %runscript
 cd /data
 exec /bin/bash "$@"
