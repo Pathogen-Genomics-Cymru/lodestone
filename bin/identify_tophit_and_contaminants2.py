@@ -188,19 +188,29 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
         if depth_of_contam_species > depth_of_top_species:
             warnings.append("warning: the top species hit (%s) has the highest %% coverage of all afanc species classifications (%s) and a median depth of %s, but a contaminating species (%s) - although with lower coverage (%s %%) - has higher depth (%s)" %(top_species, pc_coverage_of_top_species, depth_of_top_species, contam_species, pc_coverage_of_contam_species, depth_of_contam_species))
 
-    # OTHER THAN THE TOP HIT, WHAT NON-HUMAN SPECIES ARE ALSO PRESENT IN THE SAMPLE, ACCORDING TO KRAKEN?
+    # OTHER THAN THE TOP HIT, WHAT NON-HUMAN SPECIES AND GENUSES ARE ALSO PRESENT IN THE SAMPLE, ACCORDING TO KRAKEN?
     no_of_human_reads = 0
     other_species = {}
-    for key in kraken['Species']:
-        species = key['name']
-        taxid = key['taxon_id']
-        reads = key['reads']
-        if taxid == 9606: no_of_human_reads += reads
-        # species = species.replace("Mycobacteriodes", "Mycobacterium") # Kraken sometimes uses "Mycobacteriodes" (e.g. Mycobacteriodes abscessus) whereas afanc uses "Mycobacterium" for the same. We need to standardise this to prevent downstream errors
-        ## ignore any Kraken hits to mycobacterial species - they may be spurious. We will use only the mycobacterial classifications made by afanc
-        if match_taxonomy(species): continue
-        if taxid == 9606: continue # ignore human because we have a dedicated human read removal process elsewhere in the workflow
-        if species != top_species: other_species[species] = taxid
+
+    # prior to discussion with the others, leave it at species and genus level
+    # We only need to do this for kraken, afanc should have a fixed species level DB
+    taxonomic_levels = ["Species", "Genus"]
+
+    for t_level in taxonomic_levels:
+        if t_level in kraken:
+
+            for key in kraken[t_level]:
+                species = key['name']
+                taxid = key['taxon_id']
+                reads = key['reads']
+                if taxid == 9606: no_of_human_reads += reads
+                # species = species.replace("Mycobacteriodes", "Mycobacterium") # Kraken sometimes uses "Mycobacteriodes" (e.g. Mycobacteriodes abscessus) whereas afanc uses "Mycobacterium" for the same. We need to standardise this to prevent downstream errors
+                ## ignore any Kraken hits to mycobacterial species - they may be spurious. We will use only the mycobacterial classifications made by afanc
+                if match_taxonomy(species): continue
+                if taxid == 9606: continue # ignore human because we have a dedicated human read removal process elsewhere in the workflow
+                if species != top_species: other_species[species] = taxid
+            #break on first one we find
+            break
 
     # OTHER THAN THE TOP HIT, WHAT NON-HUMAN SPECIES ARE ALSO PRESENT IN THE SAMPLE, ACCORDING TO AFANC?
     for species in afanc[sample_id]['phylogenetics']['species']:
