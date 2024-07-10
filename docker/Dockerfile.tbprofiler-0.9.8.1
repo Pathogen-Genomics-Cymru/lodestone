@@ -3,9 +3,8 @@ FROM ubuntu:focal
 #copy the reference genome to pre-compute our index
 COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 
-ENV \
-    tbdb_version="a5e1d48"
-    tbprofiler_version="6.2.1"
+ENV tbdb_version=a5e1d48 \
+    tbprofiler_version=6.2.1
     TMPDIR="."
 
 #USER root
