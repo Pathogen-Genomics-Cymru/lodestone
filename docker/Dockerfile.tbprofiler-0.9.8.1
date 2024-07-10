@@ -3,6 +3,10 @@ FROM ubuntu:focal
 #copy the reference genome to pre-compute our index
 COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
 
+ENV tbdb_version=a5e1d48 \
+    tbprofiler_version=6.2.1
+    TMPDIR="."
+
 #USER root
 WORKDIR /
 ENV TMPDIR="/data"
@@ -56,5 +60,3 @@ WORKDIR /data
 #wants full path to reference
 RUN tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
 
-#set tmpdir to current working directory so we don't write to filesystem
-ENV TMPDIR="."
