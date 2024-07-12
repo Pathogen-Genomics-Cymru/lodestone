@@ -567,7 +567,7 @@ process downloadContamGenomes {
 
     """
     wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
-    grep -o 'ftp://.*fna.gz' linktestlog.txt > confirmedurllist.txt
+    grep -o 'https://.*fna.gz' linktestlog.txt > confirmedurllist.txt
 
     mkdir contam_dir
     cd contam_dir
