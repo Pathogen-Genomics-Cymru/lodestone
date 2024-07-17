@@ -18,7 +18,9 @@ export NXF_VER="20.11.0-edge"
 curl -fsSL https://get.nextflow.io | bash
 ```
 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. *Please note, when running the pipeline with Singularity, either the ```$TMPDIR``` or ```$SINGULARITY_TMPDIR``` must be specified; e.g. ```export TMPDIR="./"``` to run in the working directory.*
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. 
+
+*Please note, when running the pipeline with Singularity, either the ```$TMPDIR``` or ```$SINGULARITY_TMPDIR``` must be specified; e.g. ```export TMPDIR="./"``` to run in the working directory.*
 
 E.g. to run the workflow:
 ```
@@ -71,7 +73,8 @@ Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"]
 Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_7.0.tar.gz
 * **update_tbprofiler**<br />
 Update tb-profiler. Either "yes" or "no". "yes" may be useful when running outside of a container for the first time as we will not have constructed a tb-profiler database matching our reference. This is not needed with the climb, docker and singluarity profiles as the reference has already been added. Alternatively you can run ```tb-profiler update_tbdb --match_ref <lodestone_dir>/resources/tuberculosis.fasta```.
-
+* **refseq**<br />
+Path to assembly summary refseq file (taken from [here](https://http.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt)). A local version is stored for reproducibility purposes in ```resources/``` but for best results download the latest version.
 
 For more information on the parameters run `nextflow run main.nf --help`
 
