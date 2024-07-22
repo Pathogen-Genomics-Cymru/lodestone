@@ -296,7 +296,7 @@ process kraken2 {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
     
-    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} $(params.percent_threshold) ${params.n_reads_threshold}
 
     extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
@@ -791,6 +791,7 @@ process summarise {
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     path "${sample_name}_err.json", emit: summary_log optional true
     path "${sample_name}_report.json", emit: summary_report optional true
+    val(stdout), emit: do_we_redo_decontaminate
 
     script:
     error_log = "${sample_name}_err.json"
@@ -804,7 +805,7 @@ process summarise {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
+    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; printf "NOW_DECONTAMINATE_${sample_name}";  fi
 
     if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
