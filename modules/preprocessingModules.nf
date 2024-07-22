@@ -674,7 +674,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} ${params.percent_threshold} ${params.n_reads_threshold}
     rm -rf ${sample_name}_read_classifications.txt
     """
 
