@@ -105,7 +105,7 @@ Checkpoints used throughout this workflow to fail a sample/issue warnings:
 4. (*Fail*) If the top family hit is not Mycobacteriaceae
 5. (*Fail*) If there are fewer than 100k reads classified as Mycobacteriaceae 
 6. (*Warn*) If the top family classification is mycobacterial, but this is not consistent with top genus and species classifications
-7. (*Warn*) If the top family is Mycobacteriaceae but no G1 (species complex) classifications meet minimum thresholds of > 5000 reads or > 0.5% of the total reads (this is not necessarily a concern as not all mycobacteria have a taxonomic classification at this rank)
+7. (*Warn*) If the top family is Mycobacteriaceae but no G1 (species complex) classifications meet minimum thresholds of > 5000 reads or > 0.5% of the total reads (this is not necessarily a concern as not all mycobacteria have a taxonomic classification at this rank). In ```nextflow.config``` these files can be modified.
 8. (*Warn*) If sample is mixed or contaminated - defined as containing reads > the 5000/0.5% thresholds from multiple non-human species
 9. (*Warn*) If sample contains multiple classifications to mycobacterial species complexes, each meeting the > 5000/0.5% thresholds
 10. (*Warn*) If no species classification meets the 5000/0.5% thresholds
