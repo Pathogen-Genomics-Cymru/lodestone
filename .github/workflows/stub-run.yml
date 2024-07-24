@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - stub-run-test
     paths-ignore:
       - '**/README.md'
 
@@ -24,7 +25,7 @@ jobs:
       - name: checkout playbook
         uses: actions/checkout@v3
         with:
-          repository: annacprice/ansible.nextflow-container
+          repository: whalleyt/ansible.nextflow-container
           ref: lodestone
 
       - name: Run playbook

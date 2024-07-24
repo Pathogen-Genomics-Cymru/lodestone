@@ -427,7 +427,7 @@ process mykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}.json
+    touch ${mykrobe_report}
     printf ${sample_name}
     """
 }
@@ -501,7 +501,8 @@ process identifyBacterialContaminants {
     when:
     enough_myco_reads =~ /${sample_name}/
 
-    output:
+    output:// enable dsl2
+nextflow.enable.dsl = 2
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, path(software_json), path("${sample_name}_species_in_sample_previous.json"), emit: contam_list optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, path(software_json), emit: prev_sample_json optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
@@ -728,9 +729,11 @@ process reAfanc {
 
     stub:
     afanc_report = "${sample_name}_afanc_report.json"
+    afanc_original =  "${sample_name}_afanc_original.json"
 
     """
     touch ${afanc_report}
+    touch ${afanc_original}
     printf ${sample_name}
     """
 }
@@ -765,7 +768,7 @@ process reMykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}.json
+    touch ${mykrobe_report}
     """
 }
 

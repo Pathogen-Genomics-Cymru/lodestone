@@ -23,6 +23,10 @@ process getRefFromJSON {
     echo "\$ref_string"
     """
     
+    stub:
+    """
+    printf ${baseDir}/resources/tuberculosis.fasta
+    """
     
 }
 
@@ -158,6 +162,11 @@ process getRefCortex {
     """
     ref_dir=\$(jq -r '.top_hit.file_paths.clockwork_ref_dir' ${report_json})
     echo "\$ref_dir"
+    """
+
+    stub:
+    """
+    echo ${baseDir}/resources/tuberculosis
     """
     
     
