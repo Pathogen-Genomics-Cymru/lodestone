@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - stub-run-test
     paths-ignore:
       - '**/README.md'
 
