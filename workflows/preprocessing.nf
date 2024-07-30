@@ -10,15 +10,11 @@ include {kraken2} from '../modules/preprocessingModules.nf' params(params)
 include {afanc} from '../modules/preprocessingModules.nf' params(params)
 include {mykrobe} from '../modules/preprocessingModules.nf' params(params)
 include {bowtie2} from '../modules/preprocessingModules.nf' params(params)
-include {identifyBacterialContaminants} from '../modules/preprocessingModules.nf' params(params)
-include {downloadContamGenomes} from '../modules/preprocessingModules.nf' params(params)
-include {mapToContamFa} from '../modules/preprocessingModules.nf' params(params)
-include {reKraken} from '../modules/preprocessingModules.nf' params(params)
-include {reAfanc} from '../modules/preprocessingModules.nf' params(params)
-include {reMykrobe} from '../modules/preprocessingModules.nf' params(params)
-include {summarise} from '../modules/preprocessingModules.nf' params(params)
 include {checkBamValidity} from '../modules/preprocessingModules.nf' params(params)
 include {bam2fastq} from '../modules/preprocessingModules.nf' params(params)
+
+//import subworkflow
+include {decontaminate} from '../subworkflows/decontamination.nf'
 
 // define workflow component
 workflow preprocessing {
@@ -65,26 +61,17 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
-      identifyBacterialContaminants(bowtie2.out.bowtie2_fqs.join(speciation_report, by: 0).join(kraken2.out.kraken2_json, by: 0), resource_dir, refseq_path)
+      //subworkflow to remove erraneous species
+      pass_number = 1
+      decontamination_finshed = "FALSE"
 
-      downloadContamGenomes(identifyBacterialContaminants.out.contam_list)
+      decontaminate(bowtie2.out.bowtie2_fqs, krakenDB, afanc_myco_db, bowtie2.out.bowtie2_fqs, speciation_report,
+                    kraken2.out.kraken2_json, resource_dir, refseq_path, bowtie2.out.bowtie2_fqs, kraken2.out.kraken2_json, )
 
-      mapToContamFa(bowtie2.out.bowtie2_fqs.join(downloadContamGenomes.out.contam_fa, by: 0))
-
-      reKraken(mapToContamFa.out.reClassification_fqs, krakenDB.toList())
-
-      reMykrobe(mapToContamFa.out.reClassification_fqs)
-
-      reAfanc(mapToContamFa.out.reClassification_fqs, afanc_myco_db)
-
-      // set speciation report
-      speciation_report = reAfanc.out.reAfanc_report
-
-      summarise(speciation_report.join(reKraken.out.reKraken_report, by: 0).join(identifyBacterialContaminants.out.prev_sample_json, by: 0), resource_dir, refseq_path)
 
     emit:
-
-      decontam_seqs = mapToContamFa.out.reClassification_fqs
-      decontam_json = summarise.out.summary_json
-      nocontam_seqs_json = identifyBacterialContaminants.out.nocontam_fqs
+    
+      decontam_seqs = decontaminate.out.reClassification_fqs
+      decontam_json = decontaminate.out.summary_json
+      nocontam_seqs_json = decontaminate.out.nocontam_fqs
 }

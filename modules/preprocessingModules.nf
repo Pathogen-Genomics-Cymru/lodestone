@@ -794,6 +794,7 @@ process summarise {
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     path "${sample_name}_err.json", emit: summary_log optional true
     path "${sample_name}_report.json", emit: summary_report optional true
+    stodout, emit: do_we_break
 
     script:
     error_log = "${sample_name}_err.json"
