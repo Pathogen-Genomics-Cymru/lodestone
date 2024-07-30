@@ -64,6 +64,7 @@ process tbprofiler_update_db {
 }
 
 process tbprofiler {
+    tag {sample_name}
     label 'medium_memory'
     label 'medium_cpu'
     label 'tbprofiler'
@@ -110,6 +111,7 @@ process tbprofiler {
 }
 
 process add_allelic_depth {
+    tag {sample_name}
     label 'low_memory'
     label 'low_cpu'
     label 'tbprofiler'
