@@ -18,7 +18,9 @@ export NXF_VER="20.11.0-edge"
 curl -fsSL https://get.nextflow.io | bash
 ```
 
-The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. *Please note, when running the pipeline with Singularity, either the ```$TMPDIR``` or ```$SINGULARITY_TMPDIR``` must be specified; e.g. ```export TMPDIR="./"``` to run in the working directory.*
+The workflow is designed to run with either docker `-profile docker` or singularity `-profile singularity`. The container images are pulled from quay.io and a singularity cache directory is set in the `nextflow.config`. 
+
+*Please note, when running the pipeline with Singularity, either the ```$TMPDIR``` or ```$SINGULARITY_TMPDIR``` must be specified; e.g. ```export TMPDIR="./"``` to run in the working directory.*
 
 E.g. to run the workflow:
 ```
@@ -71,7 +73,8 @@ Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"]
 Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_7.0.tar.gz
 * **update_tbprofiler**<br />
 Update tb-profiler. Either "yes" or "no". "yes" may be useful when running outside of a container for the first time as we will not have constructed a tb-profiler database matching our reference. This is not needed with the climb, docker and singluarity profiles as the reference has already been added. Alternatively you can run ```tb-profiler update_tbdb --match_ref <lodestone_dir>/resources/tuberculosis.fasta```.
-
+* **refseq**<br />
+Path to assembly summary refseq file (taken from [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt)). A local version is stored for reproducibility purposes in ```resources/``` but for best results download the latest version.
 
 For more information on the parameters run `nextflow run main.nf --help`
 
@@ -102,7 +105,7 @@ Checkpoints used throughout this workflow to fail a sample/issue warnings:
 4. (*Fail*) If the top family hit is not Mycobacteriaceae
 5. (*Fail*) If there are fewer than 100k reads classified as Mycobacteriaceae 
 6. (*Warn*) If the top family classification is mycobacterial, but this is not consistent with top genus and species classifications
-7. (*Warn*) If the top family is Mycobacteriaceae but no G1 (species complex) classifications meet minimum thresholds of > 5000 reads or > 0.5% of the total reads (this is not necessarily a concern as not all mycobacteria have a taxonomic classification at this rank)
+7. (*Warn*) If the top family is Mycobacteriaceae but no G1 (species complex) classifications meet minimum thresholds of > 5000 reads or > 0.5% of the total reads (this is not necessarily a concern as not all mycobacteria have a taxonomic classification at this rank). In ```nextflow.config``` these files can be modified.
 8. (*Warn*) If sample is mixed or contaminated - defined as containing reads > the 5000/0.5% thresholds from multiple non-human species
 9. (*Warn*) If sample contains multiple classifications to mycobacterial species complexes, each meeting the > 5000/0.5% thresholds
 10. (*Warn*) If no species classification meets the 5000/0.5% thresholds

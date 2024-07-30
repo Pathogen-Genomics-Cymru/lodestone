@@ -296,7 +296,7 @@ process kraken2 {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
     
-    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} ${params.percent_threshold} ${params.n_reads_threshold}
 
     extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} --taxid 2 --include-children --fastq-output >/dev/null
 
@@ -427,7 +427,7 @@ process mykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}.json
+    touch ${mykrobe_report}
     printf ${sample_name}
     """
 }
@@ -501,7 +501,8 @@ process identifyBacterialContaminants {
     when:
     enough_myco_reads =~ /${sample_name}/
 
-    output:
+    output:// enable dsl2
+nextflow.enable.dsl = 2
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, path(software_json), path("${sample_name}_species_in_sample_previous.json"), emit: contam_list optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, path(software_json), emit: prev_sample_json optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
@@ -567,7 +568,7 @@ process downloadContamGenomes {
 
     """
     wget -i ${contam_list} --spider -nv -a linktestlog.txt 2>&1
-    grep -o 'ftp://.*fna.gz' linktestlog.txt > confirmedurllist.txt
+    grep -o 'https://.*fna.gz' linktestlog.txt > confirmedurllist.txt
 
     mkdir contam_dir
     cd contam_dir
@@ -674,7 +675,7 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} 0.5 5000
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} ${params.percent_threshold} ${params.n_reads_threshold}
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -728,9 +729,11 @@ process reAfanc {
 
     stub:
     afanc_report = "${sample_name}_afanc_report.json"
+    afanc_original =  "${sample_name}_afanc_original.json"
 
     """
     touch ${afanc_report}
+    touch ${afanc_original}
     printf ${sample_name}
     """
 }
@@ -765,7 +768,7 @@ process reMykrobe {
     mykrobe_report = "${sample_name}_mykrobe_report.json"
 
     """
-    touch ${mykrobe_report}.json
+    touch ${mykrobe_report}
     """
 }
 

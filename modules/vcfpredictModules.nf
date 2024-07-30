@@ -101,6 +101,12 @@ process tbprofiler {
 
     jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${tbprofiler_json} > ${report_json}
     """
+
+    stub:
+    """
+    touch ${sample_name}.tbprofiler-out.json
+    touch ${sample_name}_report.json
+    """
 }
 
 process add_allelic_depth {
@@ -129,6 +135,11 @@ process add_allelic_depth {
     mkdir tmp
     
     gatk VariantAnnotator -R $reference -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
+    """
+
+    stub:
+    """
+    touch ${sample_name}_allelic_depth.minos.vcf 
     """
     
 }
