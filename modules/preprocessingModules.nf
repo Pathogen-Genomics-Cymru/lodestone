@@ -363,14 +363,14 @@ process afanc {
     report_json = "${sample_name}_report.json"
 
     """
-    if [[ ${run_afanc} =~ /${sample_name}/ ]]
+    if [[ ${run_afanc} =~ ${sample_name} ]]
     then
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
         cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
 	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 	printf ${sample_name}
     else
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
         cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
 	reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
@@ -452,7 +452,8 @@ process bowtie2 {
     enough_myco_reads =~ /${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), path(software_json), emit: bowtie2_fqs
+    tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: bowtie2_fqs
+    path(software_json), emit: software_json
 
     script:
     bam = "${sample_name}.bam"
@@ -485,7 +486,7 @@ process identifyBacterialContaminants {
     * @QCcheckpoint if urllist.txt is empty, there are no contaminant genomes to download, so skip next process
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
@@ -497,6 +498,7 @@ process identifyBacterialContaminants {
     tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(afanc_json), val(enough_myco_reads), path(kraken_report), path(kraken_json)
     val(resources)
     path(refseq)
+    val(pass)
 
     when:
     enough_myco_reads =~ /${sample_name}/
@@ -542,7 +544,7 @@ process downloadContamGenomes {
     * @QCcheckpoint confirm that we could download every genome in the list of contaminants
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'low_cpu'
     label 'medium_memory'
@@ -551,6 +553,7 @@ process downloadContamGenomes {
 
     input:
     tuple val(sample_name), path(contam_list), val(run_decontaminator), path(software_json), path(prev_species_json)
+    val(pass)
 
     when:
     run_decontaminator =~ /NOW\_DECONTAMINATE\_${sample_name}/
@@ -604,7 +607,7 @@ process mapToContamFa {
     * @QCcheckpoint none
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'normal_cpu'
     label 'high_memory'
@@ -613,12 +616,14 @@ process mapToContamFa {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json), path(contam_fa), val(does_fa_pass)
+    val(pass)    
 
     when:
     does_fa_pass =~ /${sample_name}/
 
     output:
-    tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), path(software_json), emit: reClassification_fqs
+    tuple val(sample_name), path("${sample_name}_cleaned_1.fq.gz"), path("${sample_name}_cleaned_2.fq.gz"), emit: reClassification_fqs
+    path(software_json), emit: software_json
 
     script:
     bam = "${sample_name}.bam"
@@ -651,7 +656,7 @@ process reKraken {
     * @QCcheckpoint none
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'normal_cpu'
     label 'high_memory'
@@ -662,6 +667,7 @@ process reKraken {
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
     path(database)
+    val(pass)
 
     output:
     tuple val(sample_name), path("${sample_name}_kraken_report.txt"), path("${sample_name}_kraken_report.json"), emit: reKraken_report
@@ -695,7 +701,7 @@ process reAfanc {
     * @QCcheckpoint none
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'normal_cpu'
     label 'medium_memory'
@@ -709,6 +715,7 @@ process reAfanc {
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
     path(afanc_myco_db)
+    val(pass)
 
     output:
     tuple val(sample_name), path("${sample_name}_afanc_report.json"), emit: reAfanc_report
@@ -719,7 +726,7 @@ process reAfanc {
     afanc_report = "${sample_name}_afanc_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv 
 
     cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
     reformat_afanc_json.py ${sample_name}/${sample_name}.json
@@ -742,7 +749,7 @@ process reMykrobe {
     * @QCcheckpoint none
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'normal_cpu'
     label 'low_memory'
@@ -752,6 +759,7 @@ process reMykrobe {
 
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(software_json)
+    val(pass)
 
     output:
     tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), emit: reMykrobe_report
@@ -776,7 +784,7 @@ process summarise {
     * @QCcheckpoint checks whether there are still contaminants and if top species hit is supported
     */
 
-    tag { sample_name }
+    tag "${sample_name } pass ${pass}"
     label 'preprocessing'
     label 'low_cpu'
     label 'medium_memory'
@@ -788,9 +796,11 @@ process summarise {
     tuple val(sample_name), path(afanc_json), path(kraken_report), path(kraken_json), path(prev_species_json), val(decontam), path(software_json)
     val(resources)
     path(refseq)
+    val(pass)
 
     output:
-    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), emit: summary_json
+    stdout emit: do_we_break
     path "${sample_name}_err.json", emit: summary_log optional true
     path "${sample_name}_report.json", emit: summary_report optional true
 
@@ -806,7 +816,7 @@ process summarise {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes' ]; then echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
+    if [ \$contam_to_remove == 'yes' ]; then printf "${decontam}"; echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
 
     if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then printf "NOW_ALIGN_TO_REF_${sample_name}"; elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}; fi
     """
