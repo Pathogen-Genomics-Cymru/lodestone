@@ -14,7 +14,8 @@ include {getRefCortex} from '../modules/clockworkModules.nf' params(params)
 workflow clockwork {
 
     take:
-      input_seqs_json
+      input_seqs_json //tuple of sample_name, fq1, fq2, software_version_json, 
+                      //speciation_json, do_we_align?
 
     main:
       //get just the json

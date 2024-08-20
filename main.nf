@@ -194,23 +194,18 @@ workflow {
       preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq)
 
       // CLOCKWORK SUB-WORKFLOW
-
-      clockwork_seqs = preprocessing.out.decontam_seqs
-      clockwork_json = preprocessing.out.decontam_json
-
-      nomix_seqs_json = preprocessing.out.nocontam_seqs_json
-
-      clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+      preprocessing_output = preprocessing.out.fastqs_and_reports
+      clockwork(preprocessing_output)
 
       // VCFPREDICT SUB-WORKFLOW
-
+      
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
       reference = clockwork.out.reference
       bam = clockwork.out.bam
 
       vcfpredict(bam, mpileup_vcf, minos_vcf, reference)
-
+    
 }
 
 workflow.onComplete {

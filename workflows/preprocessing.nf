@@ -16,6 +16,7 @@ include {bam2fastq} from '../modules/preprocessingModules.nf' params(params)
 
 //import subworkflow
 include {decontaminate} from '../subworkflows/decontamination.nf'
+include {decontaminate as decontaminate_second_pass} from '../subworkflows/decontamination.nf'
 
 // define workflow component
 workflow preprocessing {
@@ -68,11 +69,13 @@ workflow preprocessing {
 
       //subworkflow to remove erraneous species
       pass_number = 1
-      decontamination_finshed = "FALSE"
-      
-      decontaminate.recurse(bowtie2.out.bowtie2_fqs.collect(), bowtie2.out.software_json.collect(), krakenDB.collect(), afanc_myco_db, 
-                            speciation_report.collect(), kraken2.out.kraken2_json.collect(), resource_dir, refseq_path, 
-                            versions.collect(), pass_number, decontamination_finshed).until{it[10] != "FALSE"}
+      decontamination_finished = "FALSE"
+      software_json = bowtie2.out.software_json
+
+      first_pass_decontaminate = decontaminate(bowtie2.out.bowtie2_fqs, krakenDB, afanc_myco_db, 
+                    speciation_report, kraken2.out.kraken2_json, resource_dir, 
+                    refseq_path, 1, decontamination_finished)
+
 
       /*to pass to clockwork we need the following:
         - sample name
@@ -81,14 +84,35 @@ workflow preprocessing {
         - versions json
         - species in sample (e.g. summarise report)
         - do we align bool
-     */
+        write them first
+       */
 
-      sample_and_fastq = decontaminate.out.fastqs
-      versions = versions
-      summary_json = decontaminate.out.summary_json.map{it[1]} //we've kept the samee summary json for the recursion, so now we can just grab the json
-      do_we_align = decontaminate.out.decontamination_finshed
-      output_to_pass = sample_and_fastq.combine(versions).combine(summary_json).combine(do_we_align)
+      fastqs          = first_pass_decontaminate.decontaminated_fastqs
+      summary_json    = first_pass_decontaminate.decontamination_json
+      do_we_repass    = first_pass_decontaminate.do_we_proceed
+      nomix_seqs_json = first_pass_decontaminate.uncontaminatd_fastqs
+
+      //grab new reports for our second iteration
+      //replace original sample_id val that was used to start identifyBacterialContaminants with our last pass
+      reafanc_report  = first_pass_decontaminate.speciation_report.combine(do_we_repass) 
+      rekraken_report = first_pass_decontaminate.kraken_report
+
+      first_pass_output = fastqs.join(summary_json, by: 0).mix(nomix_seqs_json)
+
+      second_pass_decontaminate = decontaminate_second_pass(fastqs, krakenDB, afanc_myco_db, 
+                                                            reafanc_report, rekraken_report, resource_dir, 
+                                                            refseq_path, 2, decontamination_finished)
+
+      fastqs_2nd          = second_pass_decontaminate.decontaminated_fastqs
+      summary_json_2nd    = second_pass_decontaminate.decontamination_json
+      do_we_align         = second_pass_decontaminate.do_we_proceed        
+      nomix_seqs_json_2nd = second_pass_decontaminate.uncontaminatd_fastqs
+
+      //combine to suit how clockwork wf was written
+      second_pass_output = fastqs_2nd.join(summary_json_2nd, by: 0).mix(nomix_seqs_json_2nd)
+
+      both_passes = first_pass_output.concat(second_pass_output)
 
     emit:
-    fastqs_and_reports = output_to_pass
+    fastqs_and_reports = both_passes
 }
