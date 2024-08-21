@@ -138,7 +138,7 @@ Parameters used:
 --species               ${params.species}
 --vcfmix                ${params.vcfmix}
 --afanc_myco_db         ${params.afanc_myco_db}
-
+--permissive            ${params.permissive}
 Runtime data:
 ------------------------------------------------------------------------
 Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}

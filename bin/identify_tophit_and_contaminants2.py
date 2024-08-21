@@ -17,6 +17,7 @@ def process_requirements(args):
     unmix_myco = args[5]
     myco_dir = args[6]
     prev_species_json = args[7]
+    permissive = args[8]
     
     
     # check if input files exist and not empty
@@ -60,6 +61,9 @@ def process_requirements(args):
 
     if ((unmix_myco != 'yes') & (unmix_myco != 'no')):
         sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
+    
+    if ((permissive != 'yes') & (permissive != 'no')):
+        sys.exit('ERROR: \'permissive\' should be either \'yes\' or \'no\'')
 
     ## check IDs from the file names
 
@@ -142,7 +146,13 @@ def match_taxonomy(spec):
         return False
 
 # define main function to process data
-def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_myco, myco_dir_path, prev_species_json_path, urls, tax_ids, sample_id):
+def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_myco, myco_dir_path, prev_species_json_path, urls, tax_ids, sample_id, permissive):
+
+    if permissive == "yes":
+        permissive = True
+    else:
+        permissive = False
+
 
     # DEFINE OUTPUT
     out = {}
@@ -427,10 +437,13 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
             warnings.append("warning: regardless of what Kraken reports, afanc did not make a species-level mycobacterial classification")
 
     # IF THE TOP HIT IS APPROPRIATE AND THERE ARE NO CONTAMINANTS, WE CAN CONTINUE TO RUN CLOCKWORK
-    if ((out['summary_questions']['is_the_top_species_appropriate'] == 'yes') & (out['summary_questions']['are_there_contaminants'] == 'no')):
+    if permissive:
         out['summary_questions']['continue_to_clockwork'] = 'yes'
     else:
-        out['summary_questions']['continue_to_clockwork'] = 'no'
+        if ((out['summary_questions']['is_the_top_species_appropriate'] == 'yes') & (out['summary_questions']['are_there_contaminants'] == 'no')):
+            out['summary_questions']['continue_to_clockwork'] = 'yes'
+        else:
+            out['summary_questions']['continue_to_clockwork'] = 'no'
 
     # IF THE SAMPLE IS *NOT CURRENTLY CONSIDERED* CONTAMINATED BUT PREVIOUSLY WAS, WE SAY SO
     if ((out['summary_questions']['are_there_contaminants'] == 'no') & (out['summary_questions']['were_contaminants_removed'] == 'yes')):
@@ -469,6 +482,7 @@ if __name__ == "__main__":
     parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'yes\' or \'no\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'no\', any contaminating mycobacteria will be recorded but NOT acted upon')
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
+    parser.add_argument('permissive', metavar='permissive', type=str, help="Is either \'yes\' or \'no\', given in response to the question: do you want to carry on to Clockwork regardless of errors?")
     args = parser.parse_args()
 
     # REQUIREMENTS
@@ -480,12 +494,13 @@ if __name__ == "__main__":
     unmix_myco = sys.argv[5]
     myco_dir = sys.argv[6]
     prev_species_json = sys.argv[7]
+    permissive = sys.argv[8]
 
     # read assembly summary
     urls, tax_ids = read_assembly_summary(assembly_file)
 
     # process reports
-    out, out_urls = process_reports(afanc_json, kraken_json, supposed_species, unmix_myco, myco_dir, prev_species_json, urls, tax_ids, sample_id)
+    out, out_urls = process_reports(afanc_json, kraken_json, supposed_species, unmix_myco, myco_dir, prev_species_json, urls, tax_ids, sample_id, permissive)
 
     # print urls into {sample_id}_urllist.txt
     out_file1 = sample_id + '_urllist.txt'
