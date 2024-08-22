@@ -43,7 +43,6 @@ def process_requirements(args):
         sample_id_REP = res_report2[0][0]
     else:
         sample_id_REP = ''
-    print(sample_id_REP)
 
     sample_id = ''
     if sample_id_STA != sample_id_REP:
