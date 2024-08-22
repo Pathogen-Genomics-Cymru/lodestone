@@ -483,6 +483,7 @@ if __name__ == "__main__":
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
     parser.add_argument('permissive', metavar='permissive', type=str, help="Is either \'yes\' or \'no\', given in response to the question: do you want to carry on to Clockwork regardless of errors?")
+    parser.add_argument('pass_number', metavar='pass_number', type=int, help="Pass number. Refers to what pass of decontamination the pipeline is on")
     args = parser.parse_args()
 
     # REQUIREMENTS
@@ -495,6 +496,7 @@ if __name__ == "__main__":
     myco_dir = sys.argv[6]
     prev_species_json = sys.argv[7]
     permissive = sys.argv[8]
+    pass_number = sys.argv[9]
 
     # read assembly summary
     urls, tax_ids = read_assembly_summary(assembly_file)
@@ -509,6 +511,6 @@ if __name__ == "__main__":
             f.write(url + "\n")
 
     # print final file
-    out_file2 = sample_id + '_species_in_sample.json'
+    out_file2 = sample_id + '_species_in_sample_pass_' + str(pass_number) + '.json'
     with open(out_file2, 'w') as f:
         json.dump(out, f, indent = 4)

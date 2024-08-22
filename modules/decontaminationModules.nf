@@ -34,7 +34,7 @@ process identifyBacterialContaminants {
     report_json = "${sample_name}_report.json"
 
     """
-    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} null ${params.permissive}
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} null ${params.permissive} ${pass}
 
     contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
@@ -340,32 +340,32 @@ process summarise {
     tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
     stdout emit: do_we_break
     path "${sample_name}_err.json", emit: summary_log optional true
-    path "${sample_name}_report.json", emit: summary_report optional true
+    path "${sample_name}_pass_${pass}_report.json", emit: summary_report optional true
     val(pass), emit: pass_number
 
     script:
     error_log = "${sample_name}_err.json"
-    report_json = "${sample_name}_report.json"
-
+    report_json = "${sample_name}_pass_${pass}_report.json"
+    species_in_sample = "${sample_name}_species_in_sample_pass_${pass}.json"
     """
-    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} ${prev_species_json} ${params.permissive}
+    identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} ${prev_species_json} ${params.permissive} ${pass}
     
 
-    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
-    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
-    top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
+    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${species_in_sample})
+    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${species_in_sample})
+    top_hit=\$(jq -r '.top_hit.name' ${species_in_sample})
 
     if [ \$contam_to_remove == 'yes' ]; then
         if [ "${params.permissive}" == "no" ]; then
             printf "${sample_name}"
-            echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+            echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${species_in_sample} > ${report_json}
         else
             if [ "${pass}" == 2 ]; then
                  printf "NOW_ALIGN_TO_REF_${sample_name}"
             else
                  printf "${sample_name}"
             fi
-            echo '{"warning":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+            echo '{"warning":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${species_in_sample} > ${report_json}
         fi
     fi
 
@@ -373,7 +373,7 @@ process summarise {
         printf "NOW_ALIGN_TO_REF_${sample_name}"
     elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then
         jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && \
-        jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+        jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${species_in_sample} > ${report_json}
         printf "DO_NOT_PROCEED_${sample_name}"
     fi
     """
