@@ -355,9 +355,18 @@ process summarise {
     acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
     top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
 
-    if [ \$contam_to_remove == 'yes'] && [${params.permissive} == "no"]; then 
-        printf "${sample_name}"
-        echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+    if [ \$contam_to_remove == 'yes' ]; then
+        if [ "${params.permissive}" == "no" ]; then
+            printf "${sample_name}"
+            echo '{"error":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+        else
+            if [ "${pass}" == 2 ]; then
+                 printf "NOW_ALIGN_TO_REF_${sample_name}"
+            else
+                 printf "${sample_name}"
+            fi
+            echo '{"warning":"sample remains contaminated, even after attempting to resolve this"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+        fi
     fi
 
     if [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then 
