@@ -14,14 +14,15 @@ include {getRefCortex} from '../modules/clockworkModules.nf' params(params)
 workflow clockwork {
 
     take:
-      input_seqs_json
+      input_seqs_json //tuple of sample_name, fq1, fq2, software_version_json, 
+                      //speciation_json, do_we_align?
 
     main:
       //get just the json
       json = input_seqs_json.map{it[4]}
       do_we_align = input_seqs_json.map{it[5]}
       sample_name = input_seqs_json.map{it[0]}
-      
+
       getRefFromJSON(json, do_we_align, sample_name)
       alignToRef(input_seqs_json, getRefFromJSON.out)
       

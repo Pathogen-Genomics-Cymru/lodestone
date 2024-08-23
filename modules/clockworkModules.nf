@@ -11,8 +11,8 @@ process getRefFromJSON {
     val(do_we_align)
     val(sample_name)
     
-    when:
-    do_we_align =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
+    //when:
+    //do_we_align =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
     
     output:
     stdout

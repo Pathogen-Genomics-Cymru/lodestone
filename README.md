@@ -75,6 +75,8 @@ Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciat
 Update tb-profiler. Either "yes" or "no". "yes" may be useful when running outside of a container for the first time as we will not have constructed a tb-profiler database matching our reference. This is not needed with the climb, docker and singluarity profiles as the reference has already been added. Alternatively you can run ```tb-profiler update_tbdb --match_ref <lodestone_dir>/resources/tuberculosis.fasta```.
 * **refseq**<br />
 Path to assembly summary refseq file (taken from [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt)). A local version is stored for reproducibility purposes in ```resources/``` but for best results download the latest version.
+* **permissive**<br />
+One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway. If there are not enough reads and/or not a reference found the programme will still exit.
 
 For more information on the parameters run `nextflow run main.nf --help`
 

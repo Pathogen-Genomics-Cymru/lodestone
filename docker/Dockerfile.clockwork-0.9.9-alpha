@@ -3,6 +3,7 @@ FROM debian:buster
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the clockwork workflow"
 
+
 ENV samtools_version=1.12 \
 htslib_version=1.12 \
 bcftools_version=1.12 \
@@ -36,10 +37,7 @@ RUN apt-get update \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
-&& wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
-&& add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
-&& apt-get update && apt-get install -y adoptopenjdk-8-hotspot
-
+&& apt-get update && apt-get install -y openjdk-11-jdk
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
@@ -117,4 +115,5 @@ PICARD_JAR=/usr/local/bin/picard.jar
 ENV LC_ALL en_US.UTF-8 \
 LANG en_US.UTF-8 \
 LANGUAGE en_US.UTF-8
+
 

@@ -51,10 +51,9 @@ Mandatory and conditional parameters:
 --bowtie_index_name   Name of the bowtie index, e.g. hg19_1kgmaj
 --vcfmix              Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
 --resistance_profiler Tool to profile resistance with. At the moment options are "tb-profiler" or "none"
---amr_cat             Path to the AMR catalogue (https://github.com/oxfordmmm/tuberculosis_amr_catalogues is at /tuberculosis_amr_catalogues
-                      in the vcfpredict container)
 --afanc_myco_db       Path to the Afanc database used for speciation. Obtain from https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_3.0.tar.gz
-
+--permissive          One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway.
+                      If there are not enough reads and/or not a reference found the programme will still exit.
 Optional parameters:
 ------------------------------------------------------------------------
 --species          principal species in each sample, assuming genus Mycobacterium
@@ -139,7 +138,7 @@ Parameters used:
 --species               ${params.species}
 --vcfmix                ${params.vcfmix}
 --afanc_myco_db         ${params.afanc_myco_db}
-
+--permissive            ${params.permissive}
 Runtime data:
 ------------------------------------------------------------------------
 Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
@@ -194,23 +193,18 @@ workflow {
       preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq)
 
       // CLOCKWORK SUB-WORKFLOW
-
-      clockwork_seqs = preprocessing.out.decontam_seqs
-      clockwork_json = preprocessing.out.decontam_json
-
-      nomix_seqs_json = preprocessing.out.nocontam_seqs_json
-
-      clockwork(clockwork_seqs.join(clockwork_json, by: 0).mix(nomix_seqs_json))
+      preprocessing_output = preprocessing.out.fastqs_and_reports
+      clockwork(preprocessing_output)
 
       // VCFPREDICT SUB-WORKFLOW
-
+      
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
       reference = clockwork.out.reference
       bam = clockwork.out.bam
 
       vcfpredict(bam, mpileup_vcf, minos_vcf, reference)
-
+    
 }
 
 workflow.onComplete {
