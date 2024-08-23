@@ -24,33 +24,34 @@ process identifyBacterialContaminants {
     output:
     tuple val(sample_name), path("${sample_name}_urllist.txt"), stdout, path(software_json), path("${sample_name}_species_in_sample_previous.json"), emit: contam_list optional true
     tuple val(sample_name), path("${sample_name}_species_in_sample_previous.json"), stdout, path(software_json), emit: prev_sample_json optional true
-    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: sample_json
-    tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path(software_json), path("${sample_name}_species_in_sample.json"), stdout, emit: nocontam_fqs optional true
+    tuple val(sample_name), path("${sample_name}_species_in_sample_pass_${pass}.json"), stdout, emit: sample_json
+    tuple val(sample_name), path("${sample_name}_nocontam_1.fq.gz"), path("${sample_name}_nocontam_2.fq.gz"), path(software_json), path("${sample_name}_species_in_sample_pass_${pass}.json"), stdout, emit: nocontam_fqs optional true
     path "${sample_name}_err.json", emit: contam_log optional true
     path "${sample_name}_report.json", emit: contam_report optional true
 
     script:
     error_log = "${sample_name}_err.json"
     report_json = "${sample_name}_report.json"
+    report_pass_json = "${sample_name}_species_in_sample_pass_${pass}.json"
 
     """
     identify_tophit_and_contaminants2.py ${afanc_json} ${kraken_json} ${refseq} ${params.species} ${params.unmix_myco} ${resources} null ${params.permissive} ${pass}
 
-    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${sample_name}_species_in_sample.json)
-    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${sample_name}_species_in_sample.json)
-    top_hit=\$(jq -r '.top_hit.name' ${sample_name}_species_in_sample.json)
+    contam_to_remove=\$(jq -r '.summary_questions.are_there_contaminants' ${report_pass_json})
+    acceptable_species=\$(jq -r '.summary_questions.is_the_top_species_appropriate' ${report_pass_json})
+    top_hit=\$(jq -r '.top_hit.name' ${report_pass_json})
 
     if [ \$contam_to_remove == 'yes' ]; then 
-        cp ${sample_name}_species_in_sample.json ${sample_name}_species_in_sample_previous.json
+        cp ${report_pass_json} ${sample_name}_species_in_sample_previous.json
     fi
 
     if [ \$contam_to_remove == 'yes' ]; then
         printf "NOW_DECONTAMINATE_${sample_name}"
-    elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ]; then 
+    elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'yes' ] && [ ${pass} == 1 ]; then 
         printf "NOW_ALIGN_TO_REF_${sample_name}" && mv $fq1 ${sample_name}_nocontam_1.fq.gz && mv $fq2 ${sample_name}_nocontam_2.fq.gz; 
     elif [ \$contam_to_remove == 'no' ] && [ \$acceptable_species == 'no' ]; then 
         jq -n --arg key "\$top_hit" '{"error": ("top hit " + \$key + " does not have a reference genome. Sample will not proceed beyond preprocessing workflow.")}' > ${error_log} && \
-        jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+        jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${report_pass_json} > ${report_json}
     fi
     """
 
@@ -337,7 +338,7 @@ process summarise {
     val(pass)
 
     output:
-    tuple val(sample_name), path("${sample_name}_species_in_sample.json"), stdout, emit: summary_json
+    tuple val(sample_name), path("${sample_name}_species_in_sample_pass_${pass}.json"), stdout, emit: summary_json
     stdout emit: do_we_break
     path "${sample_name}_err.json", emit: summary_log optional true
     path "${sample_name}_pass_${pass}_report.json", emit: summary_report optional true

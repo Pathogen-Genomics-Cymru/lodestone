@@ -67,7 +67,15 @@ workflow preprocessing {
 
       bowtie2(kraken2.out.kraken2_fqs, bowtie_dir.toList())
 
-      //subworkflow to remove erraneous species
+      /*subworkflow to remove erraneous species, this is a (up to) two-stage process.
+        All samples will enter the workflow. If identify decontaminants finds nothing,
+        they are passed back out (.out.uncontaminated_fastqs) with their JSON report
+        
+        If there is contamination, we proceed, giving out the JSON from the summary
+        process, and the decontaminated fqs from mapToContanFa. We then join them
+     */
+      
+      //pass number to track iteration, value to track if we have sucessfully removed contams
       pass_number = 1
       decontamination_finished = "FALSE"
       software_json = bowtie2.out.software_json
@@ -77,23 +85,17 @@ workflow preprocessing {
                     refseq_path, 1, decontamination_finished)
 
 
-      /*to pass to clockwork we need the following:
-        - sample name
-        - fq1 (cleaned or not)
-        - fq2
-        - versions json
-        - species in sample (e.g. summarise report)
-        - do we align bool
-        write them first
-       */
-
+      //decontaminated fastq and its report
       fastqs          = first_pass_decontaminate.decontaminated_fastqs
       summary_json    = first_pass_decontaminate.decontamination_json
+      
+      //flag for alignment and passing into second run
       do_we_repass    = first_pass_decontaminate.do_we_proceed
+      
+      //reads and json that didn't need decontaminating
       nomix_seqs_json = first_pass_decontaminate.uncontaminatd_fastqs
 
       //grab new reports for our second iteration
-      //replace original sample_id val that was used to start identifyBacterialContaminants with our last pass
       reafanc_report  = first_pass_decontaminate.speciation_report.combine(do_we_repass) 
       rekraken_report = first_pass_decontaminate.kraken_report
 
@@ -102,7 +104,8 @@ workflow preprocessing {
       second_pass_decontaminate = decontaminate_second_pass(fastqs, krakenDB, afanc_myco_db, 
                                                             reafanc_report, rekraken_report, resource_dir, 
                                                             refseq_path, 2, decontamination_finished)
-
+      
+      //as above
       fastqs_2nd          = second_pass_decontaminate.decontaminated_fastqs
       summary_json_2nd    = second_pass_decontaminate.decontamination_json
       do_we_align         = second_pass_decontaminate.do_we_proceed        
@@ -112,6 +115,13 @@ workflow preprocessing {
       second_pass_output = fastqs_2nd.join(summary_json_2nd, by: 0).mix(nomix_seqs_json_2nd)
 
       both_passes = first_pass_output.concat(second_pass_output)
+      
+      /*
+        please note, both passes channel contains a mixture of the first and second pass.
+        That is, if a sample has undergone two passes this channel will contain both of 
+        those. The first pass channel will emit a do_we_proceed value that does not satify 
+        the 'when' statement for alignment in clockwork. Therefore it will be dropped out.
+      */
 
     emit:
     fastqs_and_reports = both_passes

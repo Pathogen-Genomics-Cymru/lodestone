@@ -25,8 +25,10 @@ workflow decontaminate {
     do_we_decontaminate //bool, have we finished?
 
     main:
+      
       //sample name, fastq1, fastq2, software versions, afanc_report, do_we_attempt, kraken text, kraken json
       contaminant_input = fastqs.join(speciation_report, by: 0).join(kraken2_json, by: 0)
+      
       //just sample name
       sample_name = fastqs.map{it[0]}
 

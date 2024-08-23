@@ -22,7 +22,7 @@ workflow clockwork {
       json = input_seqs_json.map{it[4]}
       do_we_align = input_seqs_json.map{it[5]}
       sample_name = input_seqs_json.map{it[0]}
-      
+
       getRefFromJSON(json, do_we_align, sample_name)
       alignToRef(input_seqs_json, getRefFromJSON.out)
       
