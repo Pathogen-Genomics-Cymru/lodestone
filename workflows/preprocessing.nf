@@ -1,6 +1,5 @@
 // enable dsl2
 nextflow.enable.dsl = 2
-nextflow.preview.recursion=true
 
 // import modules
 include {checkFqValidity} from '../modules/preprocessingModules.nf' params(params)
