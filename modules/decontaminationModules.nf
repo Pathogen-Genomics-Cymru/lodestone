@@ -59,7 +59,7 @@ process identifyBacterialContaminants {
     error_log = "${sample_name}_err.json"
 
     """
-    touch ${sample_name}_species_in_sample.json
+    touch ${sample_name}_species_in_sample_pass_${pass}.json
     touch ${sample_name}_species_in_sample_previous.json
     touch ${sample_name}_urllist.txt
     touch ${error_log}
@@ -383,7 +383,7 @@ process summarise {
     error_log = "${sample_name}_err.json"
 
     """
-    touch ${sample_name}_species_in_sample.json
+    touch ${sample_name}_species_in_sample_pass_${pass}.json
     touch ${error_log}
     printf ${params.summary_doWeAlign}
     """
