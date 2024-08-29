@@ -21,14 +21,14 @@ import identify_tophit_and_contaminants2
 
 def test_mykrobe_report_file():
     # test non existing mykrobe report
-    args = [0, "nonexisting.json", os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, "nonexisting.json", os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: cannot find %s' %args[1]
 
     # test empty mykrobe report
-    args = [0, os.path.join(data_dir_name, "test_empty_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_empty_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -36,14 +36,14 @@ def test_mykrobe_report_file():
 
 def test_kraken_report_file():
     # test non existing kraken report
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), "nonexisting.json", os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), "nonexisting.json", os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: cannot find %s' %args[2]
 
     # test empty kraken report
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_empty_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_empty_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -51,14 +51,14 @@ def test_kraken_report_file():
 
 def test_assembly_file():
     # test non existing assembly report
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"),'nonexisting.txt', 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"),'nonexisting.txt', 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: cannot find %s' %args[3]
 
     # test empty assembly
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_empty.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_empty.txt"), 'null', 'no', resources_dir, 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -66,7 +66,7 @@ def test_assembly_file():
     
 def test_non_existing_myco_dir():
     # test empty assembly
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', os.path.join(data_dir_name, "empty_dir"), 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', os.path.join(data_dir_name, "empty_dir"), 'null', 'no']
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -74,28 +74,28 @@ def test_non_existing_myco_dir():
 
 def test_prev_species():
     # test non existing kraken report
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'nonexisting.json']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'nonexisting.json', "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: cannot find %s' %args[7]
 
     # test empty kraken report
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, os.path.join(data_dir_name, "test_empty_report.json")]
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, os.path.join(data_dir_name, "test_empty_report.json"), "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: %s is empty' %args[7]
 
 def test_supposed_species():
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'Randoms', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'Randoms', 'no', resources_dir, 'null', "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == 'ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis'
 
 def test_unmix_myco():
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'test', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'test', resources_dir, 'null', "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -103,14 +103,14 @@ def test_unmix_myco():
 
 def test_unmatched_ids():
     # mismatched mykrobe and kraken
-    args = [0, os.path.join(data_dir_name, "mismatched_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null']
+    args = [0, os.path.join(data_dir_name, "mismatched_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, 'null', "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
     assert str(pytest_wrapped_e.value) == "ERROR: the sample IDs of %s and %s are mismatched" %(args[1], args[2])
 
     # test mismatched previous species id
-    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, os.path.join(data_dir_name, "mismatched_species_in_sample.json")]
+    args = [0, os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), os.path.join(data_dir_name, "assembly_summary_refseq.txt"), 'null', 'no', resources_dir, os.path.join(data_dir_name, "mismatched_species_in_sample.json"), "no"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         identify_tophit_and_contaminants2.process_requirements(args)
 
@@ -140,7 +140,7 @@ def test_process_data_unmix_myco_no():
 
     urls, tax_ids = identify_tophit_and_contaminants2.read_assembly_summary(os.path.join(data_dir_name, assembly_file))
     # process reports
-    out, out_urls = identify_tophit_and_contaminants2.process_reports(os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), 'null', unmix_myco, resources_dir, 'null', urls, tax_ids, 'test')
+    out, out_urls = identify_tophit_and_contaminants2.process_reports(os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), 'null', unmix_myco, resources_dir, 'null', urls, tax_ids, 'test', 'yes')
 
 
     with open(os.path.join(data_dir_name, test_out), 'r') as f:
@@ -164,7 +164,7 @@ def test_process_data_unmix_myco_yes():
 
     urls, tax_ids = identify_tophit_and_contaminants2.read_assembly_summary(os.path.join(data_dir_name, assembly_file))
     # process reports
-    out, out_urls = identify_tophit_and_contaminants2.process_reports(os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), 'null', unmix_myco, resources_dir, 'null', urls, tax_ids, 'test')
+    out, out_urls = identify_tophit_and_contaminants2.process_reports(os.path.join(data_dir_name, "test_mykrobe_report.json"), os.path.join(data_dir_name, "test_kraken_report.json"), 'null', unmix_myco, resources_dir, 'null', urls, tax_ids, 'test', 'no')
 
 
     with open(os.path.join(data_dir_name, test_out), 'r') as f:
