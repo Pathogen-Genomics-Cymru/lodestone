@@ -1,0 +1,48 @@
+FROM ubuntu:focal
+
+#copy the reference genome to pre-compute our index
+COPY resources/tuberculosis.fasta /data/tuberculosis.fasta
+
+ENV tbdb_version=a5e1d48 \
+    tbprofiler_version=6.2.1 \
+    TMPDIR="."
+
+#USER root
+WORKDIR /
+ENV TMPDIR="/data"
+
+# LABEL instructions tag the image with metadata that might be important to the user
+LABEL base.image="ubuntu:focal"
+LABEL dockerfile.version="0.9.9"
+LABEL software="tbtamr"
+LABEL description="The pipeline aligns reads to the H37Rv reference using bowtie2, BWA or minimap2 and then calls variants using bcftools. These variants are then compared to a drug-resistance database."
+LABEL maintainer3="Tom Whalley"
+LABEL maintainer3.email="twhalley93@gmail.com"
+
+#set env for root prefix
+ENV MAMBA_ROOT_PREFIX="/opt/conda"
+
+RUN apt-get update
+RUN apt-get install -y apt-utils wget bzip2 curl
+RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y git
+RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
+    && touch /root/.bashrc \
+    && ./bin/micromamba shell init -s bash -p /opt/conda  \
+    && grep -v '[ -z "\$PS1" ] && return' /root/.bashrc  > /opt/conda/bashrc   # this line has been modified \
+    && apt-get clean autoremove --yes \
+    && rm -rf /var/lib/{apt,dpkg,cache,log}
+
+
+# install tb-profiler via bioconda; install into 'base' conda env
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda jq requests xlsxwriter tbtamr
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4 
+RUN micromamba install --yes --name base --channel conda-forge --channel bioconda samtools 
+RUN micromamba clean --all --yes
+
+# hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
+ENV PATH="/opt/conda/bin:${PATH}"
+
+WORKDIR /data
+
+#wants full path to reference
+RUN tbtamr setup
