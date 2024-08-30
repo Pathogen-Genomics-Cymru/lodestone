@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - recursive_decontamination
+      - tbtamr
     paths:
       - '**/Dockerfile*'
       - "bin/"
