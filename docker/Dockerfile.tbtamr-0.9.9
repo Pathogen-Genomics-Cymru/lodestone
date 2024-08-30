@@ -1,10 +1,10 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 WORKDIR /
 ENV TMPDIR="/data"
 
 # LABEL instructions tag the image with metadata that might be important to the user
-LABEL base.image="ubuntu:focal"
+LABEL base.image="ubuntu:jammy"
 LABEL dockerfile.version="0.9.9"
 LABEL software="tbtamr"
 LABEL description="The pipeline aligns reads to the H37Rv reference using bowtie2, BWA or minimap2 and then calls variants using bcftools. These variants are then compared to a drug-resistance database."
@@ -15,8 +15,9 @@ LABEL maintainer3.email="twhalley93@gmail.com"
 ENV MAMBA_ROOT_PREFIX="/opt/conda"
 
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y apt-utils wget bzip2 curl
+RUN apt-get install -y git
+RUN apt-get install -y apt-utils wget bzip2 curl
+
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
     && touch /root/.bashrc \
     && ./bin/micromamba shell init -s bash -p /opt/conda  \
