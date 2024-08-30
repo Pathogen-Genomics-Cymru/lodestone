@@ -19,8 +19,9 @@ LABEL maintainer3.email="twhalley93@gmail.com"
 #set env for root prefix
 ENV MAMBA_ROOT_PREFIX="/opt/conda"
 
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update
+RUN apt-get install ca-certificates -y
+RUN update-ca-certificate
 RUN apt-get install -y apt-utils wget bzip2 curl
 RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y git
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
