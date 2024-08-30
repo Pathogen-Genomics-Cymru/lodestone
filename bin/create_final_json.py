@@ -37,12 +37,20 @@ def process_requirements(args):
 
     res_report1 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\_pass\_(.*)\.json$", report_file)
     res_report2 =  re.findall(r"^(.*?)_species\_in\_sample\_pass\_(.*)\.json$", report_file)
+    res_report3 = re.findall(r"^.+[\/|\\](.*?)\_species\_in\_sample\.json$", report_file)
+    res_report4 = re.findall(r"^(.*?)_species\_in\_sample\.json$", report_file)
+
     if len(res_report1) > 0:
         sample_id_REP = res_report1[0][0]
     elif len(res_report2) > 0:
         sample_id_REP = res_report2[0][0]
+    elif len(res_report3) > 0:
+        sample_id_REP = res_report3[0]
+    elif len(res_report4) > 0:
+        sample_id_REP = res_report4[0]
     else:
         sample_id_REP = ''
+    print(sample_id_REP)
 
     sample_id = ''
     if sample_id_STA != sample_id_REP:
