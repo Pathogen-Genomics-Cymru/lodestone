@@ -1,10 +1,5 @@
 FROM ubuntu:focal
 
-ENV tbdb_version=a5e1d48 \
-    tbprofiler_version=6.2.1 \
-    TMPDIR="."
-
-#USER root
 WORKDIR /
 ENV TMPDIR="/data"
 
@@ -20,10 +15,8 @@ LABEL maintainer3.email="twhalley93@gmail.com"
 ENV MAMBA_ROOT_PREFIX="/opt/conda"
 
 RUN apt-get update
-RUN apt-get install ca-certificates -y
-RUN update-ca-certificate
-RUN apt-get install -y apt-utils wget bzip2 curl
-RUN DEBIAN_FRONTEND=noninteractive  apt-get install -y git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y apt-utils wget bzip2 curl
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
     && touch /root/.bashrc \
     && ./bin/micromamba shell init -s bash -p /opt/conda  \
