@@ -36,9 +36,6 @@ workflow vcfpredict {
       bam = clockwork_bam.map{it[2]}
       fastq_and_report = sample_and_fastqs.combine(report_json).combine(do_we_resistance_profile)
 
-      fastq_and_report.view()
-      println(params.resistance_profiler)
-
       if ( params.resistance_profiler == "tb-profiler"){
 
         //if we are local and want to match our references, run this

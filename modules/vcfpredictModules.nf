@@ -131,18 +131,22 @@ process tbtamr {
 
     script:
     error_log = "${sample_name}_err.json"
-    tbprofiler_json = "${sample_name}.tbprofiler-out.json"
+    tbtamr_json = "${sample_name}.tbtamr-out.json"
     
     """
     tbtamr run -r1 $fq1 -r2 $fq2
     
-    mv results/tbprofiler.results.json ${tbprofiler_json}
+    mv tbtamr/tbtamr.json ${tbtamr_json}
     
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
     echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
 
-    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${tbprofiler_json} > ${report_json}
+    #tidy up report so we can combine
+    sed -i '1d;\$d' ${tbtamr_json}
+    sed -i 's/Seq_ID/resistance_profiler/g' ${tbtamr_json}
+
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${tbtamr_json} > ${report_json}
     """
 
     stub:
