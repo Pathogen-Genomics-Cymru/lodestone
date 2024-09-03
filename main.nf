@@ -140,6 +140,7 @@ Parameters used:
 --vcfmix                ${params.vcfmix}
 --afanc_myco_db         ${params.afanc_myco_db}
 --permissive            ${params.permissive}
+--collate               ${params.collate}
 Runtime data:
 ------------------------------------------------------------------------
 Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
