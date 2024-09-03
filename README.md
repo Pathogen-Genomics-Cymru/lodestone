@@ -68,7 +68,7 @@ Name of the bowtie index, e.g. hg19_1kgmaj<br />
 * **vcfmix**<br />
 Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
 * **resistance_profiler**<br />
-Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"](https://tbdr.lshtm.ac.uk/) or "none".
+Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"](https://tbdr.lshtm.ac.uk/), ["tbtamr"](https://github.com/MDU-PHL/tbtamr) or "none".
 * **afanc_myco_db**<br />
 Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_7.0.tar.gz
 * **update_tbprofiler**<br />
