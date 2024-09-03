@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - recursive_decontamination
     paths:
       - '**/Dockerfile*'
       - "bin/"
