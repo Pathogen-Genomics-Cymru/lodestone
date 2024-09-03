@@ -50,7 +50,7 @@ Mandatory and conditional parameters:
                       This is the Langmead lab pre-built major-allele-SNP reference; see https://github.com/BenLangmead/bowtie-majref)
 --bowtie_index_name   Name of the bowtie index, e.g. hg19_1kgmaj
 --vcfmix              Run VFCMIX "yes" or "no". Should be set to "no" for synthetic samples
---resistance_profiler Tool to profile resistance with. At the moment options are "tb-profiler" or "none"
+--resistance_profiler Tool to profile resistance with. At the moment options are "tb-profiler", tbt-amr or "none"
 --afanc_myco_db       Path to the Afanc database used for speciation. Obtain from https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_3.0.tar.gz
 --permissive          One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway.
                       If there are not enough reads and/or not a reference found the programme will still exit.
@@ -85,10 +85,11 @@ nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_
 }
 
 
-resistance_profilers = ["tb-profiler", "none"]
+resistance_profilers = ["tb-profiler", "tbtamr", "none"]
 
 if(!resistance_profilers.contains(params.resistance_profiler)){
-    exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler" or "none" to skip.'
+    exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler", "tbtamr" \
+    or "none" to skip.'
     }
 
 
@@ -197,13 +198,13 @@ workflow {
       clockwork(preprocessing_output)
 
       // VCFPREDICT SUB-WORKFLOW
-      
+      sample_and_fastqs = clockwork.out.sample_and_fastqs
       mpileup_vcf = clockwork.out.mpileup_vcf
       minos_vcf = clockwork.out.minos_vcf
       reference = clockwork.out.reference
       bam = clockwork.out.bam
 
-      vcfpredict(bam, mpileup_vcf, minos_vcf, reference)
+      vcfpredict(sample_and_fastqs, bam, mpileup_vcf, minos_vcf, reference)
     
 }
 

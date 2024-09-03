@@ -7,11 +7,13 @@ include {tbprofiler} from '../modules/vcfpredictModules.nf' params(params)
 include {tbprofiler_update_db} from '../modules/vcfpredictModules.nf' params(params)
 include {add_allelic_depth} from '../modules/vcfpredictModules.nf' params(params) 
 include {finalJson} from '../modules/vcfpredictModules.nf' params(params) 
+include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
 
 // define workflow component
 workflow vcfpredict {
 
     take:
+      sample_and_fastqs
       clockwork_bam
       clockwork_bcftools_tuple
       minos_vcf_tuple
@@ -26,24 +28,35 @@ workflow vcfpredict {
 
       }
 
-      if ( params.resistance_profiler == "tb-profiler"){
-        //get just the vcf
-        sample_name = minos_vcf_tuple.map{it[0]}
-        minos_vcf = minos_vcf_tuple.map{it[1]}
-        do_we_resistance_profile = minos_vcf_tuple.map{it[2]}
-        report_json  = minos_vcf_tuple.map{it[3]}
-        bam = clockwork_bam.map{it[2]}
+      //get just the vcf
+      sample_name = minos_vcf_tuple.map{it[0]}
+      minos_vcf = minos_vcf_tuple.map{it[1]}
+      do_we_resistance_profile = minos_vcf_tuple.map{it[2]}
+      report_json  = minos_vcf_tuple.map{it[3]}
+      bam = clockwork_bam.map{it[2]}
+      fastq_and_report = sample_and_fastqs.combine(report_json).combine(do_we_resistance_profile)
 
+      fastq_and_report.view()
+      println(params.resistance_profiler)
+
+      if ( params.resistance_profiler == "tb-profiler"){
+
+        //if we are local and want to match our references, run this
         if (params.update_tbprofiler == "yes"){
         tbprofiler_update_db(reference_fasta)
         }
         
         //add allelic depth back in: was calculated in mpileup but lost in minos
         add_allelic_depth(sample_name, minos_vcf, bam, reference_fasta, do_we_resistance_profile)
+        //run tb-profiler
         tbprofiler(sample_name, add_allelic_depth.out, report_json, do_we_resistance_profile)
+        profiling_json = tbprofiler.out.tbprofiler_json
+      } else if (params.resistance_profiler == "tbtamr"){
+        tbtamr(fastq_and_report)
+        profiling_json = tbtamr.out.tbprofiler_json
       }
       
       if (params.vcfmix == "yes" && params.resistance_profiler != "none"){
-          finalJson(vcfmix.out.vcfmix_json.join(tbprofiler.out.tbprofiler_json, by: 0))
+          finalJson(vcfmix.out.vcfmix_json.join(profiling_json, by: 0))
       }
 }

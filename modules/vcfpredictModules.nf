@@ -111,6 +111,47 @@ process tbprofiler {
     """
 }
 
+process tbtamr {
+    tag { sample_name }
+    label 'medium_memory'
+    label 'medium_cpu'
+    label 'tbtamr'
+    
+    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbprofiler-out.json', overwrite: 'true'
+    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+
+    output:
+    tuple val(sample_name), path("${sample_name}.tbtamr-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
+
+    when:
+    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
+
+    script:
+    error_log = "${sample_name}_err.json"
+    tbprofiler_json = "${sample_name}.tbprofiler-out.json"
+    
+    """
+    tbtamr run -r1 $fq1 -r2 $fq2
+    
+    mv results/tbprofiler.results.json ${tbprofiler_json}
+    
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
+
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${tbprofiler_json} > ${report_json}
+    """
+
+    stub:
+    """
+    touch ${sample_name}.tbtamr-out.json
+    touch ${sample_name}_report.json
+    """
+}
+
 process add_allelic_depth {
     tag { sample_name }
     label 'low_memory'
