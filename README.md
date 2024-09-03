@@ -77,6 +77,8 @@ Update tb-profiler. Either "yes" or "no". "yes" may be useful when running outsi
 Path to assembly summary refseq file (taken from [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt)). A local version is stored for reproducibility purposes in ```resources/``` but for best results download the latest version.
 * **permissive**<br />
 One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway. If there are not enough reads and/or not a reference found the programme will still exit.
+* **collate**<br />
+One of "yes" or "no". If "yes" collate function will be ran to collect all resistance profiling reports
 
 For more information on the parameters run `nextflow run main.nf --help`
 
