@@ -9,6 +9,7 @@ include {add_allelic_depth} from '../modules/vcfpredictModules.nf' params(params
 include {finalJson} from '../modules/vcfpredictModules.nf' params(params) 
 include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr_collate} from '../modules/vcfpredictModules.nf' params(params)
+include {tbprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
 
 // define workflow component
 workflow vcfpredict {
@@ -50,7 +51,7 @@ workflow vcfpredict {
         tbprofiler(sample_name, add_allelic_depth.out, report_json, do_we_resistance_profile)
         profiling_json = tbprofiler.out.tbprofiler_json
         if(params.collate == "yes"){
-          collated_jsons = tbtamr.out.collate_json.collect()
+          collated_jsons = tbprofiler.out.collate_json.collect()
           tbprofiler_collate(collated_jsons)
         }
       } else if (params.resistance_profiler == "tbtamr"){

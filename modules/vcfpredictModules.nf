@@ -71,7 +71,7 @@ process tbprofiler {
     label 'tbprofiler'
     
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbprofiler-out.json', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+    publishDir "${params.output_dir}${sample_name}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
     val(sample_name)
@@ -81,7 +81,7 @@ process tbprofiler {
 
     output:
     tuple val(sample_name), path("${sample_name}.tbprofiler-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
-    path(sample_name), emit: collate_json
+    path("${sample_name}/${sample_name}.results.json"), emit: collate_json
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -94,9 +94,10 @@ process tbprofiler {
     bgzip ${minos_vcf}
     
     mkdir tmp
-    tb-profiler profile --prefix ${sample_name}--vcf ${minos_vcf}.gz --threads ${task.cpus} --temp tmp
+    tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus} --temp tmp --prefix ${sample_name}
     
-    cp ${sample_name}/tbprofiler.results.json ${tbprofiler_json}
+    mv results ${sample_name}
+    cp ${sample_name}/${sample_name}.results.json ${tbprofiler_json}
     
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
@@ -164,19 +165,17 @@ process tbtamr_collate{
     label 'medium_cpu'
     label 'tbtamr'
 
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+    publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: 'tbtamr.csv', stageAs: "tbtamr.variants.csv"
 
     input:
-    path(files)
+    path(files), stageAs: "results/*"
 
     output:
-    publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: "tbtamr.csv"
+    path("tbtamr.csv")
 
     script:
     """
-    #put all our dirs in a file; seperate by newline
-    echo $files | tr ' ' '\n' > input.txt
-    tbtamr collate -i input.txt
+    tbtamr collate
     """
 }
 
@@ -185,19 +184,17 @@ process tbprofiler_collate{
     label 'medium_cpu'
     label 'tbprofiler'
 
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
+    publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: 'tbprofiler.variants.csv'
 
     input:
-    path(files)
-
+    path(files), stageAs: "results/*"
+    
     output:
-    publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: "tbtamr.csv"
+    path("tbprofiler.variants.csv")
 
     script:
     """
-    #put all our dirs in a file; seperate by newline
-    echo $files | tr ' ' '\n' > input.txt
-    tb-profiler collate --samples input.txt
+    tb-profiler collate
     """
 }
 
