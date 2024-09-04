@@ -26,7 +26,7 @@ RUN python3.12 -m ensurepip --upgrade
 RUN python3.12 -m pip install --upgrade setuptools
 
 #use pip to install ntm stuff
-RUN python3.12 -m pip install pysam joblib tqdm pydantic jinja2 rich-argparse packaging>23.0 
+RUN python3.12 -m pip install pysam joblib tqdm pydantic jinja2 rich-argparse packaging==24.1 
 RUN python3.12 -m pip install git+https://github.com/jodyphelan/pathogen-profiler.git@${PATHOGEN_PROFILER_VERSION}
 RUN python3.12 -m pip install git+https://github.com/jodyphelan/ntm-profiler.git@${NTM_PROFILER_VERSION}
 
