@@ -78,7 +78,7 @@ Path to assembly summary refseq file (taken from [here](https://ftp.ncbi.nlm.nih
 * **permissive**<br />
 One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway. If there are not enough reads and/or not a reference found the programme will still exit.
 * **collate**<br />
-One of "yes" or "no". If "yes" collate function will be ran to collect all resistance profiling reports
+One of "yes" or "no". If "yes" collate function will be ran to collect all resistance profiling reports. Will be outputted to the base level output directory (e.g. ```output/tbprofiler.variants.csv```)
 
 For more information on the parameters run `nextflow run main.nf --help`
 
