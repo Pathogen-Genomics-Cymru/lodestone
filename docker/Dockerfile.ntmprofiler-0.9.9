@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 ENV pathogenprofiler_version="3b4c6e2ffba8f7a44d12cc2ed4369ee635464093"
 ENV ntmprofiler_version="2e4116bff2c09461b2d452f4075c6589e0a66965"
@@ -10,19 +10,25 @@ ARG NTMDB_VERSION="93c979b4c3825c591e5bceb55f86538e10d556d2"
 
 #python packages
 ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq" \
-	PYTHON="python3.9 python3-pip python3-dev"
+	PYTHON="python3.12 python3-pip python3-dev python3-packaging"
 
 #apt-get python stuff
-RUN apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get install -y $PACKAGES 
-RUN apt-get install -y $PYTHON
-RUN apt-get install -y python3-packaging
+RUN apt-get update  && \
+	DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install \
+	tzdata software-properties-common && \
+	add-apt-repository ppa:deadsnakes/ppa && \
+ 	apt install -y $PACKAGES $PYTHON && \
+	apt remove -y python3.8 && \
+	apt install -y python3.12-distutils python3.12-venv
+
+#reinstall pip
+RUN python3.12 -m ensurepip --upgrade
+RUN python3.12 -m pip install --upgrade setuptools
 
 #use pip to install ntm stuff
-RUN pip install pysam joblib tqdm pydantic 
-RUN pip install git+https://github.com/jodyphelan/pathogen-profiler.git@${PATHOGEN_PROFILER_VERSION}
-RUN pip install git+https://github.com/jodyphelan/ntm-profiler.git@${NTM_PROFILER_VERSION}
+RUN python3.12 -m pip install pysam joblib tqdm pydantic jinja2 rich-argparse packaging 
+RUN python3.12 -m pip install git+https://github.com/jodyphelan/pathogen-profiler.git@${PATHOGEN_PROFILER_VERSION}
+RUN python3.12 -m pip install git+https://github.com/jodyphelan/ntm-profiler.git@${NTM_PROFILER_VERSION}
 
 #update DB to our commit
 RUN ntm-profiler update_db --commit ${NTMDB_VERSION} 
