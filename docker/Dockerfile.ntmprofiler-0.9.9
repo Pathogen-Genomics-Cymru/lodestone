@@ -1,0 +1,28 @@
+FROM ubuntu:focal
+
+ENV pathogenprofiler_version="3b4c6e2ffba8f7a44d12cc2ed4369ee635464093"
+ENV ntmprofiler_version="2e4116bff2c09461b2d452f4075c6589e0a66965"
+ENV ntmdb_version="93c979b4c3825c591e5bceb55f86538e10d556d2"
+
+ARG PATHOGEN_PROFILER_VERSION="3b4c6e2ffba8f7a44d12cc2ed4369ee635464093"
+ARG NTM_PROFILER_VERSION="2e4116bff2c09461b2d452f4075c6589e0a66965"
+ARG NTMDB_VERSION="93c979b4c3825c591e5bceb55f86538e10d556d2"
+
+#python packages
+ENV PACKAGES="procps curl wget git build-essential libhdf5-dev libffi-dev r-base-core jq" \
+	PYTHON="python3.9 python3-pip python3-dev"
+
+#apt-get python stuff
+RUN apt-get update 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
+RUN apt-get install -y $PACKAGES 
+RUN apt-get install -y $PYTHON
+RUN apt-get install -y python3-packaging
+
+#use pip to install ntm stuff
+RUN pip install pysam joblib tqdm pydantic 
+RUN pip install git+https://github.com/jodyphelan/pathogen-profiler.git@${PATHOGEN_PROFILER_VERSION}
+RUN pip install git+https://github.com/jodyphelan/ntm-profiler.git@${NTM_PROFILER_VERSION}
+
+#update DB to our commit
+RUN ntm-profiler update_db --commit ${NTMDB_VERSION} 
