@@ -1,11 +1,10 @@
-FROM ubuntu:jammy
+FROM ubuntu:focal
 
 ENV ntmdb_version=93c979b4c3825c591e5bceb55f86538e10d556d2 \
     ntmprofiler_version=0.4.0 \
     TMPDIR="." 
 
 #USER root
-WORKDIR /
 ARG NTMPROFILER_VER="0.4.0"
 ARG NTMDB_VER="93c979b4c3825c591e5bceb55f86538e10d556d2"
 
@@ -26,7 +25,9 @@ LABEL maintainer3.email="twhalley93@gmail.com"
 #set env for root prefix
 ENV MAMBA_ROOT_PREFIX="/opt/conda"
 
-RUN apt-get update && apt-get install -y apt-utils wget bzip2 curl
+RUN apt-get update
+RUN apt-get install -y ca-certificates
+RUN apt-get install -y wget bzip2 curl
 RUN curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
     && touch /root/.bashrc \
     && ./bin/micromamba shell init -s bash -p /opt/conda  \
@@ -42,5 +43,4 @@ RUN micromamba install --yes --name base --channel conda-forge --channel biocond
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
 ENV PATH="/opt/conda/bin:${PATH}"
 
-RUN tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${NTMDB_VER}
-
+RUN ntm-profiler update_tbdb --commit ${NTMDB_VER}
