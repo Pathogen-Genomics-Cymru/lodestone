@@ -123,8 +123,8 @@ process ntmprofiler {
     tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
     
     output:
-    tuple val(sample_name), path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
-    path("${sample_name}/${sample_name}.results.json"), emit: collate_json
+    path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
+    path("${sample_name}.results.json"), emit: collate_json
 
     when:
     isSampleTB != /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -137,8 +137,7 @@ process ntmprofiler {
     mkdir tmp
     ntm-profiler profile -1 $fq1 -2 $fq2 --threads ${task.cpus} --temp tmp --prefix ${sample_name}
     
-    mv results ${sample_name}
-    cp ${sample_name}/${sample_name}.results.json ${ntmprofiler_json}
+    cp ${sample_name}.results.josn ${ntmprofiler_json}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
@@ -230,6 +229,25 @@ process tbprofiler_collate{
     script:
     """
     tb-profiler collate
+    """
+}
+
+process ntmprofiler_collate{
+    label 'medium_memory'
+    label 'medium_cpu'
+    label 'ntmprofiler'
+
+    publishDir "${params.output_dir}", mode: 'copy', owerwrite: 'true', pattern: ' ntmprofiler.collate.txt.variants.csv'
+
+    input:
+    path(files)
+    
+    output:
+    path('ntmprofiler.collate.txt.variants.csv')
+
+    script:
+    """
+    ntm-profiler collate 
     """
 }
 

@@ -43,6 +43,13 @@ workflow vcfpredict {
       //of linking up the references
       ntmprofiler(fastq_and_report)
 
+      ntm_profiling_json = ntmprofiler.out.ntmprofiler_json
+      
+      if(params.collate == "yes"){
+        collated_ntm_jsons = ntmprofiler.out.collate_json.collect()
+        ntmprofiler_collate(collated_ntm_jsons)
+      }
+
       if ( params.resistance_profiler == "tb-profiler"){
 
         //if we are local and want to match our references, run this
@@ -69,6 +76,7 @@ workflow vcfpredict {
       }
       
       if (params.vcfmix == "yes" && params.resistance_profiler != "none"){
+          profiling_jsons = profiling_json.combine(ntm_profiling_json)
           finalJson(vcfmix.out.vcfmix_json.join(profiling_json, by: 0))
       }
 }
