@@ -10,7 +10,7 @@ include {finalJson} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr_collate} from '../modules/vcfpredictModules.nf' params(params)
 include {tbprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
-
+include {ntmprofiler} from '../modules/vcfpredictModules.nf' params(params)
 // define workflow component
 workflow vcfpredict {
 
@@ -37,6 +37,11 @@ workflow vcfpredict {
       report_json  = minos_vcf_tuple.map{it[3]}
       bam = clockwork_bam.map{it[2]}
       fastq_and_report = sample_and_fastqs.combine(report_json).combine(do_we_resistance_profile)
+
+      //ntm-profiling: e.g. everything down being passed into tbtamr/tb-profiler
+      //at the moment it is only ran on fastqs; need to find a sensible way
+      //of linking up the references
+      ntmprofiler(fastq_and_report)
 
       if ( params.resistance_profiler == "tb-profiler"){
 

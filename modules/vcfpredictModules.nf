@@ -113,6 +113,41 @@ process tbprofiler {
     """
 }
 
+process ntmprofiler {
+    tag {sample_name}
+    label 'low_memory'
+    label 'low_cpu'
+    label 'ntmprofiler'
+   
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+    
+    output:
+    tuple val(sample_name), path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
+    path("${sample_name}/${sample_name}.results.json"), emit: collate_json
+
+    when:
+    isSampleTB != /CREATE\_ANTIBIOGRAM\_${sample_name}/
+
+    script:
+    error_log = "${sample_name}_err.json"
+    ntmprofiler_json = "${sample_name}.ntmprofiler-out.json"
+
+    """
+    mkdir tmp
+    ntm-profiler profile -1 $fq1 -2 $fq2 --threads ${task.cpus} --temp tmp --prefix ${sample_name}
+    
+    mv results ${sample_name}
+    cp ${sample_name}/${sample_name}.results.json ${ntmprofiler_json}
+
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
+
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${ntmprofiler_json} > ${report_json}
+    """
+}
+
 process tbtamr {
     tag { sample_name }
     label 'medium_memory'
