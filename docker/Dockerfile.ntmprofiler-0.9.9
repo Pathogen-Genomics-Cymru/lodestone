@@ -10,7 +10,8 @@ ARG NTMDB_VER="93c979b4c3825c591e5bceb55f86538e10d556d2"
 
 WORKDIR /
 ENV TMPDIR="/data"
-
+RUN mkdir /data 
+RUN chmod a+rwx -R /data
 # this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
 # commits are found on https://github.com/jodyphelan/tbdb/commits/master
 # this was the latest commit as of 2024-05-21
