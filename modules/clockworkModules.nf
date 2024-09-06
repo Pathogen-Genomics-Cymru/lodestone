@@ -202,7 +202,8 @@ process callVarsCortex {
     cp -r ${ref_dir}/* .
 
     clockwork cortex . ${bam} cortex ${sample_name}
-    if [[ -f ${cortex_original} ]]
+    if [[ -f ${cortex_original} ]] ;
+    then
         cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
     else
         touch ${cortex_vcf}
@@ -246,9 +247,18 @@ process minos {
     """
     awk '{print \$1}' ${ref} > ref.fa
 
-    minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
-    cp minos/final.vcf ${minos_vcf}
-    rm -rf minos
+    n_variants_bcf=\$(grep -i "^#" ${bcftools_vcf} | wc -l)
+    n_variants_cortex=\$(grep -i "^#" ${cortex_vcf} | wc -l)
+
+    if [[ \$n_variants_bcf == 0 ]]
+        cp ${cortex_vcf} ${minos_vcf}
+    elif [[ \$n_variants_cortex == 0 ]]
+        cp ${bcftools_vcf} ${minos_vcf}
+    else
+        minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
+        cp minos/final.vcf ${minos_vcf}
+        rm -rf minos
+    fi
 
     top_hit=\$(jq -r '.top_hit.name' ${report_json})
 
