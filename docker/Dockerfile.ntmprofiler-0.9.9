@@ -50,3 +50,5 @@ WORKDIR /data
 RUN ntm-profiler update_db #--commit ${NTMDB_VER}
 
 RUN for file in /opt/conda/share/ntm-profiler/*fasta ; do bwa index $file ; done
+
+ENV TMPDIR="./"
