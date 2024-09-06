@@ -196,12 +196,17 @@ process callVarsCortex {
 
     script:
     cortex_vcf = "${sample_name}.cortex.vcf"
-
+    cortex_original = "cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf"
+    
     """
     cp -r ${ref_dir}/* .
 
     clockwork cortex . ${bam} cortex ${sample_name}
-    cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
+    if [[ -f ${cortex_original} ]]
+        cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
+    else
+        touch ${cortex_vcf}
+    fi
     """
 
     stub:
