@@ -11,9 +11,6 @@ process getRefFromJSON {
     val(do_we_align)
     val(sample_name)
     
-    //when:
-    //do_we_align =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
-    
     output:
     stdout
     
@@ -250,7 +247,8 @@ process minos {
     n_variants_bcf=\$(grep -i "^#" ${bcftools_vcf} | wc -l)
     n_variants_cortex=\$(grep -i "^#" ${cortex_vcf} | wc -l)
 
-    if [[ \$n_variants_bcf == 0 ]]
+    if [[ \$n_variants_bcf == 0 ]] ;
+    then
         cp ${cortex_vcf} ${minos_vcf}
     elif [[ \$n_variants_cortex == 0 ]]
         cp ${bcftools_vcf} ${minos_vcf}
