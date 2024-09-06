@@ -250,7 +250,7 @@ process minos {
     if [[ \$n_variants_bcf == 0 ]] ;
     then
         cp ${cortex_vcf} ${minos_vcf}
-    elif [[ \$n_variants_cortex == 0 ]]
+    elif [[ \$n_variants_cortex == 0 ]] ; then
         cp ${bcftools_vcf} ${minos_vcf}
     else
         minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
