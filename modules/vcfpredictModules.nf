@@ -113,6 +113,40 @@ process tbprofiler {
     """
 }
 
+process ntmprofiler {
+    tag {sample_name}
+    label 'low_memory'
+    label 'low_cpu'
+    label 'ntmprofiler'
+   
+    input:
+    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+    
+    output:
+    path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
+    path("${sample_name}.results.json"), emit: collate_json
+
+    when:
+    isSampleTB != /CREATE\_ANTIBIOGRAM\_${sample_name}/
+
+    script:
+    error_log = "${sample_name}_err.json"
+    ntmprofiler_json = "${sample_name}.ntmprofiler-out.json"
+
+    """
+    mkdir tmp
+    ntm-profiler profile -1 $fq1 -2 $fq2 --threads ${task.cpus} --temp tmp --prefix ${sample_name}
+    
+    cp ${sample_name}.results.josn ${ntmprofiler_json}
+
+    cp ${sample_name}_report.json ${sample_name}_report_previous.json
+
+    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
+
+    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${ntmprofiler_json} > ${report_json}
+    """
+}
+
 process tbtamr {
     tag { sample_name }
     label 'medium_memory'
@@ -198,6 +232,25 @@ process tbprofiler_collate{
     """
 }
 
+process ntmprofiler_collate{
+    label 'medium_memory'
+    label 'medium_cpu'
+    label 'ntmprofiler'
+
+    publishDir "${params.output_dir}", mode: 'copy', owerwrite: 'true', pattern: ' ntmprofiler.collate.txt.variants.csv'
+
+    input:
+    path(files)
+    
+    output:
+    path('ntmprofiler.collate.txt.variants.csv')
+
+    script:
+    """
+    ntm-profiler collate 
+    """
+}
+
 process add_allelic_depth {
     tag { sample_name }
     label 'low_memory'
@@ -232,63 +285,6 @@ process add_allelic_depth {
     touch ${sample_name}_allelic_depth.minos.vcf 
     """
     
-}
-
-process gnomonicus {
-
-    tag {sample_name}
-    label 'vcfpredict'
-    label 'low_memory'
-    label 'low_cpu'
-
-    errorStrategy 'ignore'
-
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.gnomonicus-out.json', overwrite: 'true'
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.csv', overwrite: 'true'
-    publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.fasta', overwrite: 'true'
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
-
-    input:
-    tuple val(sample_name), path(vcf), val(isSampleTB), path(report_json)
-    path(genbank)
-    when:
-    isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
-
-    output:
-    tuple val(sample_name), path("${sample_name}.gnomonicus-out.json"), path("${sample_name}_report.json"), emit: gnomon_json
-    tuple val(sample_name), path("${sample_name}.effects.csv"), path("${sample_name}.mutations.csv"), emit: gnomon_csv optional true
-    tuple val(sample_name), path("*-fixed.fasta"), emit: gnomon_fasta
-    path("${sample_name}_err.json", emit: gnomon_log)
-    path ("${sample_name}_report.json", emit: gnomon_report)
-
-    script:
-    minos_vcf = "${sample_name}.minos.vcf"
-    error_log = "${sample_name}_err.json"
-
-    """
-    gnomonicus --genome_object ${genbank} --catalogue ${params.amr_cat} --vcf_file ${minos_vcf} --output_dir . --json --fasta fixed
-
-    cp ${sample_name}_report.json ${sample_name}_report_previous.json
-
-    echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
-
-    jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}.gnomonicus-out.json > ${report_json}
-    """
-
-    stub:
-    gnomonicus_json = "${sample_name}.gnomonicus-out.json"
-    gnomonicus_fasta = "${sample_name}-fixed.fasta"
-    gnomonicus_effects = "${sample_name}.effects.csv"
-    gnomonicus_mutations = "${sample_name}.mutations.csv"
-    error_log = "${sample_name}_err.json"
-
-    """
-    touch ${gnomonicus_json}
-    touch ${gnomonicus_fasta}
-    touch ${gnomonicus_effects}
-    touch ${gnomonicus_mutations}
-    touch ${error_log}
-    """
 }
 
 process finalJson {

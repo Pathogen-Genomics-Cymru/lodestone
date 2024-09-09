@@ -10,7 +10,7 @@ include {finalJson} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr_collate} from '../modules/vcfpredictModules.nf' params(params)
 include {tbprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
-
+include {ntmprofiler} from '../modules/vcfpredictModules.nf' params(params)
 // define workflow component
 workflow vcfpredict {
 
@@ -38,6 +38,18 @@ workflow vcfpredict {
       bam = clockwork_bam.map{it[2]}
       fastq_and_report = sample_and_fastqs.combine(report_json).combine(do_we_resistance_profile)
 
+      //ntm-profiling: e.g. everything down being passed into tbtamr/tb-profiler
+      //at the moment it is only ran on fastqs; need to find a sensible way
+      //of linking up the references
+      ntmprofiler(fastq_and_report)
+
+      ntm_profiling_json = ntmprofiler.out.ntmprofiler_json
+      
+      if(params.collate == "yes"){
+        collated_ntm_jsons = ntmprofiler.out.collate_json.collect()
+        ntmprofiler_collate(collated_ntm_jsons)
+      }
+
       if ( params.resistance_profiler == "tb-profiler"){
 
         //if we are local and want to match our references, run this
@@ -64,6 +76,7 @@ workflow vcfpredict {
       }
       
       if (params.vcfmix == "yes" && params.resistance_profiler != "none"){
+          profiling_jsons = profiling_json.combine(ntm_profiling_json)
           finalJson(vcfmix.out.vcfmix_json.join(profiling_json, by: 0))
       }
 }
