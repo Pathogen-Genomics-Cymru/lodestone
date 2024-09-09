@@ -1,0 +1,6 @@
+.nextflow.log*
+.nextflow/
+work/
+singularity/*img
+trace*
+
