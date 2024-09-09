@@ -32,7 +32,9 @@ workflow clockwork {
       getRefCortex(alignToRef.out.alignToRef_bam)
       callVarsCortex(alignToRef.out.alignToRef_bam, getRefCortex.out)
 
-      minos(alignToRef.out.alignToRef_bam.join(callVarsCortex.out.cortex_vcf, by: 0).join(callVarsMpileup.out.mpileup_vcf, by: 0))
+      minos(alignToRef.out.alignToRef_bam
+            .join(callVarsCortex.out.cortex_vcf, by: 0)
+            .join(callVarsMpileup.out.mpileup_vcf, by: 0))
 
       gvcf(alignToRef.out.alignToRef_bam.join(minos.out.minos_vcf, by: 0))
 

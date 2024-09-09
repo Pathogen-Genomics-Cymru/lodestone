@@ -11,9 +11,6 @@ process getRefFromJSON {
     val(do_we_align)
     val(sample_name)
     
-    //when:
-    //do_we_align =~ /NOW\_ALIGN\_TO\_REF\_${sample_name}/
-    
     output:
     stdout
     
@@ -196,12 +193,18 @@ process callVarsCortex {
 
     script:
     cortex_vcf = "${sample_name}.cortex.vcf"
-
+    cortex_original = "cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf"
+    
     """
     cp -r ${ref_dir}/* .
 
     clockwork cortex . ${bam} cortex ${sample_name}
-    cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
+    if [[ -f ${cortex_original} ]] ;
+    then
+        cp cortex/cortex.out/vcfs/cortex_wk_flow_I_RefCC_FINALcombined_BC_calls_at_all_k.raw.vcf ${cortex_vcf}
+    else
+        touch ${cortex_vcf}
+    fi
     """
 
     stub:
@@ -241,6 +244,17 @@ process minos {
     """
     awk '{print \$1}' ${ref} > ref.fa
 
+    n_variants_bcf=\$(grep -i "^#" ${bcftools_vcf} | wc -l)
+    n_variants_cortex=\$(grep -i "^#" ${cortex_vcf} | wc -l)
+
+    if [[ \$n_variants_bcf == 0 ]] ;
+    then
+        grep "^#" ${cortex_vcf} > ${bcftools_vcf}
+    elif [[ \$n_variants_cortex == 0 ]]
+    then
+        grep "^#" ${bcftools_vcf} > ${cortex_vcf}
+    fi 
+        
     minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
