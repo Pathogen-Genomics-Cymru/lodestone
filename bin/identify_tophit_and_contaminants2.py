@@ -358,7 +358,10 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
         out['summary_questions']['were_contaminants_removed'] = 'no'
 
     # IS THE TOP SPECIES HIT ONE OF THE 10 ACCEPTABLE POSSIBILITIES? IF SO, PROVIDE A LINK TO THE REFERENCE GENOME
-    re_top_species = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis) ()\w+ (bovis|orgis|caprae).*?$", top_species)
+    re_top_species = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
+    re_top_variant = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis) ()\w+ (bovis|orgis|caprae).*?$", top_species)
+    if len(re_top_variant) != 0:
+        re_top_species = re_top_variant
     if len(re_top_species) > 0:
         if len(re_top_species[0]) == 2:
             identified_species = re_top_species[0][1]
