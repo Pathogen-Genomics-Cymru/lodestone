@@ -3,4 +3,5 @@
 work/
 singularity/*img
 trace*
-
+output/
+outputs/

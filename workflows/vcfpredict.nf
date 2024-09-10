@@ -11,6 +11,7 @@ include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
 include {tbtamr_collate} from '../modules/vcfpredictModules.nf' params(params)
 include {tbprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
 include {ntmprofiler} from '../modules/vcfpredictModules.nf' params(params)
+include {ntmprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
 // define workflow component
 workflow vcfpredict {
 

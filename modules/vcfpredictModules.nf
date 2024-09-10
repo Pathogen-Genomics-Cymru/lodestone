@@ -123,7 +123,7 @@ process ntmprofiler {
     tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
     
     output:
-    path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
+    tuple val(sample_name), path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
     path("${sample_name}.results.json"), emit: collate_json
 
     when:
@@ -137,7 +137,7 @@ process ntmprofiler {
     mkdir tmp
     ntm-profiler profile -1 $fq1 -2 $fq2 --threads ${task.cpus} --temp tmp --prefix ${sample_name}
     
-    cp ${sample_name}.results.josn ${ntmprofiler_json}
+    cp ${sample_name}.results.json ${ntmprofiler_json}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
