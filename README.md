@@ -4,14 +4,14 @@
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/stub-run/badge.svg)
 
 ## Table of Contents
-- [What is Lodestone](#-what-is-lodestone)
-- [Quick Start](#-quick-start)
-- [Executors](#-executors)
-- [System Requirements](#-system-requirements)
-- [Parameters](#-parameters)
-- [Stub Runs](#-stub-runs)
-- [Checkpoints](#-checkpoints)
-- [Acknowledgments](#-acknowledgements)
+- [What is Lodestone](#what-is-lodestone)
+- [Quick Start](#quick-start)
+- [Executors](#executors)
+- [System Requirements](#system-requirements)
+- [Parameters](#parameters)
+- [Stub Runs](#stub-runs)
+- [Checkpoints](#checkpoints)
+- [Acknowledgments](#acknowledgements)
 - [License](#-license)
 
 ## What is Lodestone?
