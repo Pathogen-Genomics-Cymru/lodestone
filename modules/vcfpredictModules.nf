@@ -108,8 +108,10 @@ process tbprofiler {
 
     stub:
     """
+    mkdir ${sample_name}
     touch ${sample_name}.tbprofiler-out.json
     touch ${sample_name}_report.json
+    touch ${sample_name}/${sample_name}.results.json
     """
 }
 
@@ -127,7 +129,7 @@ process ntmprofiler {
     path("${sample_name}.results.json"), emit: collate_json
 
     when:
-    isSampleTB != /CREATE\_ANTIBIOGRAM\_${sample_name}/
+    isSampleTB =~ /CREATE\_NTM_\ANTIBIOGRAM\_${sample_name}/
 
     script:
     error_log = "${sample_name}_err.json"
@@ -144,6 +146,13 @@ process ntmprofiler {
     echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log}
 
     jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${ntmprofiler_json} > ${report_json}
+    """
+    
+    stub:
+    """
+    touch ${sample_name}.ntmprofiler-out.json
+    touch ${sample_name}_report.json
+    touch ${sample_name}.results.json
     """
 }
 
