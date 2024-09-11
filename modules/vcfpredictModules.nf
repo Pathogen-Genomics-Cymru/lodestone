@@ -122,14 +122,16 @@ process ntmprofiler {
     label 'ntmprofiler'
    
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+    tuple val(sample_name), path(fq1), path(fq2)
+    path(report_json)
+    val(isSampleNTM)
     
     output:
     tuple val(sample_name), path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
     path("${sample_name}.results.json"), emit: collate_json
 
     when:
-    isSampleTB =~ /CREATE\_NTM_\ANTIBIOGRAM\_${sample_name}/
+    isSampleNTM =~ /CREATE\_NTM\_ANTIBIOGRAM\_${sample_name}/
 
     script:
     error_log = "${sample_name}_err.json"

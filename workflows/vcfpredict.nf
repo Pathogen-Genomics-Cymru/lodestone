@@ -35,14 +35,15 @@ workflow vcfpredict {
       sample_name = minos_vcf_tuple.map{it[0]}
       minos_vcf = minos_vcf_tuple.map{it[1]}
       do_we_resistance_profile = minos_vcf_tuple.map{it[2]}
-      report_json  = minos_vcf_tuple.map{it[3]}
+      report_json = minos_vcf_tuple.map{it[3]}
       bam = clockwork_bam.map{it[2]}
-      fastq_and_report = sample_and_fastqs.combine(report_json).combine(do_we_resistance_profile)
+
+      sample_and_fastqs.view()
 
       //ntm-profiling: e.g. everything down being passed into tbtamr/tb-profiler
       //at the moment it is only ran on fastqs; need to find a sensible way
       //of linking up the references
-      ntmprofiler(fastq_and_report)
+      ntmprofiler(sample_and_fastqs, report_json, do_we_resistance_profile)
 
       ntm_profiling_json = ntmprofiler.out.ntmprofiler_json
       
@@ -63,6 +64,7 @@ workflow vcfpredict {
         //run tb-profiler
         tbprofiler(sample_name, add_allelic_depth.out, report_json, do_we_resistance_profile)
         profiling_json = tbprofiler.out.tbprofiler_json
+
         if(params.collate == "yes"){
           collated_jsons = tbprofiler.out.collate_json.collect()
           tbprofiler_collate(collated_jsons)

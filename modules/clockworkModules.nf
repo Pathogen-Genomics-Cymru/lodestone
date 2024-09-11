@@ -268,7 +268,7 @@ process minos {
     else
         printf "CREATE_NTM_ANTIBIOGRAM_${sample_name}"
         echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' \
-        | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}
+        | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}
     fi
     """
 
