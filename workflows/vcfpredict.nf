@@ -38,8 +38,6 @@ workflow vcfpredict {
       report_json = minos_vcf_tuple.map{it[3]}
       bam = clockwork_bam.map{it[2]}
 
-      sample_and_fastqs.view()
-
       //ntm-profiling: e.g. everything down being passed into tbtamr/tb-profiler
       //at the moment it is only ran on fastqs; need to find a sensible way
       //of linking up the references
