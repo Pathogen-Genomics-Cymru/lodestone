@@ -259,11 +259,17 @@ process minos {
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
 
-    top_hit=\$(jq -r '.top_hit.name' ${report_json})
+    top_hit=\$(jq -r '.top_hit.file_paths.ref_fa' ${report_json})
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [[ \$top_hit =~ "tuberculosis" ]]; then 
+        printf "CREATE_ANTIBIOGRAM_${sample_name}"
+    else
+        printf "CREATE_NTM_ANTIBIOGRAM_${sample_name}"
+        echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' \
+        | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}
+    fi
     """
 
     stub:
