@@ -365,6 +365,13 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
     if len(re_top_species) > 0:
         if len(re_top_species[0]) == 2:
             identified_species = re_top_species[0][1]
+            #deal with lineages
+            lineage_dict = {"La1.": "bovis",
+                            "La2.": "caprae",
+                            "La3.": "orygis"}
+            for lineage in lineage_dict:
+                if lineage in top_species:
+                    identified_species = lineage_dict[lineage]
         else:
             identified_species = re_top_species[0][3] #we have bovis (or  orgis/caprae) with variant in the name
         if supposed_species == 'null':
