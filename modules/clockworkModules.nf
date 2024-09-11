@@ -263,7 +263,7 @@ process minos {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [[ \$top_hit =~ "tuberculosis" ]]; then 
+    if [[ \$top_hit =~ "/tuberculosis.fasta" ]]; then 
         printf "CREATE_ANTIBIOGRAM_${sample_name}"
     else
         printf "CREATE_NTM_ANTIBIOGRAM_${sample_name}"
