@@ -16,34 +16,16 @@ include {ntmprofiler_collate} from '../modules/vcfpredictModules.nf' params(para
 workflow vcfpredict {
 
     take:
-      sample_and_fastqs
-      clockwork_bam
-      clockwork_bcftools_tuple
-      minos_vcf_tuple
-      reference_fasta
-      
+    profiler_input_fq
+    profiler_input_vcf
 
     main:
-
-      if ( params.vcfmix == "yes" ) {
-
-          vcfmix(clockwork_bcftools_tuple)
-
-      }
-
-      //get just the vcf
-      sample_name = minos_vcf_tuple.map{it[0]}
-      minos_vcf = minos_vcf_tuple.map{it[1]}
-      do_we_resistance_profile = minos_vcf_tuple.map{it[2]}
-      report_json = minos_vcf_tuple.map{it[3]}
-      bam = clockwork_bam.map{it[2]}
-
       //ntm-profiling: e.g. everything down being passed into tbtamr/tb-profiler
       //at the moment it is only ran on fastqs; need to find a sensible way
       //of linking up the references
-      ntmprofiler(sample_and_fastqs, report_json, do_we_resistance_profile)
+      ntmprofiler(profiler_input_fq)
 
-      ntm_profiling_json = ntmprofiler.out.ntmprofiler_json
+      ntm_profiling_out = ntmprofiler.out.vcfmix_in
       
       if(params.collate == "yes"){
         collated_ntm_jsons = ntmprofiler.out.collate_json.collect()
@@ -58,26 +40,28 @@ workflow vcfpredict {
         }
         
         //add allelic depth back in: was calculated in mpileup but lost in minos
-        add_allelic_depth(sample_name, minos_vcf, bam, reference_fasta, do_we_resistance_profile)
+        add_allelic_depth(profiler_input_vcf)
         //run tb-profiler
-        tbprofiler(sample_name, add_allelic_depth.out, report_json, do_we_resistance_profile)
-        profiling_json = tbprofiler.out.tbprofiler_json
+        tbprofiler(add_allelic_depth.out)
+
+        tb_profiling_out = tbprofiler.out.vcfmix_in
 
         if(params.collate == "yes"){
           collated_jsons = tbprofiler.out.collate_json.collect()
           tbprofiler_collate(collated_jsons)
         }
       } else if (params.resistance_profiler == "tbtamr"){
-        tbtamr(fastq_and_report)
-        profiling_json = tbtamr.out.tbtamr_json
+        tbtamr(profiler_input_fq)
+
+        tb_profiling_out = tbtamr.out.vcfmix_in
+        
         if(params.collate == "yes"){
           collated_jsons = tbtamr.out.collate_json.collect()
           tbtamr_collate(collated_jsons)
         }
       }
       
-      if (params.vcfmix == "yes" && params.resistance_profiler != "none"){
-          profiling_jsons = profiling_json.combine(ntm_profiling_json)
-          finalJson(vcfmix.out.vcfmix_json.join(profiling_json, by: 0))
-      }
+      profiling_jsons = ntm_profiling_out.mix(tb_profiling_out)
+      profiling_jsons.view()
+      vcfmix(profiling_jsons)
 }

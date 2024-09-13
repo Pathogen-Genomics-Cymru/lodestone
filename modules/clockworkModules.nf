@@ -305,6 +305,9 @@ process gvcf {
     path("${sample_name}.fa", emit: gvcf_fa)
     path "${sample_name}_err.json", emit: gvcf_log optional true
     path "${sample_name}_report.json", emit: gvcf_report optional true
+    tuple val(sample_name), path(minos_vcf), path(report_json), emit: vcfmix_input
+    tuple val(sample_name), path(minos_vcf), path(report_json), path(bam), path(ref), val(isSampleTB), emit: tbprofiler
+    tuple val(sample_name), path(report_json), path(minos_vcf), val(isSampleTB), emit: gvcf_report_resistance
 
     script:
     gvcf = "${sample_name}.gvcf.vcf"

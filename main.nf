@@ -85,11 +85,10 @@ nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_
 }
 
 
-resistance_profilers = ["tb-profiler", "tbtamr", "none"]
+resistance_profilers = ["tb-profiler", "tbtamr"]
 
 if(!resistance_profilers.contains(params.resistance_profiler)){
-    exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler", "tbtamr" \
-    or "none" to skip.'
+    exit 1, 'Invalid resistance profiler. Must be one of "tb-profiler" or "tbtamr"'
     }
 
 
@@ -199,13 +198,10 @@ workflow {
       clockwork(preprocessing_output)
 
       // VCFPREDICT SUB-WORKFLOW
-      sample_and_fastqs = clockwork.out.sample_and_fastqs
-      mpileup_vcf = clockwork.out.mpileup_vcf
-      minos_vcf = clockwork.out.minos_vcf
-      reference = clockwork.out.reference
-      bam = clockwork.out.bam
+      profiler_input_vcf = clockwork.out.profiler_input_vcf 
+      profiler_input_fq = clockwork.out.profiler_input_fq     
 
-      vcfpredict(sample_and_fastqs, bam, mpileup_vcf, minos_vcf, reference)
+      vcfpredict(profiler_input_fq, profiler_input_vcf)
     
 }
 
