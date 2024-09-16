@@ -11,8 +11,8 @@ def go(vcf_file):
     # create a lineagescan object
     v = lineageScan()
 
-    # assuming postfix of ".bcftools.vcf"
-    sampleid = vcf_file[:-13]
+    # assuming postfix of ".minos.vcf"
+    sampleid = vcf_file.replace(".minos.vcf", "")
     print(sampleid)
 
     res = v.parse(vcffile=vcf_file, sample_id=sampleid)
