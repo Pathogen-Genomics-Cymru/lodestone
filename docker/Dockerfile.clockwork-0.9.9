@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM ubuntu:focal
 
 
 LABEL maintainer="pricea35@cardiff.ac.uk" \
@@ -26,7 +26,7 @@ PYTHON="python2.7 python-dev"
 COPY bin/ /opt/bin/
 ENV PATH=/opt/bin:$PATH
 
-
+RUN snap install openjdk --channel=22.0.2/stable
 RUN apt-get update \
 && apt-get install -y $PACKAGES $PYTHON \
 && curl -fsSL https://www.python.org/ftp/python/${python_version}/Python-${python_version}.tgz | tar -xz \
