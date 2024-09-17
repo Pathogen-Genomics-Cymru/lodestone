@@ -20,7 +20,7 @@ python_version=3.6.5 \
 clockwork_version=2364dec4cbf25c844575e19e8fe0a319d10721b5 \
 gatk_version=4.6.0.0
 
-ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix libvcflib-tools libssl-dev software-properties-common perl locales locales-all openjdk-18-jdk" \
+ENV PACKAGES="procps curl git build-essential wget zlib1g-dev pkg-config jq r-base-core rsync autoconf libncurses-dev libbz2-dev liblzma-dev libcurl4-openssl-dev cmake tabix libvcflib-tools libssl-dev software-properties-common perl locales locales-all" \
 PYTHON="python2.7 python-dev"
 
 COPY bin/ /opt/bin/
@@ -38,7 +38,7 @@ RUN apt-get update \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
-&& apt-get update && apt-get install -y openjdk-11-jdk
+&& apt-get update && apt-get install -y openjdk-18-jdk
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
