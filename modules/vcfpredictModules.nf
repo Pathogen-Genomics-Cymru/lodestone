@@ -27,7 +27,7 @@ process vcfmix {
     error_log = "${sample_name}_err.json"
 
     """
-    run-vcfmix.py $vcf
+    run-vcfmix.py ${vcf}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
@@ -77,7 +77,7 @@ process tbprofiler {
     output:
     tuple val(sample_name), path("${sample_name}.tbprofiler-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
     path("${sample_name}/${sample_name}.results.json"), emit: collate_json
-    tuple val(sample_name), path(vcf), path(report_json), emit: vcfmix_in
+    tuple val(sample_name), path(minos_vcf), path(report_json), emit: vcfmix_in
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -87,7 +87,10 @@ process tbprofiler {
     tbprofiler_json = "${sample_name}.tbprofiler-out.json"
     
     """
+    #keep the original vcf so we can collate the output and pass it down
+    cp ${minos_vcf} tmp.vcf
     bgzip ${minos_vcf}
+    mv tmp.vcf ${minos_vcf}
     
     mkdir tmp
     tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus} --temp tmp --prefix ${sample_name}

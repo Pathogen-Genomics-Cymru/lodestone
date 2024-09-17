@@ -39,10 +39,8 @@ workflow vcfpredict {
         tbprofiler_update_db(reference_fasta)
         }
         
-        //add allelic depth back in: was calculated in mpileup but lost in minos
-        add_allelic_depth(profiler_input_vcf)
         //run tb-profiler
-        tbprofiler(add_allelic_depth.out)
+        tbprofiler(profiler_input_vcf)
 
         tb_profiling_out = tbprofiler.out.vcfmix_in
 
@@ -62,6 +60,5 @@ workflow vcfpredict {
       }
       
       profiling_jsons = ntm_profiling_out.mix(tb_profiling_out)
-      profiling_jsons.view()
       vcfmix(profiling_jsons)
 }

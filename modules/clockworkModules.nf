@@ -233,7 +233,7 @@ process minos {
 
     output:
     tuple val(sample_name), path(report_json), path(bam), path(ref), emit: minos_bam
-    tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
+    tuple val(sample_name), path("${sample_name}_allelic_depth.minos.vcf"), stdout, emit: minos_vcf
     tuple val(sample_name), path("${sample_name}_report.json"), emit: minos_report
     path "${sample_name}_err.json", emit: minos_log optional true
 
@@ -258,6 +258,12 @@ process minos {
     minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
+
+    samtools faidx $ref
+    samtools dict $ref -o ${ref.baseName}.dict
+    mkdir tmp
+
+    gatk VariantAnnotator -R $ref -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
 
     top_hit=\$(jq -r '.top_hit.file_paths.ref_fa' ${report_json})
 
