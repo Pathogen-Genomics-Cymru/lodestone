@@ -27,7 +27,7 @@ COPY bin/ /opt/bin/
 ENV PATH=/opt/bin:$PATH
 
 RUN apt-get update \
-&& apt-get install -y $PACKAGES $PYTHON \
+&& DEBIAN_FRONTEND=noninteractive apt-get install -y $PACKAGES $PYTHON \
 && curl -fsSL https://www.python.org/ftp/python/${python_version}/Python-${python_version}.tgz | tar -xz \
 && cd Python-${python_version} \
 && ./configure --enable-optimizations \
@@ -37,9 +37,15 @@ RUN apt-get update \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
-&& apt-get update && apt-get install -y snapd
+&& apt-get update
 
-RUN snap install openjdk --channel=22.0.2/stable
+#update jdk
+RUN wget https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_linux-x64_bin.tar.gz
+RUN tar -xvf openjdk-18_linux-x64_bin.tar.gz
+RUN mv jdk-18* /opt/
+ENV JAVA_HOME=/opt/jdk-18
+ENV PATH=$PATH:$JAVA_HOME/bin
+
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
