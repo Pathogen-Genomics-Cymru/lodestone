@@ -12,7 +12,7 @@ def go(vcf_file):
     v = lineageScan()
 
     # assuming postfix of ".minos.vcf"
-    sampleid = vcf_file.replace(".minos.vcf", "")
+    sampleid = vcf_file.replace("_allelic_depth.minos.vcf", "")
     print(sampleid)
 
     res = v.parse(vcffile=vcf_file, sample_id=sampleid)
