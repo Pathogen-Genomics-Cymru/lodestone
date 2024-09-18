@@ -26,7 +26,6 @@ PYTHON="python2.7 python-dev"
 COPY bin/ /opt/bin/
 ENV PATH=/opt/bin:$PATH
 
-RUN snap install openjdk --channel=22.0.2/stable
 RUN apt-get update \
 && apt-get install -y $PACKAGES $PYTHON \
 && curl -fsSL https://www.python.org/ftp/python/${python_version}/Python-${python_version}.tgz | tar -xz \
@@ -38,7 +37,9 @@ RUN apt-get update \
 && ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip3 \
 && pip3 install --upgrade pip \
 && pip3 install 'cluster_vcf_records==0.13.1' pysam setuptools  awscli \
-&& apt-get update && apt-get install -y openjdk-18-jdk
+&& apt-get update && apt-get install -y snapd
+
+RUN snap install openjdk --channel=22.0.2/stable
 
 RUN curl -fsSL https://github.com/samtools/samtools/archive/${samtools_version}.tar.gz | tar -xz \
 && curl -fsSL https://github.com/samtools/htslib/releases/download/${htslib_version}/htslib-${htslib_version}.tar.bz2 | tar -xj \
