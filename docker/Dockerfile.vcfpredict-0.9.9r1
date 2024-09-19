@@ -19,7 +19,6 @@ RUN apt-get update \
 && apt-get install -y python3-packaging \
 && git clone https://github.com/whalleyt/VCFMIX.git \
 && cd VCFMIX \
-&& git checkout ${vcfmix_version} \
 && pip3 install recursive_diff \
 && pip3 install awscli \
 && pip3 install . \
