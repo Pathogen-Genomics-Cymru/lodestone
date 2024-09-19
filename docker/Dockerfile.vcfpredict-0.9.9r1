@@ -3,6 +3,7 @@ FROM ubuntu:20.04
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the vcf predict workflow"
 
+
 #add run-vcf to container
 COPY bin/ /opt/bin/
 ENV PATH=/opt/bin:$PATH
