@@ -5,11 +5,12 @@ import sys
 import urllib.request
 import json
 from pathlib import Path
-from vcfmix import lineageScan
+#from vcfmix import lineageScan
+from vcfScan import lineageScan
 
 def go(vcf_file):
     # create a lineagescan object
-    v = lineageScan()
+    v = lineageScan(minos=True)
 
     # assuming postfix of ".minos.vcf"
     sampleid = vcf_file.replace("_allelic_depth.minos.vcf", "")
