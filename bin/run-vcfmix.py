@@ -5,8 +5,7 @@ import sys
 import urllib.request
 import json
 from pathlib import Path
-#from vcfmix import lineageScan
-from vcfScan import lineageScan
+from vcfmix import lineageScan
 
 def go(vcf_file):
     # create a lineagescan object
