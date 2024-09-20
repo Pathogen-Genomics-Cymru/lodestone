@@ -24,8 +24,6 @@ workflow clockwork {
       sample_name = input_seqs_json.map{it[0]}
 
       getRefFromJSON(json, do_we_align, sample_name)
-      input_seqs_json.view()
-      getRefFromJSON.out.view()
       alignToRef(input_seqs_json, getRefFromJSON.out)
       
 
