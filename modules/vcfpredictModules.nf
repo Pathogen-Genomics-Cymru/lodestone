@@ -73,7 +73,7 @@ process tbprofiler {
 
     input:
     tuple val(sample_name), path(minos_vcf), path(report_json), val(isSampleTB)
-
+    
     output:
     tuple val(sample_name), path("${sample_name}.tbprofiler-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
     path("${sample_name}/${sample_name}.results.json"), emit: collate_json
