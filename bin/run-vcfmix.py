@@ -9,10 +9,10 @@ from vcfmix import lineageScan
 
 def go(vcf_file):
     # create a lineagescan object
-    v = lineageScan()
+    v = lineageScan(minos=True)
 
-    # assuming postfix of ".bcftools.vcf"
-    sampleid = vcf_file[:-13]
+    # assuming postfix of ".minos.vcf"
+    sampleid = vcf_file.replace("_allelic_depth.minos.vcf", "")
     print(sampleid)
 
     res = v.parse(vcffile=vcf_file, sample_id=sampleid)

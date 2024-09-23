@@ -14,6 +14,9 @@ maintainer3.email="twhalley93@gmail.com"
 mkdir -p /
 cd /
 
+freebayes_version=1.3.6
+tbtamr_version=0.0.4
+
 # LABEL instructions tag the image with metadata that might be important to the user
 
 #set env for root prefix
@@ -33,7 +36,7 @@ curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/mic
 micromamba install --yes --name base --channel conda-forge --channel bioconda jq requests xlsxwriter tbtamr
 micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4
 micromamba install --yes --name base --channel conda-forge --channel bioconda samtools
-micromamba install --yes bioconda freebayes==1.3.6 #STDERR in current version of freebayes
+micromamba install --yes --name base --channel conda-forge --channel bioconda freebayes==1.3.6 #STDERR in current version of freebayes
 micromamba clean --all --yes
 
 # hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
@@ -45,6 +48,8 @@ cd /data
 #wants full path to reference
 tbtamr setup
 %environment
+export freebayes_version=1.3.6
+export tbtamr_version=0.0.4
 export MAMBA_ROOT_PREFIX="/opt/conda"
 export PATH="/opt/conda/bin:${PATH}"
 %runscript

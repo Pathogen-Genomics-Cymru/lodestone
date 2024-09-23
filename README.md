@@ -2,7 +2,20 @@
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/build-push-quay/badge.svg)
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/pytest/badge.svg)
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/stub-run/badge.svg)
-  
+
+## Table of Contents
+- [What is Lodestone](#what-is-lodestone)
+- [Quick Start](#quick-start)
+- [Executors](#executors)
+- [System Requirements](#system-requirements)
+- [Parameters](#parameters)
+- [Stub Runs](#stub-runs)
+- [Checkpoints](#checkpoints)
+- [Acknowledgments](#acknowledgements)
+- [License](#-license)
+
+## What is Lodestone?
+ 
 This pipeline takes as input reads presumed to be from one of 10 mycobacterial genomes: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Input should be in the form of one directory containing pairs of fastq(.gz) or bam files.
 
 Pipeline cleans and QCs reads with fastp and FastQC, classifies with Kraken2 & Afanc, removes non-bacterial content, and - by alignment to any minority genomes - disambiguates mixtures of bacterial reads. Cleaned reads are aligned to either of the 10 supported genomes and variants called. Produces as output one directory per sample, containing cleaned fastqs, sorted, indexed BAM, VCF, F2 and F47 statistics, an antibiogram and summary reports.
@@ -40,7 +53,7 @@ By default, the pipeline will just run on the local machine. To run on a cluster
 ### System Requirements ###
 Minimum recommended requirements: 32GB RAM, 8CPU
 
-## Params ##
+## Paramaters ##
 The following parameters should be set in `nextflow.config` or specified on the command line:
 
 * **input_dir**<br /> 
@@ -84,7 +97,7 @@ For more information on the parameters run `nextflow run main.nf --help`
 
 The path to the singularity images can also be changed in the singularity profile in `nextflow.config`. Default value is `${baseDir}/singularity`
 
-## Stub-run ##
+## Stub runs ##
 To test the stub run:
 ```
 NXF_VER=20.11.0-edge nextflow run main.nf -stub -config testing.config
@@ -150,3 +163,5 @@ For a list of direct authors of this pipeline, please see the contributors list.
 
 The preprocessing sub-workflow is based on the preprocessing nextflow DSL1 pipeline written by Stephen Bush, University of Oxford. The clockwork sub-workflow uses aspects of the variant calling workflow from https://github.com/iqbal-lab-org/clockwork, lead author Martin Hunt, Iqbal Lab at EMBL-EBI
 
+## License
+The tool is licensed under the V3 GNU Affero GPL license. Please see the [LICENSE](LICENSE) file for more details.

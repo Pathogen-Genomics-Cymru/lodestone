@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - ntmprofiler
+      - bcg
     paths:
       - '**/Dockerfile*'
       - "bin/"

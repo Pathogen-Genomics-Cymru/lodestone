@@ -27,13 +27,11 @@ process vcfmix {
     error_log = "${sample_name}_err.json"
 
     """
-    run-vcfmix.py ${bcftools_vcf}
+    run-vcfmix.py ${vcf}
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
     jq -s ".[0] * .[1]" ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}
-
-    if [ ${params.resistance_profiler} == "none" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json ${sample_name}_f-stats.json > ${report_json}; fi
     """
 
     stub:
@@ -74,14 +72,12 @@ process tbprofiler {
     publishDir "${params.output_dir}${sample_name}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    val(sample_name)
-    path(minos_vcf)
-    path(report_json)
-    val(isSampleTB)
+    tuple val(sample_name), path(minos_vcf), path(report_json), val(isSampleTB)
 
     output:
     tuple val(sample_name), path("${sample_name}.tbprofiler-out.json"), path("${sample_name}_report.json"), emit: tbprofiler_json
     path("${sample_name}/${sample_name}.results.json"), emit: collate_json
+    tuple val(sample_name), path(minos_vcf), path(report_json), emit: vcfmix_in
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -91,7 +87,10 @@ process tbprofiler {
     tbprofiler_json = "${sample_name}.tbprofiler-out.json"
     
     """
+    #keep the original vcf so we can collate the output and pass it down
+    cp ${minos_vcf} tmp.vcf
     bgzip ${minos_vcf}
+    mv tmp.vcf ${minos_vcf}
     
     mkdir tmp
     tb-profiler profile --vcf ${minos_vcf}.gz --threads ${task.cpus} --temp tmp --prefix ${sample_name}
@@ -108,8 +107,10 @@ process tbprofiler {
 
     stub:
     """
+    mkdir ${sample_name}
     touch ${sample_name}.tbprofiler-out.json
     touch ${sample_name}_report.json
+    touch ${sample_name}/${sample_name}.results.json
     """
 }
 
@@ -120,14 +121,15 @@ process ntmprofiler {
     label 'ntmprofiler'
    
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+    tuple val(sample_name), path(fq1), path(fq2), path(report_json), path(vcf), val(isSampleNTM)
     
     output:
     tuple val(sample_name), path("${sample_name}.ntmprofiler-out.json"), path("${sample_name}_report.json"), emit: ntmprofiler_json
     path("${sample_name}.results.json"), emit: collate_json
+    tuple val(sample_name), path(vcf), path(report_json), emit: vcfmix_in
 
     when:
-    isSampleTB != /CREATE\_ANTIBIOGRAM\_${sample_name}/
+    isSampleNTM =~ /CREATE\_NTM\_ANTIBIOGRAM\_${sample_name}/
 
     script:
     error_log = "${sample_name}_err.json"
@@ -145,6 +147,13 @@ process ntmprofiler {
 
     jq -s ".[0] * .[1] * .[2]" ${error_log} ${sample_name}_report_previous.json  ${ntmprofiler_json} > ${report_json}
     """
+    
+    stub:
+    """
+    touch ${sample_name}.ntmprofiler-out.json
+    touch ${sample_name}_report.json
+    touch ${sample_name}.results.json
+    """
 }
 
 process tbtamr {
@@ -157,11 +166,12 @@ process tbtamr {
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
 
     input:
-    tuple val(sample_name), path(fq1), path(fq2), path(report_json), val(isSampleTB)
+    tuple val(sample_name), path(fq1), path(fq2), path(report_json), path(vcf), val(isSampleTB)
 
     output:
     tuple val(sample_name), path("${sample_name}.tbtamr-out.json"), path("${sample_name}_report.json"), emit: tbtamr_json
     path(sample_name), emit: collate_json
+    tuple val(sample_name), path(vcf), path(report_json), emit: vcfmix_in
 
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
@@ -258,15 +268,11 @@ process add_allelic_depth {
     label 'tbprofiler'
     
     input:
-    val(sample_name)
-    path(minos_vcf)
-    path(bam)
-    path(reference)
-    val(isSampleTB)
+    tuple val(sample_name), path(minos_vcf), path(report_json), path(bam), path(reference), val(isSampleTB)
     
     output:
-    path("${sample_name}_allelic_depth.minos.vcf")
-
+    tuple val(sample_name), path("${sample_name}_allelic_depth.minos.vcf"), path(report_json), val(isSampleTB)
+    
     when:
     isSampleTB =~ /CREATE\_ANTIBIOGRAM\_${sample_name}/
     

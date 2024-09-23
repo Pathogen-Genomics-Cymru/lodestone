@@ -2,6 +2,9 @@ FROM ubuntu:jammy
 
 WORKDIR /
 
+ENV freebayes_version=1.3.6 \
+    tbtamr_version=0.0.4
+
 # LABEL instructions tag the image with metadata that might be important to the user
 LABEL base.image="ubuntu:jammy"
 LABEL dockerfile.version="0.9.9"

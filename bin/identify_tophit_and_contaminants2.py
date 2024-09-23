@@ -359,8 +359,21 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
 
     # IS THE TOP SPECIES HIT ONE OF THE 10 ACCEPTABLE POSSIBILITIES? IF SO, PROVIDE A LINK TO THE REFERENCE GENOME
     re_top_species = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis).*?$", top_species)
+    re_top_variant = re.findall(r"^(Mycobact|Mycolicibac)\w+ (abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis) ()\w+ (bovis|orgis|caprae).*?$", top_species)
+    if len(re_top_variant) != 0:
+        re_top_species = re_top_variant
     if len(re_top_species) > 0:
-        identified_species = re_top_species[0][1]
+        if len(re_top_species[0]) == 2:
+            identified_species = re_top_species[0][1]
+            #deal with lineages
+            lineage_dict = {"La1.": "bovis",
+                            "La2.": "caprae",
+                            "La3.": "orygis"}
+            for lineage in lineage_dict:
+                if lineage in top_species:
+                    identified_species = lineage_dict[lineage]
+        else:
+            identified_species = re_top_species[0][3] #we have bovis (or  orgis/caprae) with variant in the name
         if supposed_species == 'null':
             out['summary_questions']['is_the_top_species_appropriate'] = 'yes'
         elif ((supposed_species != 'null') & (supposed_species == identified_species)):

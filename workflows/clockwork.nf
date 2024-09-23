@@ -38,11 +38,11 @@ workflow clockwork {
 
       gvcf(alignToRef.out.alignToRef_bam.join(minos.out.minos_vcf, by: 0))
 
-    emit:
-      sample_and_fastqs = input_seqs_json.map{it[0,1,2]}
-      mpileup_vcf = callVarsMpileup.out.mpileup_vcf.join(minos.out.minos_report, by: 0)
-      minos_vcf = minos.out.minos_vcf.join(alignToRef.out.alignToRef_report, by: 0)
-      reference = getRefFromJSON.out
-      bam = alignToRef.out.alignToRef_bam
+      report_for_ntm = gvcf.out.gvcf_report_resistance
+      sample_and_fqs = input_seqs_json.map{it[0,1,2]}
+      profiler_input_fq = sample_and_fqs.join(report_for_ntm, by:0)
 
+    emit:
+      profiler_input_vcf = gvcf.out.tbprofiler
+      profiler_input_fq = profiler_input_fq
 }

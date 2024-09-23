@@ -233,7 +233,7 @@ process minos {
 
     output:
     tuple val(sample_name), path(report_json), path(bam), path(ref), emit: minos_bam
-    tuple val(sample_name), path("${sample_name}.minos.vcf"), stdout, emit: minos_vcf
+    tuple val(sample_name), path("${sample_name}_allelic_depth.minos.vcf"), stdout, emit: minos_vcf
     tuple val(sample_name), path("${sample_name}_report.json"), emit: minos_report
     path "${sample_name}_err.json", emit: minos_log optional true
 
@@ -259,11 +259,23 @@ process minos {
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
 
-    top_hit=\$(jq -r '.top_hit.name' ${report_json})
+    samtools faidx $ref
+    samtools dict $ref -o ${ref.baseName}.dict
+    mkdir tmp
+
+    gatk VariantAnnotator -R $ref -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
+
+    top_hit=\$(jq -r '.top_hit.file_paths.ref_fa' ${report_json})
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [[ \$top_hit =~ ^"Mycobacterium tuberculosis" ]]; then printf "CREATE_ANTIBIOGRAM_${sample_name}"; else echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [[ \$top_hit =~ "/tuberculosis.fasta" ]]; then 
+        printf "CREATE_ANTIBIOGRAM_${sample_name}"
+    else
+        printf "CREATE_NTM_ANTIBIOGRAM_${sample_name}"
+        echo '{"resistance-profiling-warning":"sample is not TB so cannot produce antibiogram using resistance profiling tools"}' \
+        | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}
+    fi
     """
 
     stub:
@@ -299,6 +311,9 @@ process gvcf {
     path("${sample_name}.fa", emit: gvcf_fa)
     path "${sample_name}_err.json", emit: gvcf_log optional true
     path "${sample_name}_report.json", emit: gvcf_report optional true
+    tuple val(sample_name), path(minos_vcf), path(report_json), emit: vcfmix_input
+    tuple val(sample_name), path(minos_vcf), path(report_json), path(bam), path(ref), val(isSampleTB), emit: tbprofiler
+    tuple val(sample_name), path(report_json), path(minos_vcf), val(isSampleTB), emit: gvcf_report_resistance
 
     script:
     gvcf = "${sample_name}.gvcf.vcf"
