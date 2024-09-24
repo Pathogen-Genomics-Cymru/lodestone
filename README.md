@@ -1,8 +1,7 @@
 # Lodestone #
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/build-push-quay/badge.svg)
 ![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/pytest/badge.svg)
-![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/workflows/stub-run/badge.svg?branch=main)
-
+![Build Status](https://github.com/Pathogen-Genomics-Cymru/lodestone/actions/workflows/stub-run.yml/badge.svg?branch=main)
 ## Table of Contents
 - [What is Lodestone](#what-is-lodestone)
 - [Quick Start](#quick-start)
