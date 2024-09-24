@@ -43,7 +43,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
             num_frags_direct = line[2] # defined as "number of fragments assigned directly to this taxon"
             rank_code = line[3] # defined as "rank code, indicating (U)nclassified, (R)oot, (D)omain, (K)ingdom, (P)hylum, (C)lass, (O)rder, (F)amily, (G)enus, or (S)pecies". Takes the form of one letter, optionally followed by one number.
             ncbi_taxon_id = line[4] # defined as "NCBI taxonomic ID number"
-            name = re.sub(r'\W+', '', line[5]) # defined as "scientific name; remove non alphanumerics as it breaks the other scripts "
+            name = re.sub(r'\W+', ' ', line[5]) # defined as "scientific name; remove non alphanumerics as it breaks the other scripts "
             # convert strings to float or int
             pc_frags = float(pc_frags.strip())
             num_frags_rooted = int(num_frags_rooted.strip())

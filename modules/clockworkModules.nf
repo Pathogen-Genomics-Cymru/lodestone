@@ -279,7 +279,7 @@ process minos {
     """
 
     stub:
-    minos_vcf = "${sample_name}.minos.vcf"
+    minos_vcf = "${sample_name}_allelic_depth.minos.vcf"
     error_log = "${sample_name}_err.json"
 
     """
@@ -312,7 +312,7 @@ process gvcf {
     path "${sample_name}_err.json", emit: gvcf_log optional true
     path "${sample_name}_report.json", emit: gvcf_report optional true
     tuple val(sample_name), path(minos_vcf), path(report_json), emit: vcfmix_input
-    tuple val(sample_name), path(minos_vcf), path(report_json), path(bam), path(ref), val(isSampleTB), emit: tbprofiler
+    tuple val(sample_name), path(minos_vcf), path(report_json), val(isSampleTB), emit: tbprofiler
     tuple val(sample_name), path(report_json), path(minos_vcf), val(isSampleTB), emit: gvcf_report_resistance
 
     script:
