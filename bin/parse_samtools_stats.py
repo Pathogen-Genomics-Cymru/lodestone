@@ -4,7 +4,6 @@ import argparse
 import json
 import pysam
 
-
 def total_genome_size_from_bam(bam_file):
     bam = pysam.AlignmentFile(bam_file, "rb")
     try:
