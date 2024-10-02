@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-import json
+ import json
 import os
 import sys
 import argparse
 import re
 import copy
+
 
 # define process requirements function
 def process_requirements(args):
