@@ -30,7 +30,7 @@ jobs:
           echo -n ::set-output name=GIT-COMMITS::
           COMMITS=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} **/Dockerfile* | jq -R '[.]' | jq -s -c 'add')
           #do we have any commits to python? if so override above and put all Dockerfiles in matrix
-          if git diff --name-only | grep -q ".py"
+          if git diff --name-only ${{ github.event.before }}..${{ github.event.after }} bin/*py | grep -q ".py"
           then
             COMMITS=$(ls **/Dockerfile.* -1 | jq -R '[.]' | jq -s -c 'add')
           fi
