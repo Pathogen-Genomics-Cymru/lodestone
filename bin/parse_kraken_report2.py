@@ -184,6 +184,7 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
             out['Errors'] = []
         if permissive:
             warnings.append("Warning: Mycobacteriaceae is not the top family, but permissive flag has been invoked")
+            out['afanc'] = 'true'
         else:
             out['Errors'].append("error: top family is not Mycobacteriaceae")
             out['afanc'] = 'false'
@@ -227,8 +228,8 @@ def process_requirements(args):
 
     if ((permissive != 'yes') & (permissive != 'no')):
         sys.exit('ERROR: \'permissive\' should be either \'yes\' or \'no\'')
-
-	return
+    
+    return
 
 # call main function
 if __name__ == "__main__":
@@ -257,10 +258,10 @@ if __name__ == "__main__":
     permissive = sys.argv[5]
 	
 	#coerce permissive into a bool
-	if permissive == "yes":
-		permissive = True
-	else:
-		permissive = False
+    if permissive == "yes":
+        permissive = True
+    else:
+        permissive = False
 
     # read kraken report
     S = []
