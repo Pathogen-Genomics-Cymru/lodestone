@@ -1,5 +1,6 @@
 FROM ubuntu:focal
 
+
 LABEL maintainer="pricea35@cardiff.ac.uk" \
 about.summary="container for the preprocessing workflow"
 
@@ -80,6 +81,7 @@ RUN curl -fsSL https://github.com/OpenGene/fastp/archive/v${fastp_version}.tar.g
 && cd .. \
 && rm -r fastp-${fastp_version}
 
+#fastqc
 RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fastqc_version}.zip \
 && unzip fastqc_v${fastqc_version}.zip \
 && chmod +x FastQC/fastqc \
@@ -87,11 +89,13 @@ RUN wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v${fas
 && rm fastqc_v${fastqc_version}.zip \
 && rm -r FastQC
 
+#Kraken needed for afanc and standalone
 RUN curl -fsSL https://github.com/DerrickWood/kraken2/archive/v${kraken2_version}.tar.gz | tar -xz \
 && cd kraken2-${kraken2_version} \
 && ./install_kraken2.sh /usr/local/bin \
 && cd ..
 
+# afanc (plus mash and fastANI)
 RUN curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_version}-alpha.tar.gz | tar -xz \
 && cd Afanc-${afanc_version}-alpha \
 && pip3 install ./ \
@@ -103,22 +107,12 @@ RUN curl -fsSL https://github.com/ArthurVM/Afanc/archive/refs/tags/v${afanc_vers
 && unzip fastANI-Linux64-v${fastani_version}.zip \
 && mv fastANI /usr/local/bin
 
+#edirect needed for afanc
 RUN sh -c "$(curl -fsSL https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh)" \
 && mkdir -p /opt/edirect \
 && mv /root/edirect/* /opt/edirect
 
-RUN git clone --recursive -b geno_kmer_count https://github.com/phelimb/mccortex \
-&& make -C mccortex \
-&& mv mccortex /usr/local/bin \
-&& curl -fsSL mykrobe-${mykrobe_version}.tar.gz https://github.com/Mykrobe-tools/mykrobe/archive/v${mykrobe_version}.tar.gz | tar -xz \
-&& cd mykrobe-${mykrobe_version} \
-&& pip3 install requests \
-&& pip3 install . \
-&& ln -s /usr/local/bin/mccortex/bin/mccortex31 /usr/local/lib/python3.8/dist-packages/mykrobe/cortex/mccortex31 \
-&& mykrobe panels update_metadata \
-&& mykrobe panels update_species all \
-&& cd ..
-
+# install BWA
 RUN curl -fsSL https://github.com/lh3/bwa/archive/v${bwa_version}.tar.gz | tar -C /usr/local/bin -xz \
 && make -C /usr/local/bin/bwa-${bwa_version} \
 && chmod +x /usr/local/bin/bwa-${bwa_version}/bwa
