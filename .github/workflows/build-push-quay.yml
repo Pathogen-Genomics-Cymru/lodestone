@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - not_top_hit
     paths:
       - '**/Dockerfile*'
       - "bin/"
