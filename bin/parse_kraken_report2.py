@@ -201,6 +201,7 @@ def process_requirements(args):
     out_file = args[2]
     pct_threshold = float(args[3])
     num_threshold = int(args[4])
+    permissive = args[5]
 
     # check if input file exists
     if not os.path.exists(in_file):
@@ -224,7 +225,10 @@ def process_requirements(args):
     if pct_threshold > 100:
         sys.exit('ERROR: %f is a %% and cannot be > 100' %(pct_threshold))
 
-    return
+    if ((permissive != 'yes') & (permissive != 'no')):
+        sys.exit('ERROR: \'permissive\' should be either \'yes\' or \'no\'')
+
+	return
 
 # call main function
 if __name__ == "__main__":
@@ -239,7 +243,7 @@ if __name__ == "__main__":
     parser.add_argument('out_file', metavar='out_file', type=str, help='Path to output file; must end .json')
     parser.add_argument('pct_threshold', metavar='pct_threshold', type=float, help='Min. coverage, as %%')
     parser.add_argument('num_threshold', metavar='num_threshold', type=int, help='Min. coverage, as no. of reads. Should be a positive integer.')
-    parser.add_argument('permissive', metavar='permissive', action='store_true', help="Flag. if supplied then permissive error handling will be applied. \
+    parser.add_argument('permissive', metavar='permissive', type=str, help="Boolean. if True then permissive error handling will be applied. \
                         This means samples will proceed even if Mycobacteriaceae is not the top hit" )
 
     args = parser.parse_args()
@@ -251,6 +255,12 @@ if __name__ == "__main__":
     pct_threshold = float(sys.argv[3])
     num_threshold = int(sys.argv[4])
     permissive = sys.argv[5]
+	
+	#coerce permissive into a bool
+	if permissive == "yes":
+		permissive = True
+	else:
+		permissive = False
 
     # read kraken report
     S = []
