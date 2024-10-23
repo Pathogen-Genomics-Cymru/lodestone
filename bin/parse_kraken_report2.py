@@ -77,7 +77,7 @@ def read_kraken_report(input, pct_threshold, num_threshold):
     return S, G, G1, F, non_human_species_detected
 
 # define output function
-def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, num_threshold):
+def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, num_threshold, permissive):
     # arguments are the output from read_kraken_report function
     # define warnings lists
     warnings = []
@@ -155,7 +155,8 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
     # IF THE TOP FAMILY IS MYCOBACTERIACEAE (WHICH CAN ONLY BE THE CASE IF MINIMUM COVERAGE THRESHOLDS ARE MET), WE WILL ALSO REPORT THE KRAKEN 'G1' CLASSIFICATIONS. THESE MAY INDICATE WHETHER THIS IS A MIXED MYCOBACTERIAL SAMPLE.
     if top_family == "Mycobacteriaceae":
         if no_of_reads_assigned_to_top_family < 100000:
-            if "Errors" not in out: out['Errors'] = []
+            if "Errors" not in out: 
+                out['Errors'] = []
             out['Errors'].append("error: there are < 100k reads classified as Mycobacteriaceae")
             out['afanc'] = 'false'
         else:
@@ -179,9 +180,13 @@ def parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, 
             if len(sorted_G1) > 1:
                 warnings.append("warning: sample contains multiple mycobacterial species complexes (for superior classification of mixed mycobacteria, defer to afanc report)")
     else:
-        if "Errors" not in out: out['Errors'] = []
-        out['Errors'].append("error: top family is not Mycobacteriaceae")
-        out['afanc'] = 'false'
+        if "Errors" not in out:
+            out['Errors'] = []
+        if permissive:
+            warnings.append("Warning: Mycobacteriaceae is not the top family, but permissive flag has been invoked")
+        else:
+            out['Errors'].append("error: top family is not Mycobacteriaceae")
+            out['afanc'] = 'false'
 
     if len(warnings) == 0:
         warnings.append('')
@@ -234,6 +239,8 @@ if __name__ == "__main__":
     parser.add_argument('out_file', metavar='out_file', type=str, help='Path to output file; must end .json')
     parser.add_argument('pct_threshold', metavar='pct_threshold', type=float, help='Min. coverage, as %%')
     parser.add_argument('num_threshold', metavar='num_threshold', type=int, help='Min. coverage, as no. of reads. Should be a positive integer.')
+    parser.add_argument('permissive', metavar='permissive', action='store_true', help="Flag. if supplied then permissive error handling will be applied. \
+                        This means samples will proceed even if Mycobacteriaceae is not the top hit" )
 
     args = parser.parse_args()
 
@@ -243,6 +250,7 @@ if __name__ == "__main__":
     out_file = sys.argv[2]
     pct_threshold = float(sys.argv[3])
     num_threshold = int(sys.argv[4])
+    permissive = sys.argv[5]
 
     # read kraken report
     S = []
@@ -253,7 +261,7 @@ if __name__ == "__main__":
     S, G, G1, F, non_human_species_detected = read_kraken_report(in_file, pct_threshold, num_threshold)
 
     # parse kraken report and generate output
-    out = parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, num_threshold)
+    out = parse_kraken_report(S, G, G1, F, non_human_species_detected, pct_threshold, num_threshold, permissive)
     
     # CREATE OUTPUT FILE
     with open(out_file, 'w') as f:
