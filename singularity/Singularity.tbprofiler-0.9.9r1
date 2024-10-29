@@ -1,0 +1,83 @@
+Bootstrap: docker
+From: ubuntu:focal
+Stage: spython-base
+
+%files
+resources/tuberculosis.fasta /data/tuberculosis.fasta
+%labels
+base.image="ubuntu:focal"
+dockerfile.version="0.9.8.1"
+software="tbprofiler"
+software.version="${TBPROFILER_VER}"
+description="The pipeline aligns reads to the H37Rv reference using bowtie2, BWA or minimap2 and then calls variants using bcftools. These variants are then compared to a drug-resistance database."
+maintainer3="Tom Whalley"
+maintainer3.email="twhalley93@gmail.com"
+%post
+
+
+#copy the reference genome to pre-compute our index
+
+tbdb_version=a5e1d48
+tbprofiler_version=6.2.1
+TMPDIR="."
+
+#USER root
+mkdir -p /
+cd /
+TMPDIR="/data"
+TBPROFILER_VER="2c92475"
+
+# this version is the shortened commit hash on the `master` branch here https://github.com/jodyphelan/tbdb/
+# commits are found on https://github.com/jodyphelan/tbdb/commits/master
+# this was the latest commit as of 2024-05-21
+TBDB_VER="a5e1d48"
+
+# LABEL instructions tag the image with metadata that might be important to the user
+
+#set env for root prefix
+MAMBA_ROOT_PREFIX="/opt/conda"
+
+apt-get update && apt-get install -y apt-utils wget bzip2 curl
+curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest| tar -xvj bin/micromamba \
+&& touch /root/.bashrc \
+&& ./bin/micromamba shell init -s bash -p /opt/conda  \
+&& grep -v '[ -z "\$PS1" ] && return' /root/.bashrc  > /opt/conda/bashrc   # this line has been modified \
+&& apt-get clean autoremove --yes \
+&& rm -rf /var/lib/{apt,dpkg,cache,log}
+
+
+# install tb-profiler via bioconda; install into 'base' conda env
+micromamba install --yes --name base --channel conda-forge --channel bioconda  \
+tb-profiler=${TBPROFILER_VER}
+micromamba install --yes --name base --channel conda-forge --channel bioconda gatk4
+micromamba install --yes --name base --channel conda-forge --channel bioconda samtools
+micromamba install --yes --name base --channel conda-forge jq
+micromamba clean --all --yes
+
+# hardcode 'base' env bin into PATH, so conda env does not have to be "activated" at run time
+PATH="/opt/conda/bin:${PATH}"
+
+
+# Version of database can be confirmed at /opt/conda/share/tbprofiler/tbdb.version.json
+# can also run 'tb-profiler list_db' to find the same version info
+# In 5.0.1 updating_tbdb does not work with tb-profiler update_tbdb --commit ${TBDB_VER}
+
+mkdir -p /data
+cd /data
+
+#wants full path to reference
+tb-profiler update_tbdb --match_ref /data/tuberculosis.fasta --commit ${TBDB_VER}
+
+%environment
+export tbdb_version=a5e1d48
+export tbprofiler_version=6.2.1
+export TMPDIR="."
+export TMPDIR="/data"
+export MAMBA_ROOT_PREFIX="/opt/conda"
+export PATH="/opt/conda/bin:${PATH}"
+%runscript
+cd /data
+exec /bin/bash "$@"
+%startscript
+cd /data
+exec /bin/bash "$@"
