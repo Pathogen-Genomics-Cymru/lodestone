@@ -247,6 +247,7 @@ process minos {
     n_variants_bcf=\$(grep -i "^#" ${bcftools_vcf} | wc -l)
     n_variants_cortex=\$(grep -i "^#" ${cortex_vcf} | wc -l)
 
+    # If number of variants is zero in one of the files don't run minos
     if [[ \$n_variants_bcf == 0 ]] ;
     then
         grep "^#" ${cortex_vcf} > ${bcftools_vcf}
@@ -254,7 +255,8 @@ process minos {
     then
         grep "^#" ${bcftools_vcf} > ${cortex_vcf}
     fi 
-        
+
+    # minos adjudication         
     minos adjudicate --force --reads ${bam} minos ref.fa ${bcftools_vcf} ${cortex_vcf}
     cp minos/final.vcf ${minos_vcf}
     rm -rf minos
@@ -263,7 +265,13 @@ process minos {
     samtools dict $ref -o ${ref.baseName}.dict
     mkdir tmp
 
-    gatk VariantAnnotator -R $ref -I $bam -V $minos_vcf -A DepthPerAlleleBySample -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
+    # add in allelic depth
+    gatk VariantAnnotator -R $ref -I $bam -V $minos_vcf -A DepthPerAlleleBySample \
+    -O ${sample_name}_allelic_depth.minos.vcf --tmp-dir tmp
+
+    # remove allelic depth fields where there are no reads
+    bcftools view -i "sum(AD)>0" ${sample_name}_allelic_depth.minos.vcf \
+    -o ${sample_name}_allelic_depth.minos.vcf
 
     top_hit=\$(jq -r '.top_hit.file_paths.ref_fa' ${report_json})
 
