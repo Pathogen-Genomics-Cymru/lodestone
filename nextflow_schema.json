@@ -13,8 +13,7 @@
             "default": "fastq"
         },
         "pattern": {
-            "type": "string",
-            "default": "*_R{1,2}.fastq.gz"
+            "type": "string"
         },
         "output_dir": {
             "type": "string"
@@ -70,14 +69,6 @@
             "type": "string",
             "default": "/home/ubuntu/magma/lodestone/resources/assembly_summary_refseq.txt"
         },
-        "percent_threshold": {
-            "type": "integer",
-            "default": 10
-        },
-        "n_reads_threshold": {
-            "type": "integer",
-            "default": 10000
-        },
         "permissive": {
             "type": "string",
             "default": "no"
@@ -85,6 +76,65 @@
     },
     "required": [
         "input_dir",
+        "pattern",
         "output_dir"
+    ],
+    "$defs": {
+        "kraken": {
+            "title": "kraken",
+            "type": "object",
+            "description": "Kraken thresholds",
+            "default": "",
+            "properties": {
+                "kraken_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Total reads threshold of total reads in Kraken report needed to keep when filtering",
+                    "default": 10000
+                },
+                "kraken_percent_threshold": {
+                    "type": "number",
+                    "description": "Percentage threshold of total reads in Kraken report needed to keep when filtering",
+                    "default": 10
+                }
+            }
+        },
+        "afanc": {
+            "title": "afanc",
+            "type": "object",
+            "description": "Afanc thresholds",
+            "default": "",
+            "properties": {
+                "afanc_percent_threshold": {
+                    "type": "number",
+                    "description": "Threshold percentage for Afanc. Percentage of reads needing to be mapped to a species in order to be considered",
+                    "default": 10,
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "afanc_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Total number of reads for Afanc. Number of reads needing to be mapped to a species in order to be considered",
+                    "default": 10000
+                },
+                "afanc_fail_percent_threshold": {
+                    "type": "number",
+                    "description": "Same as percent_threshold but lowered if Lodestone fails before Afanc",
+                    "default": 2
+                },
+                "afanc_fail_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Same as n_reads_thresholdbut lowered if Lodestone fails before Afanc",
+                    "default": 500
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/kraken"
+        },
+        {
+            "$ref": "#/$defs/afanc"
+        }
     ]
 }

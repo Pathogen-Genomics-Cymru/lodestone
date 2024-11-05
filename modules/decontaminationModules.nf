@@ -210,7 +210,9 @@ process reKraken {
     """
     kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} --report ${kraken2_report} --paired $fq1 $fq2
 
-    parse_kraken_report2.py ${kraken2_report} ${kraken2_json} ${params.percent_threshold} ${params.n_reads_threshold} ${params.permissive}
+    parse_kraken_report2.py ${kraken2_report} ${kraken2_json}     ${params.kraken.kraken_percent_threshold} \
+    ${params.kraken.kraken_n_reads_threshold} ${params.permissive}
+
     rm -rf ${sample_name}_read_classifications.txt
     """
 
@@ -260,7 +262,8 @@ process reAfanc {
     afanc_report = "${sample_name}_afanc_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv 
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2}-p ${params.afanc.afanc_percent_threshold} \
+        -n ${params.afanc.afanc_n_reads_threshold} -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv 
 
     cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
     reformat_afanc_json.py ${sample_name}/${sample_name}.json

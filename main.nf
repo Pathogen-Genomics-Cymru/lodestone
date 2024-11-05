@@ -104,6 +104,7 @@ if(!resistance_profilers.contains(params.resistance_profiler)){
 
 resistance_profiler = params.resistance_profiler
 
+// schema should take care of this. But keep it for the time being.
 // confirm that mandatory parameters have been set and that the conditional parameter, --pattern, has been used appropriately
 if ( params.input_dir == "" ) {
     exit 1, "error: --input_dir is mandatory (run with --help to see parameters)"
@@ -129,34 +130,6 @@ if ( ( params.unmix_myco != "yes" ) && ( params.unmix_myco != "no" ) ) {
 if ( ( params.species != "null" ) && ( params.species != "abscessus" ) && ( params.species != "africanum" ) && ( params.species != "avium" ) && ( params.species != "bovis" ) && ( params.species != "chelonae" ) && ( params.species != "chimaera" ) && ( params.species != "fortuitum" ) && ( params.species != "intracellulare" ) && ( params.species != "kansasii" ) && ( params.species != "tuberculosis" ) ) {
     exit 1, "error: --species is optional, but if used should be one of either abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis"
 }
-
-log.info """
-========================================================================
-M Y C O B A C T E R I A L  P I P E L I N E
-
-Parameters used:
-------------------------------------------------------------------------
---input_dir             ${params.input_dir}
---filetype              ${params.filetype}
---pattern               ${params.pattern}
---output_dir            ${params.output_dir}
---unmix_myco            ${params.unmix_myco}
---kraken_db             ${params.kraken_db}
---bowtie2_index         ${params.bowtie2_index}
---bowtie_index_name     ${params.bowtie_index_name}
---resistance_profiler   ${params.resistance_profiler}
---species               ${params.species}
---vcfmix                ${params.vcfmix}
---afanc_myco_db         ${params.afanc_myco_db}
---permissive            ${params.permissive}
---collate               ${params.collate}
-Runtime data:
-------------------------------------------------------------------------
-Running with profile  ${ANSI_GREEN}${workflow.profile}${ANSI_RESET}
-Running as user       ${ANSI_GREEN}${workflow.userName}${ANSI_RESET}
-Launch directory      ${ANSI_GREEN}${workflow.launchDir}${ANSI_RESET}
-"""
-.stripIndent()
 
 // main workflow
 workflow {

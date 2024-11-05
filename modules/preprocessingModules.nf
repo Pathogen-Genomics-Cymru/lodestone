@@ -294,14 +294,14 @@ process kraken2 {
     report_json = "${sample_name}_report.json"
 
     """
-    kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification}\ 
+    kraken2 --threads ${task.cpus} --db . --output ${kraken2_read_classification} \
     --report ${kraken2_report} --paired $fq1 $fq2
     
     parse_kraken_report2.py ${kraken2_report} ${kraken2_json} \
-    ${params.decontamination.kraken.percent_threshold} \
-    ${params.decontamination.kraken.n_reads_threshold} ${params.permissive}
+    ${params.kraken.kraken_percent_threshold} \
+    ${params.kraken.kraken_n_reads_threshold} ${params.permissive}
 
-    extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report}\ 
+    extract_kraken_reads.py -k ${kraken2_read_classification} -r ${kraken2_report} \
     -s $fq1 -s2 $fq2 -o ${nonBac_depleted_reads_1} -o2 ${nonBac_depleted_reads_2} \
     --taxid 2 --include-children --fastq-output >/dev/null
 
@@ -370,19 +370,24 @@ process afanc {
     """
     if [[ ${run_afanc} =~ ${sample_name} ]]
     then
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 5.0 -n 1000 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
+	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p ${params.afanc.afanc_percent_threshold} \
+        -n ${params.afanc.afanc_n_reads_threshold} -o ${sample_name} \
+        -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
         cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
-	reformat_afanc_json.py ${sample_name}/${sample_name}.json
-	printf ${sample_name}
+	
+        reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	    printf ${sample_name}
     else
-	afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p 2.0 -n 500 -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
+        afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p ${params.afanc.afanc_fail_percent_threshold} \
+        -n ${params.afanc.afanc_fail_n_reads_threshold} -o ${sample_name} -t ${task.cpus} \
+        -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv > afanc.log
         cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
-	reformat_afanc_json.py ${sample_name}/${sample_name}.json
+	    reformat_afanc_json.py ${sample_name}/${sample_name}.json
 
-	identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null ${params.permissive} 0
+	    identify_tophit_and_contaminants2.py ${afanc_report} ${kraken_json} $refseq_path ${params.species} ${params.unmix_myco} $resource_dir null ${params.permissive} 0
         mv "${sample_name}"_species_in_sample_pass_0.json "${sample_name}"_species_in_sample.json 
 
-	echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
+	    echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1] * .[2]" ${software_json} ${error_log} ${sample_name}_species_in_sample.json > ${report_json}
 
     fi
 
