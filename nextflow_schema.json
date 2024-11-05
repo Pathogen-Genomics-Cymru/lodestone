@@ -1,0 +1,90 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com//master/nextflow_schema.json",
+    "title": " pipeline parameters",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "input_dir": {
+            "type": "string"
+        },
+        "filetype": {
+            "type": "string",
+            "default": "fastq"
+        },
+        "pattern": {
+            "type": "string",
+            "default": "*_R{1,2}.fastq.gz"
+        },
+        "output_dir": {
+            "type": "string"
+        },
+        "unmix_myco": {
+            "type": "string",
+            "default": "no"
+        },
+        "species": {
+            "type": "string"
+        },
+        "kraken_db": {
+            "type": "string",
+            "default": "kraken2"
+        },
+        "bowtie2_index": {
+            "type": "string",
+            "default": "bowtie2"
+        },
+        "bowtie_index_name": {
+            "type": "string",
+            "default": "hg19_1kgmaj"
+        },
+        "resistance_profiler": {
+            "type": "string",
+            "default": "tb-profiler"
+        },
+        "update_tbprofiler": {
+            "type": "string",
+            "default": "no"
+        },
+        "collate": {
+            "type": "string",
+            "default": "yes"
+        },
+        "sing_dir": {
+            "type": "string",
+            "default": "/home/ubuntu/magma/lodestone/singularity"
+        },
+        "config_dir": {
+            "type": "string",
+            "default": "/home/ubuntu/magma/lodestone/nextflow.config"
+        },
+        "afanc_myco_db": {
+            "type": "string",
+            "default": "/home/ubuntu/magma/lodestone/Mycobacteriaciae_DB_7.0/"
+        },
+        "resource_dir": {
+            "type": "string",
+            "default": "/home/ubuntu/magma/lodestone/resources"
+        },
+        "refseq": {
+            "type": "string",
+            "default": "/home/ubuntu/magma/lodestone/resources/assembly_summary_refseq.txt"
+        },
+        "percent_threshold": {
+            "type": "integer",
+            "default": 10
+        },
+        "n_reads_threshold": {
+            "type": "integer",
+            "default": 10000
+        },
+        "permissive": {
+            "type": "string",
+            "default": "no"
+        }
+    },
+    "required": [
+        "input_dir",
+        "output_dir"
+    ]
+}

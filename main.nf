@@ -3,6 +3,9 @@
 // enable dsl2
 nextflow.enable.dsl=2
 
+//nf-validation
+include { validateParameters; paramsHelp; paramsSummaryLog} from 'plugin/nf-schema'
+
 // import subworkflows
 include {preprocessing} from './workflows/preprocessing.nf'
 include {clockwork} from './workflows/clockwork.nf'
@@ -24,7 +27,7 @@ if (params.help) {
 }
 
 def helpMessage() {
-log.info """
+log.info paramsHelp("""
 ========================================================================
 M Y C O B A C T E R I A L  P I P E L I N E
 
@@ -81,8 +84,15 @@ nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --
 nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco yes --output_dir .
 ========================================================================
 """
-.stripIndent()
+.stripIndent())
+exit 0
 }
+
+// Validate input parameters
+validateParameters()
+
+// Print summary of supplied parameters
+log.info paramsSummaryLog(workflow)
 
 
 resistance_profilers = ["tb-profiler", "tbtamr"]
