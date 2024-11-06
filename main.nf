@@ -55,8 +55,20 @@ workflow {
     }
 
     // create channels for kraken2 database and bowtie2 index
-    krakenDB = Channel.fromPath( "${params.kraken_db}/*.k2d" )
-    bowtie_dir = Channel.fromPath( "${params.bowtie2_index}/*.bt2" )
+    krakenDB = Channel.fromPath( "${params.kraken.kraken_db}/*.k2d" )
+    bowtie_dir = Channel.fromPath( "${params.bowtie.bowtie2_index}/*.bt2" )
+
+    if(params.permissive == true){
+        params.permissive = "yes"
+    } else {
+        params.permissive = "no"
+    }
+
+    if(params.unmix_myco == true){
+        params.unmix_myco = "yes"
+    } else {
+        params.unmix_myco = "no"
+    }
 
 
     // main workflow
@@ -70,7 +82,8 @@ workflow {
 
       input_files_vjson = input_files.combine(getversion.out.getversion_json)
 
-      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc_myco_db, params.resource_dir, params.refseq)
+      preprocessing(input_files_vjson, krakenDB, bowtie_dir, params.afanc.afanc_myco_db, 
+                    params.resources.resource_dir, params.resources.refseq)
 
       // CLOCKWORK SUB-WORKFLOW
       preprocessing_output = preprocessing.out.fastqs_and_reports
