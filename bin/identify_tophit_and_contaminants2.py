@@ -60,11 +60,11 @@ def process_requirements(args):
     if ((supposed_species != 'null') & (supposed_species not in species)):
         sys.exit('ERROR: if you provide a species ID, it must be one of either: abscessus|africanum|avium|bovis|chelonae|chimaera|fortuitum|intracellulare|kansasii|tuberculosis')
 
-    if ((unmix_myco != 'yes') & (unmix_myco != 'no')):
-        sys.exit('ERROR: \'unmix myco\' should be either \'yes\' or \'no\'')
+    if ((unmix_myco != 'true') & (unmix_myco != 'false')):
+        sys.exit('ERROR: \'unmix myco\' should be either \'true\' or \'false\'')
     
-    if ((permissive != 'yes') & (permissive != 'no')):
-        sys.exit('ERROR: \'permissive\' should be either \'yes\' or \'no\'')
+    if ((permissive != 'true') & (permissive != 'false')):
+        sys.exit('ERROR: \'permissive\' should be either \'true\' or \'false\'')
 
     ## check IDs from the file names
 
@@ -149,7 +149,7 @@ def match_taxonomy(spec):
 # define main function to process data
 def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_myco, myco_dir_path, prev_species_json_path, urls, tax_ids, sample_id, permissive):
 
-    if permissive == "yes":
+    if permissive == "true":
         permissive = True
     else:
         permissive = False
@@ -312,7 +312,7 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
             if len(re_species[0]) > 1:
                  contaminant_genus = re_species[0][0]
                  contaminant_species = re_species[0][1]
-            if ((unmix_myco == 'no') & (match_taxonomy(top_species)) & (match_taxonomy(spec))):
+            if ((unmix_myco == 'false') & (match_taxonomy(top_species)) & (match_taxonomy(spec))):
                 if spec not in ignored_mixed_myco: ignored_mixed_myco[spec] = 0
                 ignored_mixed_myco[spec] += 1
             else:
@@ -446,7 +446,7 @@ def process_reports(afanc_json_path, kraken_json_path, supposed_species, unmix_m
     # WHAT IS LIKELY TO HAVE HAPPENED IS THAT THE ALIGNMENT-BASED DECONTAMINATION PROCESS HAS TRIED TO DISAMBIGUATE A MIXTURE OF VERY SIMILAR MYCOBACTERIA AND INADVERTENTLY REMOVED TOO MANY READS. THERE WILL BE NOTHING SUBSTANTIVE LEFT FOR AFANC TO CLASSIFY.
     if ((num_afanc_species == afanc_finds_nothing) & (num_afanc_species == 1)):
         if out['summary_questions']['were_contaminants_removed'] == 'yes':
-            warnings.append("warning: regardless of what Kraken reports, afanc did not make a species-level mycobacterial classification. If this is a mixed-mycobacterial sample, then an alignment-based contaminant-removal process may not be appropriate. Suggestion: re-run with --unmix_myco 'no'")
+            warnings.append("warning: regardless of what Kraken reports, afanc did not make a species-level mycobacterial classification. If this is a mixed-mycobacterial sample, then an alignment-based contaminant-removal process may not be appropriate. Suggestion: re-run with --unmix_myco 'false'")
         elif out['summary_questions']['were_contaminants_removed'] == 'no':
             warnings.append("warning: regardless of what Kraken reports, afanc did not make a species-level mycobacterial classification")
 
@@ -483,20 +483,20 @@ if __name__ == "__main__":
     description += "A 'reference genome' is a manually-selected community standard for that species. Note that some prokaryotes can have more than one reference genome\n"
     description += "[species] refers to what you believe this sample to be. You will be warned if this differs from the Kraken/afanc predictions\n"
     description += "By defining [species] you will automatically select this to be the genome against which reads will be aligned using Clockwork\n"
-    description += "[unmix myco] is either 'yes' or 'no', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
-    description += "If 'no', any contaminating mycobacteria will be recorded but NOT acted upon\n"
+    description += "[unmix myco] is either 'true' or 'false', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\n"
+    description += "If 'false', any contaminating mycobacteria will be recorded but NOT acted upon\n"
     usage = "python identify_tophit_and_contaminants2.py [path to afanc JSON] [path to Kraken JSON] [path to RefSeq assembly summary file] [species] [unmix myco] [directory containing mycobacterial reference genomes] [aws_config]\n"
-    usage += "E.G.:\tpython identify_tophit_and_contaminants2.py afanc_report.json afanc_report.json assembly_summary_refseq.txt 1 tuberculosis yes myco_dir\n\n\n"
+    usage += "E.G.:\tpython identify_tophit_and_contaminants2.py afanc_report.json afanc_report.json assembly_summary_refseq.txt 1 tuberculosis true myco_dir\n\n\n"
 
     parser = argparse.ArgumentParser(description=description, usage=usage, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('afanc_json', metavar='afanc_json', type=str, help='Path to afanc json report')
     parser.add_argument('kraken_json', metavar='kraken_json', type=str, help='Path to Kraken json report')
     parser.add_argument('assembly_file', metavar='assembly_file', type=str, help='Path to RefSeq assembly summary file')
     parser.add_argument('species', metavar='species', type=str, help='Refers to what you believe this sample to be. You will be warned if this differs from the Kraken/afanc predictions')
-    parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'yes\' or \'no\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'no\', any contaminating mycobacteria will be recorded but NOT acted upon')
+    parser.add_argument('unmix_myco', metavar='unmix_myco', type=str, help='Is either \'true\' or \'false\', given in response to the question: do you want to disambiguate mixed-mycobacterial samples by read alignment?\nIf \'false\', any contaminating mycobacteria will be recorded but NOT acted upon')
     parser.add_argument('myco_dir', metavar='myco_dir', type=str, help='Path to myco directory')
     parser.add_argument('prev_species_json', metavar='prev_species_json', type=str, help='Path to previous species json file. Can be set to \'null\'')
-    parser.add_argument('permissive', metavar='permissive', type=str, help="Is either \'yes\' or \'no\', given in response to the question: do you want to carry on to Clockwork regardless of errors?")
+    parser.add_argument('permissive', metavar='permissive', type=str, help="Is either \'true\' or \'false\', given in response to the question: do you want to carry on to Clockwork regardless of errors?")
     parser.add_argument('pass_number', metavar='pass_number', type=int, help="Pass number. Refers to what pass of decontamination the pipeline is on")
     args = parser.parse_args()
 

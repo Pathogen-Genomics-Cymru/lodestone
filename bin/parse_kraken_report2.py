@@ -226,8 +226,8 @@ def process_requirements(args):
     if pct_threshold > 100:
         sys.exit('ERROR: %f is a %% and cannot be > 100' %(pct_threshold))
 
-    if ((permissive != 'yes') & (permissive != 'no')):
-        sys.exit('ERROR: \'permissive\' should be either \'yes\' or \'no\'')
+    if ((permissive != 'true') & (permissive != 'false')):
+        sys.exit('ERROR: \'permissive\' should be either \'true\' or \'false\'')
     
     return
 
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     permissive = sys.argv[5]
 	
 	#coerce permissive into a bool
-    if permissive == "yes":
+    if permissive == "true":
         permissive = True
     else:
         permissive = False
