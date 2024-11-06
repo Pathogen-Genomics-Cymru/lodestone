@@ -312,7 +312,15 @@ process kraken2 {
 
     run_afanc=\$(jq '.afanc' ${kraken2_json})
 
-    if [ \$run_afanc == '\"true\"' ]; then printf "${sample_name}"; else echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}; fi
+    #create report no matter what
+    cp ${software_json} ${report_json}
+
+    if [ \$run_afanc == '\"true\"' ]; then 
+        printf "${sample_name}"
+    else 
+        echo '{"error":"Kraken's top family hit either wasn't Mycobacteriaceae, or there were < 100k Mycobacteriaceae reads. Sample will not proceed further than afanc."}' \
+        | jq '.' > ${error_log} && printf "no" && jq -s ".[0] * .[1]" ${software_json} ${error_log} > ${report_json}
+    fi
     """
 
     stub:
