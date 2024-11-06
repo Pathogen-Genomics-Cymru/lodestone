@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 // import modules
-include {getversion} from '../modules/getversionModules.nf' params(params)
+include {getversion} from '../modules/getversionModules.nf'
 
 // define workflow component
 workflow vcfpredict {
