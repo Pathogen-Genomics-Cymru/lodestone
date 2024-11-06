@@ -64,6 +64,7 @@ process tbprofiler_update_db {
 }
 
 process tbprofiler {
+    
     tag { sample_name }
     label 'medium_memory'
     label 'medium_cpu'
@@ -72,7 +73,7 @@ process tbprofiler {
     
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbprofiler-out.json', overwrite: 'true'
     publishDir "${params.output_dir}${sample_name}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
-
+    
     input:
     tuple val(sample_name), path(minos_vcf), path(report_json), val(isSampleTB)
 
@@ -308,8 +309,8 @@ process finalJson {
     label 'low_cpu'
     
     errorStrategy 'ignore'
-
-    publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*_report.json'
+    
+    publishDir "${params.output_dir}${sample_name}", mode: 'copy', overwrite: 'true', pattern: '*_report.json'
 
     input:
     tuple val(sample_name), path(vcfmix_json), path(gnomon_json), path(report_json)
