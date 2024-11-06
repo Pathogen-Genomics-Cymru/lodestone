@@ -51,6 +51,7 @@ process tbprofiler_update_db {
     label 'low_memory'
     label 'low_cpu'
     label 'tbprofiler'
+    label 'new_tmp'
 
     input:
     path(reference)
@@ -67,6 +68,7 @@ process tbprofiler {
     label 'medium_memory'
     label 'medium_cpu'
     label 'tbprofiler'
+    label 'new_tmp'
     
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbprofiler-out.json', overwrite: 'true'
     publishDir "${params.output_dir}${sample_name}", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -119,6 +121,7 @@ process ntmprofiler {
     label 'low_memory'
     label 'low_cpu'
     label 'ntmprofiler'
+    label 'new_tmp'
    
     input:
     tuple val(sample_name), path(fq1), path(fq2), path(report_json), path(vcf), val(isSampleNTM)
@@ -161,6 +164,7 @@ process tbtamr {
     label 'medium_memory'
     label 'medium_cpu'
     label 'tbtamr'
+    label 'new_tmp'
     
     publishDir "${params.output_dir}/${sample_name}/antibiogram", mode: 'copy', pattern: '*.tbtamr-out.json', overwrite: 'true'
     publishDir "${params.output_dir}/$sample_name", mode: 'copy', overwrite: 'true', pattern: '*{_err.json,_report.json}'
@@ -208,6 +212,7 @@ process tbtamr_collate{
     label 'medium_memory'
     label 'medium_cpu'
     label 'tbtamr'
+    label 'new_tmp'
 
     publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: 'tbtamr.csv', stageAs: "tbtamr.variants.csv"
 
@@ -227,6 +232,7 @@ process tbprofiler_collate{
     label 'medium_memory'
     label 'medium_cpu'
     label 'tbprofiler'
+    label 'new_tmp'
 
     publishDir "${params.output_dir}", mode: 'copy', overwrite: 'true', pattern: 'tbprofiler.variants.csv'
 
@@ -246,6 +252,7 @@ process ntmprofiler_collate{
     label 'medium_memory'
     label 'medium_cpu'
     label 'ntmprofiler'
+    label 'new_tmp'
 
     publishDir "${params.output_dir}", mode: 'copy', owerwrite: 'true', pattern: ' ntmprofiler.collate.txt.variants.csv'
 
