@@ -56,8 +56,6 @@ workflow preprocessing {
       fastQC(fastp.out.fastp_fqs)
 
       kraken2(fastp.out.fastp_fqs, krakenDB.toList())
-
-      mykrobe(kraken2.out.kraken2_fqs)
       
       afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db, resource_dir, refseq_path)
       
