@@ -403,46 +403,6 @@ process afanc {
 }
 
 
-process mykrobe {
-    /**
-    * @QCcheckpoint none
-    */
-
-    tag { sample_name }
-    label 'preprocessing'
-    label 'normal_cpu'
-    label 'medium_memory'
-
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.json'
-    publishDir "${params.output_dir}/$sample_name/speciation_reports_for_reads_postFastP", mode: 'copy', pattern: '*_mykrobe_report.csv'
-
-    input:
-    tuple val(sample_name), path(fq1), path(fq2), val(run_mykrobe), path(software_json)
-
-    when:
-    run_mykrobe =~ /${sample_name}/
-
-    output:
-    tuple val(sample_name), path("${sample_name}_mykrobe_report.json"), stdout, emit: mykrobe_report
-    tuple val(sample_name), path(fq1), path(fq2), stdout, emit: mykrobe_fqs
-
-    script:
-    mykrobe_report = "${sample_name}_mykrobe_report"
-
-    """
-    mykrobe predict --sample ${sample_name} --species tb --threads ${task.cpus} --format json_and_csv --output ${mykrobe_report} -1 $fq1 $fq2
-    printf ${sample_name}
-    """
-
-    stub:
-    mykrobe_report = "${sample_name}_mykrobe_report.json"
-
-    """
-    touch ${mykrobe_report}
-    printf ${sample_name}
-    """
-}
-
 process bowtie2 {
     /**
     * @QCcheckpoint none
@@ -472,7 +432,7 @@ process bowtie2 {
     humanfree_fq2 = "${sample_name}_cleaned_2.fq"
 
     """
-    bowtie2 --very-sensitive -p ${task.cpus} -x ./${params.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
+    bowtie2 --very-sensitive -p ${task.cpus} -x ./${params.bowtie.bowtie_index_name} -1 $fq1 -2 $fq2 | samtools view -f 4 -Shb - > ${bam}
     samtools fastq -1 ${humanfree_fq1} -2 ${humanfree_fq2} -s singleton.fq ${bam}
 
     rm -rf ${bam}

@@ -56,20 +56,7 @@ workflow {
 
     // create channels for kraken2 database and bowtie2 index
     krakenDB = Channel.fromPath( "${params.kraken.kraken_db}/*.k2d" )
-    bowtie_dir = Channel.fromPath( "${params.bowtie.bowtie2_index}/*.bt2" )
-
-    if(params.permissive == true){
-        params.permissive = "yes"
-    } else {
-        params.permissive = "no"
-    }
-
-    if(params.unmix_myco == true){
-        params.unmix_myco = "yes"
-    } else {
-        params.unmix_myco = "no"
-    }
-
+    bowtie_dir = Channel.fromPath( "${params.bowtie.bowtie_index}/*.bt2" )
 
     // main workflow
     main:
