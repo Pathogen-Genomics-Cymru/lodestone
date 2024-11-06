@@ -53,48 +53,46 @@ By default, the pipeline will just run on the local machine. To run on a cluster
 Minimum recommended requirements: 32GB RAM, 8CPU
 
 ## Paramaters ##
-The following parameters should be set in `nextflow.config` or specified on the command line:
+The following parameters should be set in `nextflow.config`. They can be accessed by `nextflow run main.nf --help`:
 
-* **input_dir**<br /> 
-Directory containing fastq OR bam files
-* **filetype**<br />
-File type in input_dir. Either "fastq" or "bam"
-* **pattern**<br />
-Regex to match fastq files in input_dir, e.g. "*_R{1,2}.fq.gz". Only mandatory if --filetype is "fastq"
-* **output_dir**<br />
-Output directory for results
-* **unmix_myco**<br />
-Do you want to disambiguate mixed-mycobacterial samples by read alignment? Either "yes" or "no":
-  * If "yes" workflow will remove reads mapping to any minority mycobacterial genomes but in doing so WILL ALMOST CERTAINLY ALSO reduce coverage of the principal species
-  * If "no" then mixed-mycobacterial samples will be left alone. Mixtures of mycobacteria + non-mycobacteria will still be disambiguated
-* **species**<br />
-Principal species in each sample, assuming genus Mycobacterium. Default 'null'. If parameter used, takes 1 of 10 values: abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis. Using this parameter will apply an additional sanity test to your sample
-  * If you DO NOT use this parameter (default option), pipeline will determine principal species from the reads and consider any other species a contaminant
-  * If you DO use this parameter, pipeline will expect this to be the principal species. It will fail the sample if reads from this species are not actually the majority
-* **kraken_db**<br />
-Directory containing `*.k2d` Kraken2 database files (k2_pluspf_16gb recommended, obtain from https://benlangmead.github.io/aws-indexes/k2)
-* **bowtie2_index**<br />
-Directory containing Bowtie2 index (obtain from ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes/hg19_1kgmaj_bt2.zip). The specified path should NOT include the index name
-* **bowtie_index_name**<br />
-Name of the bowtie index, e.g. hg19_1kgmaj<br />
-* **vcfmix**<br />
-Run [vcfmix](https://github.com/AlexOrlek/VCFMIX), yes or no. Set to no for synthetic samples<br />
-* **resistance_profiler**<br />
-Run resistance profiling for Mycobacterium tubercuclosis. Either ["tb-profiler"](https://tbdr.lshtm.ac.uk/), ["tbtamr"](https://github.com/MDU-PHL/tbtamr) or "none".
-* **afanc_myco_db**<br />
-Path to the [afanc](https://github.com/ArthurVM/Afanc) database used for speciation. Obtain from  https://s3.climb.ac.uk/microbial-bioin-sp3/Mycobacteriaciae_DB_7.0.tar.gz
-* **update_tbprofiler**<br />
-Update tb-profiler. Either "yes" or "no". "yes" may be useful when running outside of a container for the first time as we will not have constructed a tb-profiler database matching our reference. This is not needed with the climb, docker and singluarity profiles as the reference has already been added. Alternatively you can run ```tb-profiler update_tbdb --match_ref <lodestone_dir>/resources/tuberculosis.fasta```.
-* **refseq**<br />
-Path to assembly summary refseq file (taken from [here](https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt)). A local version is stored for reproducibility purposes in ```resources/``` but for best results download the latest version. Instead of downloading, the link can be supplied directly in the refseq argument e.g. `--refseq "https://ftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txtftp.ncbi.nlm.nih.gov/genomes/refseq/assembly_summary_refseq.txt"`
-* **permissive**<br />
-One of "yes" or "no". If "yes", continue to clockwork flags will be ignored and alignment will be performed anyway. If there are not enough reads and/or not a reference found the programme will still exit.
-* **collate**<br />
-One of "yes" or "no". If "yes" collate function will be ran to collect all resistance profiling reports. Will be outputted to the base level output directory (e.g. ```output/tbprofiler.variants.csv```)
+```
+--input_dir                      [string]          Input directory containing FASTQs or BAMs
+--pattern                        [string]          Glob pattern for FASTQs or BAM
+--output_dir                     [string]          Output directory
+--permissive                     [boolean]         Flag. If True, errors in decontamination will be demoted to warnings
+--filetype                       [string]          Either "fastq" or "bam". Assumes FASTQs are PE Illumina reads and BAMs are mapped against one of the references in resources/  (accepted: bam, fastq) [default: fastq]
+--unmix_myco                     [boolean]         Flag. If True then minority Mycobacteriaceae reads will be removed. If False, they will be discarded
+--species                        [string]          Species which will be mapped against, corresponding to references in resources/: can be one of  abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis or null. If 'null' the top hit as determined by Afanc will be used  (accepted: null, abscessus, africanum,
+avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis)
+--sing_dir                       [string]          Directory to singularity definition files. Used to parse versions for reporting [default: ${baseDir}/resources]
+--config_file                    [string]          Path to Nextflow config file. Used for parsing arguments to write to results if needed [default: ${baseDir}/nextflow.config]
+--help                           [boolean, string] Show the help message for all top level parameters. When a parameter is given to `--help`, the full help message of that parameter will be printed.
+--helpFull                       [boolean]         Show the help message for all non-hidden parameters.
+--showHidden                     [boolean]         Show all hidden parameters in the help message. This needs to be used in combination with `--help` or `--helpFull`.
 
-For more information on the parameters run `nextflow run main.nf --help`
+resources
+  --resource_dir                 [string] Path to resources directroy where utility files are stored [default: ${baseDir}/resources]
+  --refseq                       [string] Path to NCBI refseq summary file [default: ${baseDir}/resources/assembly_summary_refseq.txt]
 
-The path to the singularity images can also be changed in the singularity profile in `nextflow.config`. Default value is `${baseDir}/singularity`
+resistance
+  --resistance_profiler          [string]  Tool used for tb-profiler. Either tb-profiler or tbtamr  (accepted: tb-profiler, tbtamr) [default: tb-profiler]
+  --collate                      [boolean] Flag. If True resistance reports will be summarised
+
+bowtie
+  --bowtie_index                 [string] Bowtie index directory [default: ${baseDir}/bowtie2/]
+  --bowtie_index_name            [string] Prefix for the Bowtie2 index (minus the file extensions). [default: hg19_1kgmaj]
+
+afanc
+  --afanc_percent_threshold      [number]  Minimum percentage threshold for reads in order for a taxa to be considered in Afanc if the pipeline has failed earlier on (for reporting) [default: 5]
+  --afanc_n_reads_threshold      [integer] Minimum reads threshold for reads in order for a taxa to be considered in Afanc [default: 500]
+  --afanc_fail_percent_threshold [number]  Minimum percentage threshold for reads in order for a taxa to be considered in Afanc [default: 2]
+  --afanc_fail_n_reads_threshold [integer] Minimum reads threshold for reads in order for a taxa to be considered in Afanc if the pipeline has failed earlier on (for reporting) [default: 200]
+
+kraken
+  --kraken_percent_threshold     [number]  Percentage threshold of reads required for taxa to be included in Kraken reports [default: 10]
+  --kraken_n_reads_threshold     [integer] Raw reads threshold required for taxa to be included in Kraken reports [default: 10000]
+  --kraken_db                    [string]  Kraken2 database path [default: kraken2/]
+```
 
 ## Stub runs ##
 To test the stub run:
