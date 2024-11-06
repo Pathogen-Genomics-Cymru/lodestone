@@ -1,0 +1,218 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/Lodestone/master/nextflow_schema.json",
+    "title": "Lodestone pipeline parameters",
+    "description": "Genomic Sequencing pipeline for Mycobacterial isolates",
+    "type": "object",
+    "properties": {
+        "input_dir": {
+            "type": "string",
+            "description": "Input directory containing FASTQs or BAMs",
+            "format": "directory-path"
+        },
+        "pattern": {
+            "type": "string",
+            "description": "Glob pattern for FASTQs or BAM"
+        },
+        "output_dir": {
+            "type": "string",
+            "description": "Output directory",
+            "format": "directory-path"
+        },
+        "permissive": {
+            "type": "boolean",
+            "description": "Flag. If True, errors in decontamination will be demoted to warnings"
+        },
+        "filetype": {
+            "type": "string",
+            "default": "fastq",
+            "description": "Either \"fastq\" or \"bam\". Assumes FASTQs are PE Illumina reads and BAMs are mapped against one of the references in resources/",
+            "enum": [
+                "bam",
+                "fastq"
+            ]
+        },
+        "unmix_myco": {
+            "type": "boolean",
+            "description": "Flag. If True then minority Mycobacteriaceae reads will be removed. If False, they will be discarded"
+        },
+        "species": {
+            "type": "string",
+            "description": "Species which will be mapped against, corresponding to references in resources/: can be one of  abscessus, africanum, avium, bovis, chelonae, chimaera, fortuitum, intracellulare, kansasii, tuberculosis or null. If 'null' the top hit as determined by Afanc will be used",
+            "enum": [
+                "null",
+                "abscessus",
+                "africanum",
+                "avium",
+                "bovis",
+                "chelonae",
+                "chimaera",
+                "fortuitum",
+                "intracellulare",
+                "kansasii",
+                "tuberculosis"
+            ]
+        },
+        "sing_dir": {
+            "type": "string",
+            "default": "${baseDir}/resources",
+            "description": "Directory to singularity definition files. Used to parse versions for reporting",
+            "format": "directory-path"
+        },
+        "config_file": {
+            "type": "string",
+            "default": "${baseDir}/nextflow.config",
+            "description": "Path to Nextflow config file. Used for parsing arguments to write to results if needed",
+            "pattern": "^\\S+\\.config$",
+            "format": "file-path"
+        }
+    },
+    "required": [
+        "input_dir",
+        "pattern",
+        "output_dir"
+    ],
+    "$defs": {
+        "resources": {
+            "title": "resources",
+            "type": "object",
+            "description": "Paths to resources directory (only needed for custom paths)",
+            "default": "",
+            "properties": {
+                "resource_dir": {
+                    "type": "string",
+                    "description": "Path to resources directroy where utility files are stored",
+                    "default": "${baseDir}/resources",
+                    "format": "directory-path"
+                },
+                "refseq": {
+                    "type": "string",
+                    "description": "Path to NCBI refseq summary file",
+                    "default": "${baseDir}/resources/assembly_summary_refseq.txt",
+                    "format": "file-path"
+                }
+            }
+        },
+        "resistance": {
+            "title": "resistance",
+            "type": "object",
+            "description": "Parameters relating to resistance profiling",
+            "default": "",
+            "properties": {
+                "resistance_profiler": {
+                    "type": "string",
+                    "description": "Tool used for tb-profiler. Either tb-profiler or tbtamr",
+                    "enum": [
+                        "tb-profiler",
+                        "tbtamr"
+                    ],
+                    "default": "tb-profiler"
+                },
+                "collate": {
+                    "type": "boolean",
+                    "description": "Flag. If True resistance reports will be summarised"
+                }
+            }
+        },
+        "bowtie": {
+            "title": "bowtie",
+            "type": "object",
+            "description": "Parameters for running Bowtie2 for human read removal",
+            "default": "",
+            "properties": {
+                "bowtie_index": {
+                    "type": "string",
+                    "description": "Bowtie index directory",
+                    "default": "${baseDir}/bowtie2/",
+                    "format": "directory-path"
+                },
+                "bowtie_index_name": {
+                    "type": "string",
+                    "description": "Prefix for the Bowtie2 index (minus the file extensions).",
+                    "default": "hg19_1kgmaj"
+                }
+            }
+        },
+        "afanc": {
+            "title": "afanc",
+            "type": "object",
+            "description": "Parameters for running Afanc. Includes the database and thresholds for reporting",
+            "default": "",
+            "properties": {
+                "afanc_percent_threshold": {
+                    "type": "number",
+                    "description": "Minimum percentage threshold for reads in order for a taxa to be considered in Afanc if the pipeline has failed earlier on (for reporting)",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "default": 5
+                },
+                "afanc_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Minimum reads threshold for reads in order for a taxa to be considered in Afanc",
+                    "minimum": 0,
+                    "maximum": 10000,
+                    "default": 500
+                },
+                "afanc_fail_percent_threshold": {
+                    "type": "number",
+                    "description": "Minimum percentage threshold for reads in order for a taxa to be considered in Afanc",
+                    "default": 2,
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "afanc_fail_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Minimum reads threshold for reads in order for a taxa to be considered in Afanc if the pipeline has failed earlier on (for reporting)",
+                    "default": 200,
+                    "minimum": 0,
+                    "maximum": 5000
+                }
+            }
+        },
+        "kraken": {
+            "title": "kraken",
+            "type": "object",
+            "description": "Parameters for running Kraken2. Includes the database and thresholds for reporting",
+            "default": "",
+            "properties": {
+                "kraken_percent_threshold": {
+                    "type": "number",
+                    "description": "Percentage threshold of reads required for taxa to be included in Kraken reports",
+                    "default": 10,
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "kraken_n_reads_threshold": {
+                    "type": "integer",
+                    "description": "Raw reads threshold required for taxa to be included in Kraken reports",
+                    "default": 10000,
+                    "minimum": 1000,
+                    "maximum": 50000
+                },
+                "kraken_db": {
+                    "type": "string",
+                    "description": "Kraken2 database path",
+                    "format": "directory-path",
+                    "default": "kraken2/"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/resources"
+        },
+        {
+            "$ref": "#/$defs/resistance"
+        },
+        {
+            "$ref": "#/$defs/bowtie"
+        },
+        {
+            "$ref": "#/$defs/afanc"
+        },
+        {
+            "$ref": "#/$defs/kraken"
+        }
+    ]
+}

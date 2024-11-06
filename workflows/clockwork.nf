@@ -2,13 +2,13 @@
 nextflow.enable.dsl = 2
 
 // import modules
-include {alignToRef} from '../modules/clockworkModules.nf' params(params)
-include {callVarsMpileup} from '../modules/clockworkModules.nf' params(params)
-include {callVarsCortex} from '../modules/clockworkModules.nf' params(params)
-include {minos} from '../modules/clockworkModules.nf' params(params)
-include {gvcf} from '../modules/clockworkModules.nf' params(params)
-include {getRefFromJSON} from '../modules/clockworkModules.nf' params(params)
-include {getRefCortex} from '../modules/clockworkModules.nf' params(params)
+include {alignToRef} from '../modules/clockworkModules.nf'
+include {callVarsMpileup} from '../modules/clockworkModules.nf'
+include {callVarsCortex} from '../modules/clockworkModules.nf'
+include {minos} from '../modules/clockworkModules.nf'
+include {gvcf} from '../modules/clockworkModules.nf'
+include {getRefFromJSON} from '../modules/clockworkModules.nf'
+include {getRefCortex} from '../modules/clockworkModules.nf'
          
 // define workflow component
 workflow clockwork {

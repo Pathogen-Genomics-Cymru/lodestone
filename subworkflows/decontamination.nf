@@ -1,14 +1,14 @@
 // enable dsl2
 nextflow.enable.dsl = 2
 
-include {identifyBacterialContaminants} from '../modules/decontaminationModules.nf' params(params)
-include {downloadContamGenomes} from '../modules/decontaminationModules.nf' params(params)
-include {mapToContamFa} from '../modules/decontaminationModules.nf' params(params)
-include {reKraken} from '../modules/decontaminationModules.nf' params(params)
-include {reAfanc} from '../modules/decontaminationModules.nf' params(params)
-include {reMykrobe} from '../modules/decontaminationModules.nf' params(params)
-include {summarise} from '../modules/decontaminationModules.nf' params(params)
-include {count_pass} from '../modules/decontaminationModules.nf' params(params)
+include {identifyBacterialContaminants} from '../modules/decontaminationModules.nf'
+include {downloadContamGenomes} from '../modules/decontaminationModules.nf'
+include {mapToContamFa} from '../modules/decontaminationModules.nf'
+include {reKraken} from '../modules/decontaminationModules.nf'
+include {reAfanc} from '../modules/decontaminationModules.nf'
+include {reMykrobe} from '../modules/decontaminationModules.nf'
+include {summarise} from '../modules/decontaminationModules.nf'
+include {count_pass} from '../modules/decontaminationModules.nf'
 
 workflow decontaminate {
     take:

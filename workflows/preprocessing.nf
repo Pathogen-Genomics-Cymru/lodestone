@@ -2,16 +2,15 @@
 nextflow.enable.dsl = 2
 
 // import modules
-include {checkFqValidity} from '../modules/preprocessingModules.nf' params(params)
-include {countReads} from '../modules/preprocessingModules.nf' params(params)
-include {fastp} from '../modules/preprocessingModules.nf' params(params)
-include {fastQC} from '../modules/preprocessingModules.nf' params(params)
-include {kraken2} from '../modules/preprocessingModules.nf' params(params)
-include {afanc} from '../modules/preprocessingModules.nf' params(params)
-include {mykrobe} from '../modules/preprocessingModules.nf' params(params)
-include {bowtie2} from '../modules/preprocessingModules.nf' params(params)
-include {checkBamValidity} from '../modules/preprocessingModules.nf' params(params)
-include {bam2fastq} from '../modules/preprocessingModules.nf' params(params)
+include {checkFqValidity} from '../modules/preprocessingModules.nf' 
+include {countReads} from '../modules/preprocessingModules.nf'
+include {fastp} from '../modules/preprocessingModules.nf'
+include {fastQC} from '../modules/preprocessingModules.nf' 
+include {kraken2} from '../modules/preprocessingModules.nf'
+include {afanc} from '../modules/preprocessingModules.nf'
+include {bowtie2} from '../modules/preprocessingModules.nf'
+include {checkBamValidity} from '../modules/preprocessingModules.nf'
+include {bam2fastq} from '../modules/preprocessingModules.nf'
 
 //import subworkflow
 include {decontaminate} from '../subworkflows/decontamination.nf'
@@ -56,8 +55,6 @@ workflow preprocessing {
       fastQC(fastp.out.fastp_fqs)
 
       kraken2(fastp.out.fastp_fqs, krakenDB.toList())
-
-      mykrobe(kraken2.out.kraken2_fqs)
       
       afanc(kraken2.out.kraken2_fqs.join(kraken2.out.kraken2_json, by: 0), afanc_myco_db, resource_dir, refseq_path)
       

@@ -333,7 +333,12 @@ process gvcf {
 
     cp ${sample_name}_report.json ${sample_name}_report_previous.json
 
-    if [ ${params.vcfmix} == "no" ] && [ ${params.resistance_profiler} == "none" ]; then echo '{"complete":"workflow complete without error"}' | jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > ${report_json}; fi
+    if [ ${params.resistance.resistance_profiler} == "none" ];
+    then 
+        echo '{"complete":"workflow complete without error"}' | \
+        jq '.' > ${error_log} && jq -s ".[0] * .[1]" ${error_log} ${sample_name}_report_previous.json > \
+        ${report_json}
+    fi
     """
 
     stub:

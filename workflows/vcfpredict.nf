@@ -2,16 +2,16 @@
 nextflow.enable.dsl = 2
 
 // import modules
-include {vcfmix} from '../modules/vcfpredictModules.nf' params(params)
-include {tbprofiler} from '../modules/vcfpredictModules.nf' params(params)
-include {tbprofiler_update_db} from '../modules/vcfpredictModules.nf' params(params)
-include {add_allelic_depth} from '../modules/vcfpredictModules.nf' params(params) 
-include {finalJson} from '../modules/vcfpredictModules.nf' params(params) 
-include {tbtamr} from '../modules/vcfpredictModules.nf' params(params)
-include {tbtamr_collate} from '../modules/vcfpredictModules.nf' params(params)
-include {tbprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
-include {ntmprofiler} from '../modules/vcfpredictModules.nf' params(params)
-include {ntmprofiler_collate} from '../modules/vcfpredictModules.nf' params(params)
+include {vcfmix} from '../modules/vcfpredictModules.nf'
+include {tbprofiler} from '../modules/vcfpredictModules.nf'
+include {tbprofiler_update_db} from '../modules/vcfpredictModules.nf'
+include {add_allelic_depth} from '../modules/vcfpredictModules.nf' 
+include {finalJson} from '../modules/vcfpredictModules.nf' 
+include {tbtamr} from '../modules/vcfpredictModules.nf'
+include {tbtamr_collate} from '../modules/vcfpredictModules.nf'
+include {tbprofiler_collate} from '../modules/vcfpredictModules.nf'
+include {ntmprofiler} from '../modules/vcfpredictModules.nf'
+include {ntmprofiler_collate} from '../modules/vcfpredictModules.nf'
 // define workflow component
 workflow vcfpredict {
 
@@ -27,33 +27,28 @@ workflow vcfpredict {
 
       ntm_profiling_out = ntmprofiler.out.vcfmix_in
       
-      if(params.collate == "yes"){
+      if(params.resistance.collate == true){
         collated_ntm_jsons = ntmprofiler.out.collate_json.collect()
         ntmprofiler_collate(collated_ntm_jsons)
       }
 
-      if ( params.resistance_profiler == "tb-profiler"){
-
-        //if we are local and want to match our references, run this
-        if (params.update_tbprofiler == "yes"){
-        tbprofiler_update_db(reference_fasta)
-        }
+      if ( params.resistance.resistance_profiler == "tb-profiler"){
         
         //run tb-profiler
         tbprofiler(profiler_input_vcf)
 
         tb_profiling_out = tbprofiler.out.vcfmix_in
 
-        if(params.collate == "yes"){
+        if(params.resistance.collate == true){
           collated_jsons = tbprofiler.out.collate_json.collect()
           tbprofiler_collate(collated_jsons)
         }
-      } else if (params.resistance_profiler == "tbtamr"){
+      } else if (params.resistance.resistance_profiler == "tbtamr"){
         tbtamr(profiler_input_fq)
 
         tb_profiling_out = tbtamr.out.vcfmix_in
         
-        if(params.collate == "yes"){
+        if(params.resistance.collate == true){
           collated_jsons = tbtamr.out.collate_json.collect()
           tbtamr_collate(collated_jsons)
         }
