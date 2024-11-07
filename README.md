@@ -36,10 +36,10 @@ The workflow is designed to run with either docker `-profile docker` or singular
 
 E.g. to run the workflow:
 ```
-NXF_VER=20.11.0-edge nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes \
+NXF_VER=24.10.0 nextflow run main.nf -profile singularity --filetype fastq --input_dir fq_dir --pattern "*_R{1,2}.fastq.gz" --unmix_myco yes \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 
-NXF_VER=20.11.0-edge nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
+NXF_VER=24.10.0 nextflow run main.nf -profile docker --filetype bam --input_dir bam_dir --unmix_myco no \
 --output_dir . --kraken_db /path/to/database --bowtie2_index /path/to/index --bowtie_index_name hg19_1kgmaj
 ```
 
