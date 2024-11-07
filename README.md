@@ -24,9 +24,9 @@ Note that while Mykrobe is included within this pipeline, it runs as an independ
 **WARNING**: There are currently known errors with vcfmix, as such `errorStrategy 'ignore'` has been added to the processes vcfpredict:vcfmix to stop the pipeline from crashing. Please check the stdout from nextflow to see whether these processes have ran successfully.
 
 ## Quick Start ## 
-This is a Nextflow DSL2 pipeline, it requires a version of Nextflow that supports DSL2 and the stub-run feature. It is recommended to run the pipeline with  `NXF_VER=20.11.0-edge`, as the pipeline has been tested using this version. E.g. to download
+This is a Nextflow DSL2 pipeline, it requires a version of Nextflow that supports DSL2 and the stub-run feature. It is recommended to run the pipeline with  `NXF_VER="24.10.0"`, as the pipeline has been tested using this version. To download run:
 ```
-export NXF_VER="20.11.0-edge"
+export NXF_VER="24.10.0"
 curl -fsSL https://get.nextflow.io | bash
 ```
 
