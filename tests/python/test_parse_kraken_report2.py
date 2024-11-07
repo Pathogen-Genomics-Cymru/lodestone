@@ -20,7 +20,7 @@ import parse_kraken_report2
 
 def test_non_existing_report():
     # test non existing kraken report
-    args = [0, "nonexisting.txt", "test.json", 0.5, 5000]
+    args = [0, "nonexisting.txt", "test.json", 0.5, 5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -28,7 +28,7 @@ def test_non_existing_report():
 
 def test_empty_report():
     # test empty kraken report
-    args = [0, os.path.join(data_dir_name, "test_empty_report.txt"), "test.json", 0.5, 5000]
+    args = [0, os.path.join(data_dir_name, "test_empty_report.txt"), "test.json", 0.5, 5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -36,7 +36,7 @@ def test_empty_report():
 
 def test_output_json():
     # test output file, which is not json
-    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.txt", 0.5, 5000]
+    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.txt", 0.5, 5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -44,7 +44,7 @@ def test_output_json():
 
 def test_negative_num_threshold():
     # test negative num_threshold
-    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", 0.5, -5000]
+    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", 0.5, -5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -53,7 +53,7 @@ def test_negative_num_threshold():
 def test_negative_pct_threshold():
     # test negative pct_threshold
     pct_threshold = float(-0.5)
-    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", pct_threshold, 5000]
+    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", pct_threshold, 5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -62,7 +62,7 @@ def test_negative_pct_threshold():
 def test_high_pct_threshold():
     # test >100% pct_threshold
     pct_threshold = float(105.6)
-    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", pct_threshold, 5000]
+    args = [0, os.path.join(data_dir_name, "test_kraken_report.txt"), "test.json", pct_threshold, 5000, "false"]
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         parse_kraken_report2.process_requirements(args)
     assert pytest_wrapped_e.type == SystemExit
@@ -90,7 +90,7 @@ def test_read_and_parse_kraken_report():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json
 
 def test_read_and_parse_kraken_report2():
@@ -102,6 +102,7 @@ def test_read_and_parse_kraken_report2():
     # test reading txt kraken report
     test_kraken_report = os.path.join(data_dir_name, kraken_txt)
     got_read = parse_kraken_report2.read_kraken_report(test_kraken_report, pct_threshold, num_threshold)
+    print(got_read)
     expect = (
         [[48, 0.1, 'Human immunodeficiency virus 1', 11676]],
         [[4275, 8.9, 'Corynebacterium', 1716], [83, 0.17, 'Mycobacterium', 1763], [48, 0.1, 'Lentivirus', 11646]],
@@ -115,7 +116,7 @@ def test_read_and_parse_kraken_report2():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json
 
 def test_read_and_parse_kraken_report3():
@@ -140,7 +141,7 @@ def test_read_and_parse_kraken_report3():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json
 
 def test_read_and_parse_kraken_report4():
@@ -165,8 +166,8 @@ def test_read_and_parse_kraken_report4():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
-    assert got_parse == test_kraken_json
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
+    assert got_parse == test_kraken_json 
 
 def test_read_and_parse_kraken_report5():
     pct_threshold = 0.5
@@ -190,7 +191,7 @@ def test_read_and_parse_kraken_report5():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json
 
 def test_read_and_parse_kraken_report6():
@@ -215,7 +216,7 @@ def test_read_and_parse_kraken_report6():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json
 
 def test_read_and_parse_kraken_report7():
@@ -240,5 +241,5 @@ def test_read_and_parse_kraken_report7():
     test_kraken_json_path = os.path.join(data_dir_name, kraken_json)
     with open(test_kraken_json_path, 'r') as f:
         test_kraken_json = json.load(f) 
-    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold)
+    got_parse = parse_kraken_report2.parse_kraken_report(got_read[0], got_read[1], got_read[2], got_read[3], got_read[4], pct_threshold, num_threshold, "false")
     assert got_parse == test_kraken_json

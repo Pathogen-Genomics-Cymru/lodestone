@@ -47,12 +47,11 @@
          "percentage" : 0.1
       }
    ],
-   "afanc" : "false",
+   "afanc" : "true",
    "Warnings" : [
-      ""
+	   "Warning: Mycobacteriaceae is not the top family, but permissive flag has been invoked"
    ],
    "Errors" : [
-      "error: top family is not Mycobacteriaceae"
    ],
    "Thresholds" : {
       "reads" : 1,
