@@ -94,11 +94,25 @@ kraken
   --kraken_db                    [string]  Kraken2 database path [default: kraken2/]
 ```
 
-## Stub runs ##
+## Tests ##
+
+### Stub runs
 To test the stub run:
 ```
-NXF_VER=20.11.0-edge nextflow run main.nf -stub -config testing.config
+nextflow run main.nf -stub -config config/testing.config
 ```
+
+### Pytest
+To run Python module tests:
+
+```
+cd tests/python
+pytest -v
+```
+
+### nf-test
+Coming soon..
+
 
 ## Checkpoints ##
 Checkpoints used throughout this workflow to fail a sample/issue warnings:
