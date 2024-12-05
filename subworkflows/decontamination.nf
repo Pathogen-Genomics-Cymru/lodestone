@@ -48,7 +48,6 @@ workflow decontaminate {
 
       //re-run our speciation tools 
       reKraken(fastqs, krakenDB.toList(), pass_number)
-      reMykrobe(fastqs, pass_number)
       reAfanc(fastqs, afanc_myco_db, pass_number)
       
       //set speciation report
