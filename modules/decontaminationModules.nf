@@ -262,7 +262,7 @@ process reAfanc {
     afanc_report = "${sample_name}_afanc_report.json"
 
     """
-    afanc screen ${afanc_myco_db} ${fq1} ${fq2}-p ${params.afanc.afanc_percent_threshold} \
+    afanc screen ${afanc_myco_db} ${fq1} ${fq2} -p ${params.afanc.afanc_percent_threshold} \
         -n ${params.afanc.afanc_n_reads_threshold} -o ${sample_name} -t ${task.cpus} -v ${afanc_myco_db}/lineage_profiles/TB_variants.tsv 
 
     cp ${sample_name}/${sample_name}.json ${sample_name}_afanc_original.json
