@@ -217,9 +217,9 @@ def process_requirements(args):
         sys.exit('ERROR: output file %s must end with suffix .json' %out_file)
     
     # check if pct_threshold and num_threshold are positive floar/int
-    if not (isinstance(num_threshold, int) & (num_threshold > 0)):
+    if not (isinstance(num_threshold, int) & (num_threshold >= 0)):
         sys.exit('ERROR: %d is not a positive integer' %(num_threshold))
-    if not (isinstance(pct_threshold, float) & (pct_threshold > 0)):
+    if not (isinstance(pct_threshold, float) & (pct_threshold >= 0)):
         sys.exit('ERROR: %f is not a positive number' %(pct_threshold))
 
     # check if pct_threshold is more than 100
