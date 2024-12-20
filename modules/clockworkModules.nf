@@ -17,7 +17,8 @@ process getRefFromJSON {
     script:
     """
     ref_string=\$(jq -r '.top_hit.file_paths.ref_fa' ${species_json})
-    echo "\$ref_string"
+    #echo "/home/ubuntu/magma/lodestone/resources/tuberculosis.fasta"
+    echo \${ref_string}
     """
     
     stub:
@@ -129,7 +130,7 @@ process callVarsMpileup {
     bcftools_vcf = "${sample_name}.bcftools.vcf"
 
     """
-    bcftools mpileup -Ou -a 'INFO/AD' -f ${ref} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${bcftools_vcf}
+    bcftools mpileup -Ou -a 'INFO/AD' -f ${ref} ${bam} | bcftools call --threads ${task.cpus} -vm -O v -o ${bcftools_vcf} --ploidy 1
     """
 
     stub:
